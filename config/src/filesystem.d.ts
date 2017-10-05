@@ -14,5 +14,6 @@
 export interface Filesystem {
     list(dir: string): Promise<string[]>;
     read(file: string): Promise<string>;
+    hash(file: string): Promise<string>;
     write(file: string, contents: string): Promise<void>;
 }

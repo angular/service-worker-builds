@@ -40,9 +40,9 @@ class Adapter {
     /**
      * Extract the pathname of a URL.
      */
-    getPath(url) {
-        const parsed = new URL(url);
-        return parsed.pathname;
+    parseUrl(url, relativeTo) {
+        const parsed = new URL(url, relativeTo);
+        return { origin: parsed.origin, path: parsed.pathname };
     }
     /**
      * Wait for a given amount of time before completing a Promise.
@@ -165,7 +165,13 @@ var UpdateCacheStatus;
 function sha1(str) {
     const utf8 = str;
     const words32 = stringToWords32(utf8, Endian.Big);
-    const len = utf8.length * 8;
+    return _sha1(words32, utf8.length * 8);
+}
+function sha1Binary(buffer) {
+    const words32 = arrayBufferToWords32(buffer, Endian.Big);
+    return _sha1(words32, buffer.byteLength * 8);
+}
+function _sha1(words32, len) {
     const w = new Array(80);
     let [a, b, c, d, e] = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
     words32[len >> 5] |= 0x80 << (24 - len % 32);
@@ -223,8 +229,21 @@ function stringToWords32(str, endian) {
     }
     return words32;
 }
+function arrayBufferToWords32(buffer, endian) {
+    const words32 = Array((buffer.byteLength + 3) >>> 2);
+    const view = new Uint8Array(buffer);
+    for (let i = 0; i < words32.length; i++) {
+        words32[i] = wordAt(view, i * 4, endian);
+    }
+    return words32;
+}
 function byteAt(str, index) {
-    return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
+    if (typeof str === 'string') {
+        return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
+    }
+    else {
+        return index >= str.byteLength ? 0 : str[index] & 0xff;
+    }
 }
 function wordAt(str, index, endian) {
     let word = 0;
@@ -326,6 +345,10 @@ class AssetGroup {
         // This is the metadata table, which holds specific information for each cached URL, such as
         // the timestamp of when it was added to the cache.
         this.metadata = this.db.open(`${this.prefix}:${this.config.name}:meta`);
+        // Determine the origin from the registration scope. This is used to differentiate between
+        // relative and absolute URLs.
+        this.origin =
+            this.adapter.parseUrl(this.scope.registration.scope, this.scope.registration.scope).origin;
     }
     async cacheStatus(url) {
         const cache = await this.cache;
@@ -356,11 +379,11 @@ class AssetGroup {
      * Process a request for a given resource and return it, or return null if it's not available.
      */
     async handleFetch(req, ctx) {
+        const url = this.getConfigUrl(req.url);
         // Either the request matches one of the known resource URLs, one of the patterns for
         // dynamically matched URLs, or neither. Determine which is the case for this request in
         // order to decide how to handle it.
-        if (this.config.urls.indexOf(req.url) !== -1 ||
-            this.patterns.some(pattern => pattern.test(req.url))) {
+        if (this.config.urls.indexOf(url) !== -1 || this.patterns.some(pattern => pattern.test(url))) {
             // This URL matches a known resource. Either it's been cached already or it's missing, in
             // which case it needs to be loaded from the network.
             // Open the cache to check whether this resource is present.
@@ -371,7 +394,7 @@ class AssetGroup {
             if (cachedResponse !== undefined) {
                 // A response has already been cached (which presumably matches the hash for this
                 // resource). Check whether it's safe to serve this resource from cache.
-                if (this.hashes.has(req.url)) {
+                if (this.hashes.has(url)) {
                     // This resource has a hash, and thus is versioned by the manifest. It's safe to return
                     // the response.
                     return cachedResponse;
@@ -386,14 +409,28 @@ class AssetGroup {
                     return cachedResponse;
                 }
             }
-            // No already-cached response exists, so attempt a fetch/cache operation.
-            const res = await this.fetchAndCacheOnce(req);
+            // No already-cached response exists, so attempt a fetch/cache operation. The original request
+            // may specify things like credential inclusion, but for assets these are not honored in order
+            // to avoid issues with opaque responses. The SW requests the data itself.
+            const res = await this.fetchAndCacheOnce(this.adapter.newRequest(req.url));
             // If this is successful, the response needs to be cloned as it might be used to respond to
             // multiple fetch operations at the same time.
             return res.clone();
         }
         else {
             return null;
+        }
+    }
+    getConfigUrl(url) {
+        // If the URL is relative to the SW's own origin, then only consider the path relative to
+        // the domain root. Determine this by checking the URL's origin against the SW's.
+        const parsed = this.adapter.parseUrl(url, this.scope.registration.scope);
+        if (parsed.origin === this.origin) {
+            // The URL is relative to the SW's origin domain.
+            return parsed.path;
+        }
+        else {
+            return url;
         }
     }
     /**
@@ -549,16 +586,31 @@ class AssetGroup {
             this.inFlightRequests.delete(req.url);
         }
     }
+    async fetchFromNetwork(req, redirectLimit = 3) {
+        // Make a cache-busted request for the resource.
+        const res = await this.cacheBustedFetchFromNetwork(req);
+        // Check for redirected responses, and follow the redirects.
+        if (res['redirected'] && !!res.url) {
+            // If the redirect limit is exhausted, fail with an error.
+            if (redirectLimit === 0) {
+                throw new Error(`Response hit redirect limit (fetchFromNetwork): request redirected too many times, next is ${res.url}`);
+            }
+            // Unwrap the redirect directly.
+            return this.fetchFromNetwork(this.adapter.newRequest(res.url), redirectLimit - 1);
+        }
+        return res;
+    }
     /**
      * Load a particular asset from the network, accounting for hash validation.
      */
-    async fetchFromNetwork(req) {
+    async cacheBustedFetchFromNetwork(req) {
+        const url = this.getConfigUrl(req.url);
         // If a hash is available for this resource, then compare the fetched version with the
         // canonical hash. Otherwise, the network version will have to be trusted.
-        if (this.hashes.has(req.url)) {
+        if (this.hashes.has(url)) {
             // It turns out this resource does have a hash. Look it up. Unless the fetched version
             // matches this hash, it's invalid and the whole manifest may need to be thrown out.
-            const canonicalHash = this.hashes.get(req.url);
+            const canonicalHash = this.hashes.get(url);
             // Ideally, the resource would be requested with cache-busting to guarantee the SW gets
             // the freshest version. However, doing this would eliminate any chance of the response
             // being in the HTTP cache. Given that the browser has recently actively loaded the page,
@@ -571,7 +623,7 @@ class AssetGroup {
             // without the risk of stale data, at the expense of a duplicate request in the event of
             // a stale response.
             // Fetch the resource from the network (possibly hitting the HTTP cache).
-            const networkResult = await this.scope.fetch(req);
+            const networkResult = await this.safeFetch(req);
             // Decide whether a cache-busted request is necessary. It might be for two independent
             // reasons: either the non-cache-busted request failed (hopefully transiently) or if the
             // hash of the content retrieved does not match the canonical hash from the manifest. It's
@@ -581,7 +633,7 @@ class AssetGroup {
                 // The request was successful. A cache-busted request is only necessary if the hashes
                 // don't match. Compare them, making sure to clone the response so it can be used later
                 // if it proves to be valid.
-                const fetchedHash = sha1(await networkResult.clone().text());
+                const fetchedHash = sha1Binary(await networkResult.clone().arrayBuffer());
                 makeCacheBustedRequest = (fetchedHash !== canonicalHash);
             }
             // Make a cache busted request to the network, if necessary.
@@ -591,17 +643,18 @@ class AssetGroup {
                 // data, or because the version on the server really doesn't match. A cache-busting
                 // request will differentiate these two situations.
                 // TODO: handle case where the URL has parameters already (unlikely for assets).
-                const cacheBustedResult = await this.scope.fetch(this.cacheBust(req.url));
+                const cacheBustReq = this.adapter.newRequest(this.cacheBust(req.url));
+                const cacheBustedResult = await this.safeFetch(cacheBustReq);
                 // If the response was unsuccessful, there's nothing more that can be done.
                 if (!cacheBustedResult.ok) {
-                    throw new Error(`Response not Ok (fetchFromNetwork): cache busted request for ${req.url} returned response ${cacheBustedResult.status} ${cacheBustedResult.statusText}`);
+                    throw new Error(`Response not Ok (cacheBustedFetchFromNetwork): cache busted request for ${req.url} returned response ${cacheBustedResult.status} ${cacheBustedResult.statusText}`);
                 }
                 // Hash the contents.
-                const cacheBustedHash = sha1(await cacheBustedResult.clone().text());
+                const cacheBustedHash = sha1Binary(await cacheBustedResult.clone().arrayBuffer());
                 // If the cache-busted version doesn't match, then the manifest is not an accurate
                 // representation of the server's current set of files, and the SW should give up.
                 if (canonicalHash !== cacheBustedHash) {
-                    throw new Error(`Hash mismatch (${req.url}): expected ${canonicalHash}, got ${cacheBustedHash} (after cache busting)`);
+                    throw new Error(`Hash mismatch (cacheBustedFetchFromNetwork): ${req.url}: expected ${canonicalHash}, got ${cacheBustedHash} (after cache busting)`);
                 }
                 // If it does match, then use the cache-busted result.
                 return cacheBustedResult;
@@ -612,20 +665,21 @@ class AssetGroup {
         }
         else {
             // This URL doesn't exist in our hash database, so it must be requested directly.
-            return this.scope.fetch(req);
+            return this.safeFetch(req);
         }
     }
     /**
      * Possibly update a resource, if it's expired and needs to be updated. A no-op otherwise.
      */
     async maybeUpdate(updateFrom, req, cache) {
+        const url = this.getConfigUrl(req.url);
         const meta = await this.metadata;
         // Check if this resource is hashed and already exists in the cache of a prior version.
-        if (this.hashes.has(req.url)) {
-            const hash = this.hashes.get(req.url);
+        if (this.hashes.has(url)) {
+            const hash = this.hashes.get(url);
             // Check the caches of prior versions, using the hash to ensure the correct version of
             // the resource is loaded.
-            const res = await updateFrom.lookupResourceWithHash(req.url, hash);
+            const res = await updateFrom.lookupResourceWithHash(url, hash);
             // If a previously cached version was available, copy it over to this cache.
             if (res !== null) {
                 // Copy to this cache.
@@ -643,6 +697,17 @@ class AssetGroup {
      */
     cacheBust(url) {
         return url + (url.indexOf('?') === -1 ? '?' : '&') + 'ngsw-cache-bust=' + Math.random();
+    }
+    async safeFetch(req) {
+        try {
+            return await this.scope.fetch(req);
+        }
+        catch (err) {
+            return this.adapter.newResponse('', {
+                status: 504,
+                statusText: 'Gateway Timeout',
+            });
+        }
     }
 }
 /**
@@ -970,7 +1035,7 @@ class DataGroup {
                 // Sync the LRU chain to non-volatile storage.
                 await this.syncLru();
                 // Finally, fall back on the network.
-                return this.scope.fetch(req);
+                return this.safeFetch(req);
         }
     }
     async handleFetchWithPerformance(req, ctx, lru) {
@@ -982,7 +1047,7 @@ class DataGroup {
             res = fromCache.res;
             // Check the age of the resource.
             if (this.config.refreshAheadMs !== undefined && fromCache.age >= this.config.refreshAheadMs) {
-                ctx.waitUntil(this.safeCacheResponse(req, this.scope.fetch(req)));
+                ctx.waitUntil(this.safeCacheResponse(req, this.safeFetch(req)));
             }
         }
         if (res !== null) {
@@ -1037,17 +1102,37 @@ class DataGroup {
         return res;
     }
     networkFetchWithTimeout(req) {
-        const networkFetch = this.scope.fetch(req);
         // If there is a timeout configured, race a timeout Promise with the network fetch.
         // Otherwise, just fetch from the network directly.
         if (this.config.timeoutMs !== undefined) {
+            const networkFetch = this.scope.fetch(req);
+            const safeNetworkFetch = (async () => {
+                try {
+                    return await networkFetch;
+                }
+                catch (err) {
+                    return this.adapter.newResponse(null, {
+                        status: 504,
+                        statusText: 'Gateway Timeout',
+                    });
+                }
+            })();
+            const networkFetchUndefinedError = (async () => {
+                try {
+                    return await networkFetch;
+                }
+                catch (err) {
+                    return undefined;
+                }
+            })();
             // Construct a Promise<undefined> for the timeout.
             const timeout = this.adapter.timeout(this.config.timeoutMs);
-            // Race that with the network fetch. This will either be a Response, an error, or
-            // `undefined` in the event that the request times out.
-            return [Promise.race([networkFetch, timeout]), networkFetch];
+            // Race that with the network fetch. This will either be a Response, or `undefined`
+            // in the event that the request errored or timed out.
+            return [Promise.race([networkFetchUndefinedError, timeout]), safeNetworkFetch];
         }
         else {
+            const networkFetch = this.safeFetch(req);
             // Do a plain fetch.
             return [networkFetch, networkFetch];
         }
@@ -1147,6 +1232,17 @@ class DataGroup {
             ageTable.delete(url),
         ]);
     }
+    async safeFetch(req) {
+        try {
+            return this.scope.fetch(req);
+        }
+        catch (err) {
+            return this.adapter.newResponse(null, {
+                status: 504,
+                statusText: 'Gateway Timeout',
+            });
+        }
+    }
 }
 
 /**
@@ -1156,14 +1252,14 @@ class DataGroup {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function isNavigationRequest(req, adapter) {
+function isNavigationRequest(req, relativeTo, adapter) {
     if (req.mode !== 'navigate') {
         return false;
     }
     if (req.url.indexOf('__') !== -1) {
         return false;
     }
-    if (hasFileExtension(req.url, adapter)) {
+    if (hasFileExtension(req.url, relativeTo, adapter)) {
         return false;
     }
     if (!acceptsTextHtml(req)) {
@@ -1171,8 +1267,8 @@ function isNavigationRequest(req, adapter) {
     }
     return true;
 }
-function hasFileExtension(url, adapter) {
-    const path = adapter.getPath(url);
+function hasFileExtension(url, relativeTo, adapter) {
+    const path = adapter.parseUrl(url, relativeTo).path;
     const lastSegment = path.split('/').pop();
     return lastSegment.indexOf('.') !== -1;
 }
@@ -1236,9 +1332,8 @@ class AppVersion {
             }
         });
         // Process each `DataGroup` declared in the manifest.
-        this.dataGroups =
-            (manifest.dataGroups || [])
-                .map(config => new DataGroup(this.scope, this.adapter, config, this.database, `${config.version}:data`));
+        this.dataGroups = (manifest.dataGroups || [])
+            .map(config => new DataGroup(this.scope, this.adapter, config, this.database, `ngsw:${config.version}:data`));
     }
     get okay() { return this._okay; }
     /**
@@ -1248,13 +1343,13 @@ class AppVersion {
      */
     async initializeFully(updateFrom) {
         try {
-            // Fully initialize each asset group, in series. Starts with an empty Promise, and waits for
-            // the previous
-            // groups to have been initialized before initializing the next one in turn.
+            // Fully initialize each asset group, in series. Starts with an empty Promise,
+            // and waits for the previous groups to have been initialized before initializing
+            // the next one in turn.
             await this.assetGroups.reduce(async (previous, group) => {
-                // Wait for the previous groups to complete initialization. If there is a failure, this will
-                // throw, and
-                // each subsequent group will throw, until the whole sequence fails.
+                // Wait for the previous groups to complete initialization. If there is a
+                // failure, this will throw, and each subsequent group will throw, until the
+                // whole sequence fails.
                 await previous;
                 // Initialize this group.
                 return group.initializeFully(updateFrom);
@@ -1304,7 +1399,8 @@ class AppVersion {
         }
         // Next, check if this is a navigation request for a route. Detect circular
         // navigations by checking if the request URL is the same as the index URL.
-        if (isNavigationRequest(req, this.adapter) && req.url !== this.manifest.index) {
+        if (isNavigationRequest(req, this.scope.registration.scope, this.adapter) &&
+            req.url !== this.manifest.index) {
             // This was a navigation request. Re-enter `handleFetch` with a request for
             // the URL.
             return this.handleFetch(this.adapter.newRequest(this.manifest.index), context);
@@ -1390,10 +1486,18 @@ class AppVersion {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+const DEBUG_LOG_BUFFER_SIZE = 100;
 class DebugHandler {
     constructor(driver, adapter) {
         this.driver = driver;
         this.adapter = adapter;
+        // There are two debug log message arrays. debugLogA records new debugging messages.
+        // Once it reaches DEBUG_LOG_BUFFER_SIZE, the array is moved to debugLogB and a new
+        // array is assigned to debugLogA. This ensures that insertion to the debug log is
+        // always O(1) no matter the number of logged messages, and that the total number
+        // of messages in the log never exceeds 2 * DEBUG_LOG_BUFFER_SIZE.
+        this.debugLogA = [];
+        this.debugLogB = [];
     }
     async handleFetch(req) {
         const [state, versions, idle] = await Promise.all([
@@ -1416,6 +1520,10 @@ Last update tick: ${this.since(idle.lastTrigger)}
 Last update run: ${this.since(idle.lastRun)}
 Task queue:
 ${idle.queue.map(v => ' * ' + v).join('\n')}
+
+Debug log:
+${this.formatDebugLog(this.debugLogB)}
+${this.formatDebugLog(this.debugLogA)}
 `;
         return this.adapter.newResponse(`${msgState}
 
@@ -1440,6 +1548,24 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             (minutes > 0 ? `${minutes}m` : '') + (seconds > 0 ? `${seconds}s` : '') +
             (millis > 0 ? `${millis}u` : '');
     }
+    log(value, context = '') {
+        // Rotate the buffers if debugLogA has grown too large.
+        if (this.debugLogA.length === DEBUG_LOG_BUFFER_SIZE) {
+            this.debugLogB = this.debugLogA;
+            this.debugLogA = [];
+        }
+        // Convert errors to string for logging.
+        if (typeof value !== 'string') {
+            value = this.errorToString(value);
+        }
+        // Log the message.
+        this.debugLogA.push({ value, time: this.adapter.time, context });
+    }
+    errorToString(err) { return `${err.name}(${err.message}, ${err.stack})`; }
+    formatDebugLog(log) {
+        return log.map(entry => `[${this.since(entry.time)}] ${entry.value} ${entry.context}`)
+            .join('\n');
+    }
 }
 
 /**
@@ -1450,9 +1576,10 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
  * found in the LICENSE file at https://angular.io/license
  */
 class IdleScheduler {
-    constructor(adapter, threshold) {
+    constructor(adapter, threshold, debug) {
         this.adapter = adapter;
         this.threshold = threshold;
+        this.debug = debug;
         this.queue = [];
         this.scheduled = null;
         this.empty = Promise.resolve();
@@ -1468,12 +1595,12 @@ class IdleScheduler {
         if (this.scheduled !== null) {
             this.scheduled.cancel = true;
         }
-        this.scheduled = {
+        const scheduled = {
             cancel: false,
         };
+        this.scheduled = scheduled;
         await this.adapter.timeout(this.threshold);
-        if (this.scheduled !== null && this.scheduled.cancel) {
-            this.scheduled = null;
+        if (scheduled.cancel) {
             return;
         }
         this.scheduled = null;
@@ -1482,23 +1609,23 @@ class IdleScheduler {
     async execute() {
         this.lastRun = this.adapter.time;
         while (this.queue.length > 0) {
-            const queue = this.queue.map(task => {
-                try {
-                    return task.run();
-                }
-                catch (e) {
-                    // Ignore errors, for now.
-                    return Promise.resolve();
-                }
-            });
+            const queue = this.queue;
             this.queue = [];
-            await Promise.all(queue);
-            if (this.emptyResolve !== null) {
-                this.emptyResolve();
-                this.emptyResolve = null;
-            }
-            this.empty = Promise.resolve();
+            await queue.reduce(async (previous, task) => {
+                await previous;
+                try {
+                    await task.run();
+                }
+                catch (err) {
+                    this.debug.log(err, `while running idle task ${task.desc}`);
+                }
+            }, Promise.resolve());
         }
+        if (this.emptyResolve !== null) {
+            this.emptyResolve();
+            this.emptyResolve = null;
+        }
+        this.empty = Promise.resolve();
     }
     schedule(desc, run) {
         this.queue.push({ desc, run });
@@ -1542,7 +1669,7 @@ function isMsgActivateUpdate(msg) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const SYNC_THRESHOLD = 5000;
+const IDLE_THRESHOLD = 5000;
 const SUPPORTED_CONFIG_VERSION = 1;
 const NOTIFICATION_OPTION_NAMES = [
     'actions', 'body', 'dir', 'icon', 'lang', 'renotify', 'requireInteraction', 'tag', 'vibrate',
@@ -1552,36 +1679,34 @@ var DriverReadyState;
 (function (DriverReadyState) {
     // The SW is operating in a normal mode, responding to all traffic.
     DriverReadyState[DriverReadyState["NORMAL"] = 0] = "NORMAL";
-    // The SW does not have a clean installation of the latest version of the app, but older cached
-    // versions
-    // are safe to use so long as they don't try to fetch new dependencies. This is a degraded state.
+    // The SW does not have a clean installation of the latest version of the app, but older
+    // cached versions are safe to use so long as they don't try to fetch new dependencies.
+    // This is a degraded state.
     DriverReadyState[DriverReadyState["EXISTING_CLIENTS_ONLY"] = 1] = "EXISTING_CLIENTS_ONLY";
-    // The SW has decided that caching is completely unreliable, and is forgoing request handling
-    // until the
-    // next restart.
+    // The SW has decided that caching is completely unreliable, and is forgoing request
+    // handling until the next restart.
     DriverReadyState[DriverReadyState["SAFE_MODE"] = 2] = "SAFE_MODE";
 })(DriverReadyState || (DriverReadyState = {}));
 class Driver {
     constructor(scope, adapter, db) {
+        // Set up all the event handlers that the SW needs.
         this.scope = scope;
         this.adapter = adapter;
         this.db = db;
         /**
-         * Tracks the current readiness condition under which the SW is operating. This controls whether
-         * the SW
-         * attempts to respond to some or all requests.
+         * Tracks the current readiness condition under which the SW is operating. This controls
+         * whether the SW attempts to respond to some or all requests.
          */
         this.state = DriverReadyState.NORMAL;
         this.stateMessage = '(nominal)';
         /**
-         * Tracks whether the SW is in an initialized state or not. Before initialization, it's not legal
-         * to
-         * respond to requests.
+         * Tracks whether the SW is in an initialized state or not. Before initialization,
+         * it's not legal to respond to requests.
          */
         this.initialized = null;
         /**
-         * Maps client IDs to the manifest hash of the application version being used to serve them. If a
-         * client ID is not present here, it has not yet been assigned a version.
+         * Maps client IDs to the manifest hash of the application version being used to serve
+         * them. If a client ID is not present here, it has not yet been assigned a version.
          *
          * If a ManifestHash appears here, it is also present in the `versions` map below.
          */
@@ -1597,65 +1722,114 @@ class Driver {
          */
         this.latestHash = null;
         this.lastUpdateCheck = null;
-        // Listen to fetch events.
-        this.scope.addEventListener('install', (event) => { event.waitUntil(this.scope.skipWaiting()); });
+        // The install event is triggered when the service worker is first installed.
+        this.scope.addEventListener('install', (event) => {
+            // SW code updates are separate from application updates, so code updates are
+            // almost as straightforward as restarting the SW. Because of this, it's always
+            // safe to skip waiting until application tabs are closed, and activate the new
+            // SW version immediately.
+            event.waitUntil(this.scope.skipWaiting());
+        });
+        // The activate event is triggered when this version of the service worker is
+        // first activated.
         this.scope.addEventListener('activate', (event) => {
+            // As above, it's safe to take over from existing clients immediately, since
+            // the new SW version will continue to serve the old application.
             event.waitUntil(this.scope.clients.claim());
+            // Rather than wait for the first fetch event, which may not arrive until
+            // the next time the application is loaded, the SW takes advantage of the
+            // activation event to schedule initialization. However, if this were run
+            // in the context of the 'activate' event, waitUntil() here would cause fetch
+            // events to block until initialization completed. Thus, the SW does a
+            // postMessage() to itself, to schedule a new event loop iteration with an
+            // entirely separate event context. The SW will be kept alive by waitUntil()
+            // within that separate context while initialization proceeds, while at the
+            // same time the activation event is allowed to resolve and traffic starts
+            // being served.
             if (this.scope.registration.active !== null) {
                 this.scope.registration.active.postMessage({ action: 'INITIALIZE' });
             }
         });
+        // Handle the fetch, message, and push events.
         this.scope.addEventListener('fetch', (event) => this.onFetch(event));
         this.scope.addEventListener('message', (event) => this.onMessage(event));
         this.scope.addEventListener('push', (event) => this.onPush(event));
-        this.idle = new IdleScheduler(this.adapter, SYNC_THRESHOLD);
+        // The debugger generates debug pages in response to debugging requests.
         this.debugger = new DebugHandler(this, this.adapter);
+        // The IdleScheduler will execute idle tasks after a given delay.
+        this.idle = new IdleScheduler(this.adapter, IDLE_THRESHOLD, this.debugger);
     }
+    /**
+     * The handler for fetch events.
+     *
+     * This is the transition point between the synchronous event handler and the
+     * asynchronous execution that eventually resolves for respondWith() and waitUntil().
+     */
     onFetch(event) {
         // The only thing that is served unconditionally is the debug page.
-        if (this.adapter.getPath(event.request.url) === '/ngsw/state') {
+        if (this.adapter.parseUrl(event.request.url, this.scope.registration.scope).path ===
+            '/ngsw/state') {
+            // Allow the debugger to handle the request, but don't affect SW state in any
+            // other way.
             event.respondWith(this.debugger.handleFetch(event.request));
             return;
         }
-        // If the SW is in a broken state where it's not safe to handle requests at all, returning
-        // causes the request to fall back on the network. This is preferred over
-        // `respondWith(fetch(req))` because the latter still shows in DevTools that the request
-        // was handled by the SW.
+        // If the SW is in a broken state where it's not safe to handle requests at all,
+        // returning causes the request to fall back on the network. This is preferred over
+        // `respondWith(fetch(req))` because the latter still shows in DevTools that the
+        // request was handled by the SW.
         // TODO: try to handle DriverReadyState.EXISTING_CLIENTS_ONLY here.
         if (this.state === DriverReadyState.SAFE_MODE) {
-            // Even though the worker is in safe mode, idle tasks still need to happen so things
-            // like update checks, etc. can take place.
+            // Even though the worker is in safe mode, idle tasks still need to happen so
+            // things like update checks, etc. can take place.
             event.waitUntil(this.idle.trigger());
             return;
         }
-        // Past this point, the SW commits to handling the request itself. This could still fail (and
-        // result in `state` being set to `SAFE_MODE`), but even in that case the SW will still deliver
-        // a response.
+        // Past this point, the SW commits to handling the request itself. This could still
+        // fail (and result in `state` being set to `SAFE_MODE`), but even in that case the
+        // SW will still deliver a response.
         event.respondWith(this.handleFetch(event));
     }
+    /**
+     * The handler for message events.
+     */
     onMessage(event) {
+        // Ignore message events when the SW is in safe mode, for now.
         if (this.state === DriverReadyState.SAFE_MODE) {
             return;
         }
+        // If the message doesn't have the expected signature, ignore it.
         const data = event.data;
         if (!data || !data.action) {
             return;
         }
+        // Initialization is the only event which is sent directly from the SW to itself,
+        // and thus `event.source` is not a Client. Handle it here, before the check
+        // for Client sources.
         if (data.action === 'INITIALIZE' && this.initialized === null) {
+            // Initialize the SW.
             this.initialized = this.initialize();
-            event.waitUntil(this.initialized);
-            event.waitUntil(this.idle.trigger());
-            return;
+            // Wait until initialization is properly scheduled, then trigger idle
+            // events to allow it to complete (assuming the SW is idle).
+            event.waitUntil((async () => {
+                await this.initialized;
+                await this.idle.trigger();
+            })());
         }
+        // Only messages from true clients are accepted past this point (this is essentially
+        // a typecast).
         if (!this.adapter.isClient(event.source)) {
             return;
         }
+        // Handle the message and keep the SW alive until it's handled.
         event.waitUntil(this.handleMessage(data, event.source));
     }
     onPush(msg) {
+        // Push notifications without data have no effect.
         if (!msg.data) {
             return;
         }
+        // Handle the push and keep the SW alive until it's handled.
         msg.waitUntil(this.handlePush(msg.data));
     }
     async handleMessage(msg, from) {
@@ -1692,7 +1866,8 @@ class Driver {
         }
     }
     async updateClient(client) {
-        // Figure out which version the client is on. If it's not on the latest, it needs to be moved.
+        // Figure out which version the client is on. If it's not on the latest,
+        // it needs to be moved.
         const existing = this.clientVersionMap.get(client.id);
         if (existing === this.latestHash) {
             // Nothing to do, this client is already on the latest version.
@@ -1700,13 +1875,13 @@ class Driver {
         }
         // Switch the client over.
         let previous = undefined;
-        // Look up the application data associated with the existing version. If there isn't any,
-        // fall back on using the hash.
+        // Look up the application data associated with the existing version. If there
+        // isn't any, fall back on using the hash.
         if (existing !== undefined) {
             const existingVersion = this.versions.get(existing);
             previous = this.mergeHashWithAppData(existingVersion.manifest, existing);
         }
-        // Set the current version used by the client, and
+        // Set the current version used by the client, and sync the mapping to disk.
         this.clientVersionMap.set(client.id, this.latestHash);
         await this.sync();
         // Notify the client about this activation.
@@ -1741,7 +1916,7 @@ class Driver {
             event.waitUntil(this.idle.trigger());
             // Since the SW is already committed to responding to the currently active request,
             // respond with a network fetch.
-            return this.scope.fetch(event.request);
+            return this.safeFetch(event.request);
         }
         // Decide which version of the app to use to serve this request. This is asynchronous as in
         // some cases, a record will need to be written to disk about the assignment that is made.
@@ -1749,7 +1924,7 @@ class Driver {
         // Bail out
         if (appVersion === null) {
             event.waitUntil(this.idle.trigger());
-            return this.scope.fetch(event.request);
+            return this.safeFetch(event.request);
         }
         // Handle the request. First try the AppVersion. If that doesn't work, fall back on the network.
         const res = await appVersion.handleFetch(event.request, event);
@@ -1757,7 +1932,7 @@ class Driver {
         // request. In that case, just fall back on the network.
         if (res === null) {
             event.waitUntil(this.idle.trigger());
-            return this.scope.fetch(event.request);
+            return this.safeFetch(event.request);
         }
         // Trigger the idle scheduling system. The Promise returned by trigger() will resolve after
         // a specific amount of time has passed. If trigger() hasn't been called again by then (e.g.
@@ -1771,21 +1946,19 @@ class Driver {
      * Attempt to quickly reach a state where it's safe to serve responses.
      */
     async initialize() {
-        // On initialization, all of the serialized state is read out of the 'control' table. This
-        // includes:
+        // On initialization, all of the serialized state is read out of the 'control'
+        // table. This includes:
         // - map of hashes to manifests of currently loaded application versions
         // - map of client IDs to their pinned versions
         // - record of the most recently fetched manifest hash
         //
-        // If these values don't exist in the DB, then this is the either the first time the SW has run
-        // or
-        // the DB state has been wiped or is inconsistent. In that case, load a fresh copy of the
-        // manifest
-        // and reset the state from scratch.
+        // If these values don't exist in the DB, then this is the either the first time
+        // the SW has run or the DB state has been wiped or is inconsistent. In that case,
+        // load a fresh copy of the manifest and reset the state from scratch.
         // Open up the DB table.
         const table = await this.db.open('control');
-        // Attempt to load the needed state from the DB. If this fails, the catch {} block will populate
-        // these variables with freshly constructed values.
+        // Attempt to load the needed state from the DB. If this fails, the catch {} block
+        // will populate these variables with freshly constructed values.
         let manifests, assignments, latest;
         try {
             // Read them from the DB simultaneously.
@@ -1794,17 +1967,22 @@ class Driver {
                 table.read('assignments'),
                 table.read('latest'),
             ]);
-            // Successfully loaded from saved state. This implies a manifest exists, so the update check
-            // needs to happen in the background.
+            // Successfully loaded from saved state. This implies a manifest exists, so
+            // the update check needs to happen in the background.
             this.idle.schedule('init post-load (update, cleanup)', async () => {
                 await this.checkForUpdate();
-                await this.cleanupCaches();
+                try {
+                    await this.cleanupCaches();
+                }
+                catch (err) {
+                    // Nothing to do - cleanup failed. Just log it.
+                    this.debugger.log(err, 'cleanupCaches @ init post-load');
+                }
             });
         }
         catch (_) {
-            // Something went wrong. Try to start over by fetching a new manifest from the server and
-            // building
-            // up an empty initial state.
+            // Something went wrong. Try to start over by fetching a new manifest from the
+            // server and building up an empty initial state.
             const manifest = await this.fetchLatestManifest();
             const hash = hashManifest(manifest);
             manifests = {};
@@ -1818,44 +1996,31 @@ class Driver {
                 table.write('latest', latest),
             ]);
         }
-        // At this point, either the state has been loaded successfully, or fresh state with a new copy
-        // of
-        // the manifest has been produced. At this point, the `Driver` can have its internals hydrated
-        // from
-        // the state.
-        // Initialize the `versions` map by setting each hash to a new `AppVersion` instance for that
-        // manifest.
+        // At this point, either the state has been loaded successfully, or fresh state
+        // with a new copy of the manifest has been produced. At this point, the `Driver`
+        // can have its internals hydrated from the state.
+        // Initialize the `versions` map by setting each hash to a new `AppVersion` instance
+        // for that manifest.
         Object.keys(manifests).forEach((hash) => {
             const manifest = manifests[hash];
-            // If the manifest is newly initialized, an AppVersion may have already been created for it.
+            // If the manifest is newly initialized, an AppVersion may have already been
+            // created for it.
             if (!this.versions.has(hash)) {
                 this.versions.set(hash, new AppVersion(this.scope, this.adapter, this.db, this.idle, manifest, hash));
             }
         });
-        // Wait for the scheduling of initialization of all versions in the manifest. Ordinarily this
-        // just
-        // schedules the initializations to happen during the next idle period, but in development mode
-        // this might actually wait for the full initialization.
-        await Promise.all(Object.keys(manifests).map(async (hash) => {
-            try {
-                // Attempt to schedule or initialize this version. If this operation is successful, then
-                // initialization either succeeded or was scheduled. If it fails, then full initialization
-                // was attempted and failed.
-                await this.scheduleInitialization(this.versions.get(hash));
-            }
-            catch (err) {
-                return false;
-            }
-        }));
-        // Map each client ID to its associated hash. Along the way, verify that the hash is still valid
-        // for that clinet ID. It should not be possible for a client to still be associated with a hash
-        // that was since removed from the state.
+        // Map each client ID to its associated hash. Along the way, verify that the hash
+        // is still valid for that client ID. It should not be possible for a client to
+        // still be associated with a hash that was since removed from the state.
         Object.keys(assignments).forEach((clientId) => {
             const hash = assignments[clientId];
-            if (!this.versions.has(hash)) {
-                throw new Error(`Invariant violated (initialize): no manifest known for hash ${hash} active for client ${clientId}`);
+            if (this.versions.has(hash)) {
+                this.clientVersionMap.set(clientId, hash);
             }
-            this.clientVersionMap.set(clientId, hash);
+            else {
+                this.clientVersionMap.set(clientId, latest.latest);
+                this.debugger.log(`Unknown version ${hash} mapped for client ${clientId}, using latest instead`, `initialize: map assignments`);
+            }
         });
         // Set the latest version.
         this.latestHash = latest.latest;
@@ -1863,6 +2028,24 @@ class Driver {
         if (!this.versions.has(latest.latest)) {
             throw new Error(`Invariant violated (initialize): latest hash ${latest.latest} has no known manifest`);
         }
+        // Finally, wait for the scheduling of initialization of all versions in the
+        // manifest. Ordinarily this just schedules the initializations to happen during
+        // the next idle period, but in development mode this might actually wait for the
+        // full initialization.
+        // If any of these initializations fail, versionFailed() will be called either
+        // synchronously or asynchronously to handle the failure and re-map clients.
+        await Promise.all(Object.keys(manifests).map(async (hash) => {
+            try {
+                // Attempt to schedule or initialize this version. If this operation is
+                // successful, then initialization either succeeded or was scheduled. If
+                // it fails, then full initialization was attempted and failed.
+                await this.scheduleInitialization(this.versions.get(hash));
+            }
+            catch (err) {
+                this.debugger.log(err, `initialize: schedule init of ${hash}`);
+                return false;
+            }
+        }));
     }
     lookupVersionByHash(hash, debugName = 'lookupVersionByHash') {
         // The version should exist, but check just in case.
@@ -1875,8 +2058,8 @@ class Driver {
      * Decide which version of the manifest to use for the event.
      */
     async assignVersion(event) {
-        // First, check whether the event has a client ID. If it does, the version may already be
-        // associated.
+        // First, check whether the event has a client ID. If it does, the version may
+        // already be associated.
         const clientId = event.clientId;
         if (clientId !== null) {
             // Check if there is an assigned client id.
@@ -1884,10 +2067,10 @@ class Driver {
                 // There is an assignment for this client already.
                 let hash = this.clientVersionMap.get(clientId);
                 // Ordinarily, this client would be served from its assigned version. But, if this
-                // request is a navigation request, this client can be updated to the latest version
-                // immediately.
+                // request is a navigation request, this client can be updated to the latest
+                // version immediately.
                 if (this.state === DriverReadyState.NORMAL && hash !== this.latestHash &&
-                    isNavigationRequest(event.request, this.adapter)) {
+                    isNavigationRequest(event.request, this.scope.registration.scope, this.adapter)) {
                     // Update this client to the latest version immediately.
                     if (this.latestHash === null) {
                         throw new Error(`Invariant violated (assignVersion): latestHash was null`);
@@ -1900,14 +2083,16 @@ class Driver {
                 return this.lookupVersionByHash(hash, 'assignVersion');
             }
             else {
-                // This is the first time this client ID has been seen. Whether the SW is in a state
-                // to handle new clients depends on the current readiness state, so check that first.
+                // This is the first time this client ID has been seen. Whether the SW is in a
+                // state to handle new clients depends on the current readiness state, so check
+                // that first.
                 if (this.state !== DriverReadyState.NORMAL) {
-                    // It's not safe to serve new clients in the current state. It's possible that this
-                    // is an existing client which has not been mapped yet (see below) but even if that
-                    // is the case, it's invalid to make an assignment to a known invalid version, even
-                    // if that assignment was previously implicit. Return undefined here to let the
-                    // caller know that no assignment is possible at this time.
+                    // It's not safe to serve new clients in the current state. It's possible that
+                    // this is an existing client which has not been mapped yet (see below) but
+                    // even if that is the case, it's invalid to make an assignment to a known
+                    // invalid version, even if that assignment was previously implicit. Return
+                    // undefined here to let the caller know that no assignment is possible at
+                    // this time.
                     return null;
                 }
                 // It's safe to handle this request. Two cases apply. Either:
@@ -1953,7 +2138,7 @@ class Driver {
      * Retrieve a copy of the latest manifest from the server.
      */
     async fetchLatestManifest() {
-        const res = await this.scope.fetch('/ngsw.json?ngsw-cache-bust=' + Math.random());
+        const res = await this.safeFetch(this.adapter.newRequest('/ngsw.json?ngsw-cache-bust=' + Math.random()));
         if (!res.ok) {
             if (res.status === 404) {
                 await this.deleteAllCaches();
@@ -1985,7 +2170,8 @@ class Driver {
                 await appVersion.initializeFully();
             }
             catch (err) {
-                this.versionFailed(appVersion, err);
+                this.debugger.log(err, `initializeFully for ${appVersion.manifestHash}`);
+                await this.versionFailed(appVersion, err);
             }
         };
         // TODO: better logic for detecting localhost.
@@ -1994,7 +2180,7 @@ class Driver {
         }
         this.idle.schedule(`initialization(${appVersion.manifestHash})`, initialize);
     }
-    versionFailed(appVersion, err) {
+    async versionFailed(appVersion, err) {
         // This particular AppVersion is broken. First, find the manifest hash.
         const broken = Array.from(this.versions.entries()).find(([hash, version]) => version === appVersion);
         if (broken === undefined) {
@@ -2007,8 +2193,8 @@ class Driver {
         // If so, the SW cannot accept new clients, but can continue to service old ones.
         if (this.latestHash === brokenHash) {
             // The latest manifest is broken. This means that new clients are at the mercy of the
-            // network, but caches continue to be valid for previous versions. This is unfortunate
-            // but unavoidable.
+            // network, but caches continue to be valid for previous versions. This is
+            // unfortunate but unavoidable.
             this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
             this.stateMessage = `Degraded due to failed initialization: ${errorToString(err)}`;
             // Cancel the binding for these clients.
@@ -2016,22 +2202,23 @@ class Driver {
                 .forEach(clientId => this.clientVersionMap.delete(clientId));
         }
         else {
-            // The current version is viable, but this older version isn't. The only possible remedy
-            // is to stop serving the older version and go to the network. Figure out which clients
-            // are affected and put them on the latest.
+            // The current version is viable, but this older version isn't. The only
+            // possible remedy is to stop serving the older version and go to the network.
+            // Figure out which clients are affected and put them on the latest.
             const affectedClients = Array.from(this.clientVersionMap.keys())
                 .filter(clientId => this.clientVersionMap.get(clientId) === brokenHash);
             // Push the affected clients onto the latest version.
             affectedClients.forEach(clientId => this.clientVersionMap.set(clientId, this.latestHash));
         }
+        await this.sync();
     }
     async setupUpdate(manifest, hash) {
         const newVersion = new AppVersion(this.scope, this.adapter, this.db, this.idle, manifest, hash);
         // Try to determine a version that's safe to update from.
         let updateFrom = undefined;
-        // It's always safe to update from a version, even a broken one, as it will still only have
-        // valid resources cached. If there is no latest version, though, this update will have to
-        // install as a fresh version.
+        // It's always safe to update from a version, even a broken one, as it will still
+        // only have valid resources cached. If there is no latest version, though, this
+        // update will have to install as a fresh version.
         if (this.latestHash !== null) {
             updateFrom = this.versions.get(this.latestHash);
         }
@@ -2041,8 +2228,8 @@ class Driver {
             this.scope.registration.unregister();
             throw new Error(`Invalid config version: expected ${SUPPORTED_CONFIG_VERSION}, got ${manifest.configVersion}.`);
         }
-        // Cause the new version to become fully initialized. If this fails, then the version will
-        // not be available for use.
+        // Cause the new version to become fully initialized. If this fails, then the
+        // version will not be available for use.
         await newVersion.initializeFully(this);
         // Install this as an active version of the app.
         this.versions.set(hash, newVersion);
@@ -2091,19 +2278,19 @@ class Driver {
         ]);
     }
     async cleanupCaches() {
-        // Make sure internal state has been initialized before attempting to clean up caches.
-        await this.initialized;
-        // Query for all currently active clients, and list the client ids. This may skip some
-        // clients in the browser back-forward cache, but not much can be done about that.
+        // Query for all currently active clients, and list the client ids. This may skip
+        // some clients in the browser back-forward cache, but not much can be done about
+        // that.
         const activeClients = (await this.scope.clients.matchAll()).map(client => client.id);
-        // A simple list of client ids that the SW has kept track of. Subtracting activeClients
-        // from this list will result in the set of client ids which are being tracked but are no
-        // longer used in the browser, and thus can be cleaned up.
+        // A simple list of client ids that the SW has kept track of. Subtracting
+        // activeClients from this list will result in the set of client ids which are
+        // being tracked but are no longer used in the browser, and thus can be cleaned up.
         const knownClients = Array.from(this.clientVersionMap.keys());
         // Remove clients in the clientVersionMap that are no longer active.
         knownClients.filter(id => activeClients.indexOf(id) === -1)
             .forEach(id => this.clientVersionMap.delete(id));
-        // Next, determine the set of versions which are still used. All others can be removed.
+        // Next, determine the set of versions which are still used. All others can be
+        // removed.
         const usedVersions = new Set();
         this.clientVersionMap.forEach((version, _) => usedVersions.add(version));
         // Collect all obsolete versions by filtering out used versions from the set of all versions.
@@ -2113,8 +2300,8 @@ class Driver {
         await obsoleteVersions.reduce(async (previous, version) => {
             // Wait for the other cleanup operations to complete.
             await previous;
-            // Try to get past the failure of one particular version to clean up (this shouldn't happen,
-            // but handle it just in case).
+            // Try to get past the failure of one particular version to clean up (this
+            // shouldn't happen, but handle it just in case).
             try {
                 // Get ahold of the AppVersion for this particular hash.
                 const instance = this.versions.get(version);
@@ -2123,9 +2310,10 @@ class Driver {
                 // Clean it up.
                 await instance.cleanup();
             }
-            catch (e) {
-                // Oh well? Not much that can be done here. These caches will be removed when the SW revs
-                // its format version, which happens from time to time.
+            catch (err) {
+                // Oh well? Not much that can be done here. These caches will be removed when
+                // the SW revs its format version, which happens from time to time.
+                this.debugger.log(err, `cleanupCaches - cleanup ${version}`);
             }
         }, Promise.resolve());
         // Commit all the changes to the saved state.
@@ -2226,6 +2414,18 @@ class Driver {
             lastTrigger: this.idle.lastTrigger,
             lastRun: this.idle.lastRun,
         };
+    }
+    async safeFetch(req) {
+        try {
+            return await this.scope.fetch(req);
+        }
+        catch (err) {
+            this.debugger.log(err, `Driver.fetch(${req.url})`);
+            return this.adapter.newResponse(null, {
+                status: 504,
+                statusText: 'Gateway Timeout',
+            });
+        }
     }
 }
 function errorToString(error) {
