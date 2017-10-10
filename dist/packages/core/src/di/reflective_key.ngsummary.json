@@ -1,0 +1,1 @@
+{"moduleName":null,"summaries":[{"symbol":{"__symbol":0,"members":[]},"metadata":{"__symbolic":"class","members":{"__ctor__":[{"__symbolic":"constructor","parameters":[null,null]}]},"statics":{"numberOfKeys":{"__symbolic":"error","message":"Variable not initialized","line":31,"character":20}}}}],"symbols":[{"__symbol":0,"name":"ReflectiveKey","filePath":"./reflective_key"}]}
