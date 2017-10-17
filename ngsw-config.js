@@ -208,9 +208,9 @@ var NodeFilesystem = (function () {
                 dir = this.canonical(_path);
                 entries = fs$1.readdirSync(dir).map(function (entry) { return ({ entry: entry, stats: fs$1.statSync(path$1.join(dir, entry)) }); });
                 files = entries.filter(function (entry) { return !entry.stats.isDirectory(); })
-                    .map(function (entry) { return path$1.join(_path, entry.entry); });
+                    .map(function (entry) { return path$1.posix.join(_path, entry.entry); });
                 return [2 /*return*/, entries.filter(function (entry) { return entry.stats.isDirectory(); })
-                        .map(function (entry) { return path$1.join(_path, entry.entry); })
+                        .map(function (entry) { return path$1.posix.join(_path, entry.entry); })
                         .reduce(function (list, subdir) { return __awaiter$1(_this, void 0, void 0, function () { var _a, _b; return __generator$1(this, function (_c) {
                         switch (_c.label) {
                             case 0: return [4 /*yield*/, list];
@@ -252,7 +252,7 @@ var NodeFilesystem = (function () {
             });
         });
     };
-    NodeFilesystem.prototype.canonical = function (_path) { return path$1.join(this.base, _path); };
+    NodeFilesystem.prototype.canonical = function (_path) { return path$1.posix.join(this.base, _path); };
     return NodeFilesystem;
 }());
 
