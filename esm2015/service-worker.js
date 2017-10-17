@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.2-d035175
+ * @license Angular v5.0.0-rc.2-15a8429
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -142,6 +142,13 @@ class NgswCommChannel {
  * @suppress {checkTypes} checked by tsc
  */
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
  * Subscribe and listen to push notifications from the Service Worker.
  *
  * \@experimental
@@ -202,6 +209,13 @@ class SwPush {
         return /** @type {?} */ (toPromise.call(unsubscribeOnce));
     }
 }
+SwPush.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+SwPush.ctorParameters = () => [
+    { type: NgswCommChannel, },
+];
 
 /**
  * @fileoverview added by tsickle

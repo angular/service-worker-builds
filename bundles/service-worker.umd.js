@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.2-d035175
+ * @license Angular v5.0.0-rc.2-15a8429
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -36,7 +36,7 @@ var __assign = Object.assign || function __assign(t) {
 };
 
 /**
- * @license Angular v5.0.0-rc.2-d035175
+ * @license Angular v5.0.0-rc.2-15a8429
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -213,6 +213,13 @@ var NgswCommChannel = (function () {
  * @suppress {checkTypes} checked by tsc
  */
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
  * Subscribe and listen to push notifications from the Service Worker.
  *
  * \@experimental
@@ -278,6 +285,13 @@ var SwPush = (function () {
         var /** @type {?} */ unsubscribeOnce = rxjs_operator_take.take.call(unsubscribe, 1);
         return /** @type {?} */ (rxjs_operator_toPromise.toPromise.call(unsubscribeOnce));
     };
+    SwPush.decorators = [
+        { type: _angular_core.Injectable },
+    ];
+    /** @nocollapse */
+    SwPush.ctorParameters = function () { return [
+        { type: NgswCommChannel, },
+    ]; };
     return SwPush;
 }());
 
