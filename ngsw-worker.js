@@ -1065,8 +1065,7 @@ class DataGroup {
             ctx.waitUntil(this.safeCacheResponse(req, networkFetch));
         }
         // The request completed in time, so cache it inline with the response flow.
-        // Make sure to clone it so the real response can still be returned to the user.
-        await this.cacheResponse(req, res.clone(), lru);
+        await this.cacheResponse(req, res, lru);
         return res;
     }
     async handleFetchWithFreshness(req, ctx, lru) {
@@ -1098,7 +1097,7 @@ class DataGroup {
         }
         // No response in the cache. No choice but to fall back on the full network fetch.
         res = await networkFetch;
-        await this.cacheResponse(req, res.clone(), lru, true);
+        await this.cacheResponse(req, res, lru, true);
         return res;
     }
     networkFetchWithTimeout(req) {
@@ -1198,8 +1197,9 @@ class DataGroup {
         // Mark this resource as having been accessed recently. This ensures it won't be evicted
         // until enough other resources are requested that it falls off the end of the LRU chain.
         lru.accessed(req.url);
-        // Store the response in the cache.
-        await (await this.cache).put(req, res);
+        // Store the response in the cache (cloning because the browser will consume
+        // the body during the caching operation).
+        await (await this.cache).put(req, res.clone());
         // Store the age of the cache.
         const ageTable = await this.ageTable;
         await ageTable.write(req.url, { age: this.adapter.time });
@@ -1830,7 +1830,7 @@ class Driver {
             return;
         }
         // Handle the push and keep the SW alive until it's handled.
-        msg.waitUntil(this.handlePush(msg.data));
+        msg.waitUntil(this.handlePush(msg.data.json()));
     }
     async handleMessage(msg, from) {
         if (isMsgCheckForUpdates(msg)) {
