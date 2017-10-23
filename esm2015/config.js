@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.3-910735d
+ * @license Angular v5.0.0-rc.3-90d1423
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -170,7 +170,7 @@ class Generator {
                 const /** @type {?} */ plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
                 plainFiles.forEach(file => seenMap.add(file));
                 // Add the hashes.
-                yield plainFiles.reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
+                yield [...versionedFiles, ...plainFiles].reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
                     yield previous;
                     const /** @type {?} */ hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
