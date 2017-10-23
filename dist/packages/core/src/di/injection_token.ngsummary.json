@@ -1,1 +1,0 @@
-{"moduleName":null,"summaries":[{"symbol":{"__symbol":0,"members":[]},"metadata":{"__symbolic":"class","arity":1,"members":{"__ctor__":[{"__symbolic":"constructor","parameters":[null]}],"toString":[{"__symbolic":"method"}]}}}],"symbols":[{"__symbol":0,"name":"InjectionToken","filePath":"./injection_token"}]}
