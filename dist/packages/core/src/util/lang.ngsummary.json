@@ -1,1 +1,0 @@
-{"moduleName":null,"summaries":[{"symbol":{"__symbol":0,"members":[]},"metadata":{"__symbolic":"function"}},{"symbol":{"__symbol":1,"members":[]},"metadata":{"__symbolic":"function"}}],"symbols":[{"__symbol":0,"name":"isPromise","filePath":"./lang"},{"__symbol":1,"name":"isObservable","filePath":"./lang"}]}

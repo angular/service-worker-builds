@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.3-230b98d
+ * @license Angular v5.0.0-rc.3-6bed189
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -188,7 +188,7 @@ var Generator = (function () {
                                     plainFiles = allFiles.filter(fileMatcher).filter(function (file) { return !seenMap.has(file); });
                                     plainFiles.forEach(function (file) { return seenMap.add(file); });
                                     // Add the hashes.
-                                    return [4 /*yield*/, plainFiles.reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
+                                    return [4 /*yield*/, versionedFiles.concat(plainFiles).reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
                                             var hash;
                                             return __generator(this, function (_a) {
                                                 switch (_a.label) {
