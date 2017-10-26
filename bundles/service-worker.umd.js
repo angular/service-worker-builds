@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.6-47bc6f1
+ * @license Angular v5.0.0-rc.6-47caebf
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -36,7 +36,7 @@ var __assign = Object.assign || function __assign(t) {
 };
 
 /**
- * @license Angular v5.0.0-rc.6-47bc6f1
+ * @license Angular v5.0.0-rc.6-47caebf
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -81,7 +81,7 @@ var NgswCommChannel = (function () {
             var /** @type {?} */ controllerWithChanges = /** @type {?} */ ((rxjs_observable_concat.concat(currentController, controllerChanges)));
             this.worker = /** @type {?} */ ((rxjs_operator_filter.filter.call(controllerWithChanges, function (c) { return !!c; })));
             this.registration = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.worker, function () { return serviceWorker.getRegistration(); })));
-            var /** @type {?} */ rawEvents = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.registration, function (reg) { return rxjs_observable_fromEvent.fromEvent(reg, 'message'); })));
+            var /** @type {?} */ rawEvents = rxjs_observable_fromEvent.fromEvent(serviceWorker, 'message');
             var /** @type {?} */ rawEventPayload = /** @type {?} */ ((rxjs_operator_map.map.call(rawEvents, function (event) { return event.data; })));
             var /** @type {?} */ eventsUnconnected = /** @type {?} */ ((rxjs_operator_filter.filter.call(rawEventPayload, function (event) { return !!event && !!(/** @type {?} */ (event))['type']; })));
             var /** @type {?} */ events = /** @type {?} */ ((rxjs_operator_publish.publish.call(eventsUnconnected)));
@@ -376,8 +376,9 @@ function ngswAppInitializer(injector, script, options) {
         var /** @type {?} */ onStable = /** @type {?} */ (rxjs_operator_filter.filter.call(app.isStable, function (stable) { return !!stable; }));
         var /** @type {?} */ isStable = /** @type {?} */ (rxjs_operator_take.take.call(onStable, 1));
         var /** @type {?} */ whenStable = /** @type {?} */ (rxjs_operator_toPromise.toPromise.call(isStable));
-        return /** @type {?} */ (whenStable.then(function () { return navigator.serviceWorker.register(script, options); })
-            .then(function () { return undefined; }));
+        // Don't return the Promise, as that will block the application until the SW is registered, and
+        // cause a crash if the SW registration fails.
+        whenStable.then(function () { return navigator.serviceWorker.register(script, options); });
     };
     return initializer;
 }

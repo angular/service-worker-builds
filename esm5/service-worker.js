@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.6-47bc6f1
+ * @license Angular v5.0.0-rc.6-47caebf
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -61,7 +61,7 @@ var NgswCommChannel = (function () {
             var /** @type {?} */ controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
             this.worker = /** @type {?} */ ((filter.call(controllerWithChanges, function (c) { return !!c; })));
             this.registration = /** @type {?} */ ((switchMap.call(this.worker, function () { return serviceWorker.getRegistration(); })));
-            var /** @type {?} */ rawEvents = /** @type {?} */ ((switchMap.call(this.registration, function (reg) { return fromEvent(reg, 'message'); })));
+            var /** @type {?} */ rawEvents = fromEvent(serviceWorker, 'message');
             var /** @type {?} */ rawEventPayload = /** @type {?} */ ((map.call(rawEvents, function (event) { return event.data; })));
             var /** @type {?} */ eventsUnconnected = /** @type {?} */ ((filter.call(rawEventPayload, function (event) { return !!event && !!(/** @type {?} */ (event))['type']; })));
             var /** @type {?} */ events = /** @type {?} */ ((publish.call(eventsUnconnected)));
@@ -356,8 +356,9 @@ function ngswAppInitializer(injector, script, options) {
         var /** @type {?} */ onStable = /** @type {?} */ (filter.call(app.isStable, function (stable) { return !!stable; }));
         var /** @type {?} */ isStable = /** @type {?} */ (take.call(onStable, 1));
         var /** @type {?} */ whenStable = /** @type {?} */ (toPromise.call(isStable));
-        return /** @type {?} */ (whenStable.then(function () { return navigator.serviceWorker.register(script, options); })
-            .then(function () { return undefined; }));
+        // Don't return the Promise, as that will block the application until the SW is registered, and
+        // cause a crash if the SW registration fails.
+        whenStable.then(function () { return navigator.serviceWorker.register(script, options); });
     };
     return initializer;
 }
