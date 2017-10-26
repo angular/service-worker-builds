@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.6-703fcda
+ * @license Angular v5.0.0-rc.6-17142a7
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -63,7 +63,7 @@ class NgswCommChannel {
             const /** @type {?} */ controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
             this.worker = /** @type {?} */ ((filter.call(controllerWithChanges, (c) => !!c)));
             this.registration = /** @type {?} */ ((switchMap.call(this.worker, () => serviceWorker.getRegistration())));
-            const /** @type {?} */ rawEvents = /** @type {?} */ ((switchMap.call(this.registration, (reg) => fromEvent(reg, 'message'))));
+            const /** @type {?} */ rawEvents = fromEvent(serviceWorker, 'message');
             const /** @type {?} */ rawEventPayload = /** @type {?} */ ((map.call(rawEvents, (event) => event.data)));
             const /** @type {?} */ eventsUnconnected = /** @type {?} */ ((filter.call(rawEventPayload, (event) => !!event && !!(/** @type {?} */ (event))['type'])));
             const /** @type {?} */ events = /** @type {?} */ ((publish.call(eventsUnconnected)));
@@ -294,8 +294,9 @@ function ngswAppInitializer(injector, script, options) {
         const /** @type {?} */ onStable = /** @type {?} */ (filter.call(app.isStable, (stable) => !!stable));
         const /** @type {?} */ isStable = /** @type {?} */ (take.call(onStable, 1));
         const /** @type {?} */ whenStable = /** @type {?} */ (toPromise.call(isStable));
-        return /** @type {?} */ (whenStable.then(() => navigator.serviceWorker.register(script, options))
-            .then(() => undefined));
+        // Don't return the Promise, as that will block the application until the SW is registered, and
+        // cause a crash if the SW registration fails.
+        whenStable.then(() => navigator.serviceWorker.register(script, options));
     };
     return initializer;
 }
