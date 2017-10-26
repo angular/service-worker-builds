@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.6-47caebf
+ * @license Angular v5.0.0-rc.6-14016c7
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -164,7 +164,7 @@ class SwPush {
             map.call(this.sw.eventsOfType('PUSH'), (message) => message.data);
         this.pushManager = /** @type {?} */ ((map.call(this.sw.registration, (registration) => { return registration.pushManager; })));
         const /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((switchMap.call(this.pushManager, (pm) => pm.getSubscription().then(sub => { return sub; }))));
-        this.subscription = merge.call(workerDrivenSubscriptions, this.subscriptionChanges);
+        this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
      * @param {?} options
