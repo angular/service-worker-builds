@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.6-17142a7
+ * @license Angular v5.0.0-rc.6-eca822b
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -212,7 +212,7 @@ var SwPush = (function () {
             map.call(this.sw.eventsOfType('PUSH'), function (message) { return message.data; });
         this.pushManager = /** @type {?} */ ((map.call(this.sw.registration, function (registration) { return registration.pushManager; })));
         var /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((switchMap.call(this.pushManager, function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); })));
-        this.subscription = merge.call(workerDrivenSubscriptions, this.subscriptionChanges);
+        this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
      * @param {?} options

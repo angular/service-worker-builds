@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.0-rc.6-17142a7
+ * @license Angular v5.0.0-rc.6-eca822b
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -36,7 +36,7 @@ var __assign = Object.assign || function __assign(t) {
 };
 
 /**
- * @license Angular v5.0.0-rc.6-17142a7
+ * @license Angular v5.0.0-rc.6-eca822b
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -232,7 +232,7 @@ var SwPush = (function () {
             rxjs_operator_map.map.call(this.sw.eventsOfType('PUSH'), function (message) { return message.data; });
         this.pushManager = /** @type {?} */ ((rxjs_operator_map.map.call(this.sw.registration, function (registration) { return registration.pushManager; })));
         var /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.pushManager, function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); })));
-        this.subscription = rxjs_observable_merge.merge.call(workerDrivenSubscriptions, this.subscriptionChanges);
+        this.subscription = rxjs_observable_merge.merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
      * @param {?} options
