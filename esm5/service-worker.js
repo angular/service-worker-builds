@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.1.0-beta.0-f8658cd
+ * @license Angular v5.1.0-beta.0-336041a
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -23,6 +23,13 @@ import { merge } from 'rxjs/observable/merge';
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 var ERR_SW_NOT_SUPPORTED = 'Service workers are not supported by this browser';
 /**
@@ -49,7 +56,7 @@ function errorObservable(message) {
 /**
  * \@experimental
  */
-var NgswCommChannel = (function () {
+var NgswCommChannel = /** @class */ (function () {
     function NgswCommChannel(serviceWorker) {
         if (!serviceWorker) {
             this.worker = this.events = errorObservable(ERR_SW_NOT_SUPPORTED);
@@ -204,7 +211,7 @@ var NgswCommChannel = (function () {
  *
  * \@experimental
  */
-var SwPush = (function () {
+var SwPush = /** @class */ (function () {
     function SwPush(sw) {
         this.sw = sw;
         this.subscriptionChanges = new Subject();
@@ -292,7 +299,7 @@ var SwPush = (function () {
  *
  * \@experimental
  */
-var SwUpdate = (function () {
+var SwUpdate = /** @class */ (function () {
     function SwUpdate(sw) {
         this.sw = sw;
         this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
@@ -371,7 +378,7 @@ function ngswCommChannelFactory() {
 /**
  * \@experimental
  */
-var ServiceWorkerModule = (function () {
+var ServiceWorkerModule = /** @class */ (function () {
     function ServiceWorkerModule() {
     }
     /**
