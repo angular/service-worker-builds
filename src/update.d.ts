@@ -11,6 +11,11 @@ export declare class SwUpdate {
     readonly available: Observable<UpdateAvailableEvent>;
     readonly activated: Observable<UpdateActivatedEvent>;
     constructor(sw: NgswCommChannel);
+    /**
+     * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+     * ServiceWorkerModule).
+     */
+    readonly isEnabled: boolean;
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
 }

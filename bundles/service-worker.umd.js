@@ -1,13 +1,13 @@
 /**
- * @license Angular v5.1.0-rc.0-60a3081
+ * @license Angular v5.1.0-rc.0-b9a91a5
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs/operator/filter'), require('rxjs/operator/take'), require('rxjs/operator/toPromise'), require('rxjs/observable/concat'), require('rxjs/observable/defer'), require('rxjs/observable/fromEvent'), require('rxjs/observable/of'), require('rxjs/observable/throw'), require('rxjs/operator/do'), require('rxjs/operator/map'), require('rxjs/operator/publish'), require('rxjs/operator/switchMap'), require('rxjs/Subject'), require('rxjs/observable/merge')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@angular/core', 'rxjs/operator/filter', 'rxjs/operator/take', 'rxjs/operator/toPromise', 'rxjs/observable/concat', 'rxjs/observable/defer', 'rxjs/observable/fromEvent', 'rxjs/observable/of', 'rxjs/observable/throw', 'rxjs/operator/do', 'rxjs/operator/map', 'rxjs/operator/publish', 'rxjs/operator/switchMap', 'rxjs/Subject', 'rxjs/observable/merge'], factory) :
-	(factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}),global.ng.core,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx,global.Rx.Observable));
-}(this, (function (exports,_angular_core,rxjs_operator_filter,rxjs_operator_take,rxjs_operator_toPromise,rxjs_observable_concat,rxjs_observable_defer,rxjs_observable_fromEvent,rxjs_observable_of,rxjs_observable_throw,rxjs_operator_do,rxjs_operator_map,rxjs_operator_publish,rxjs_operator_switchMap,rxjs_Subject,rxjs_observable_merge) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs/operator/filter'), require('rxjs/operator/take'), require('rxjs/operator/toPromise'), require('rxjs/observable/concat'), require('rxjs/observable/defer'), require('rxjs/observable/fromEvent'), require('rxjs/observable/of'), require('rxjs/observable/throw'), require('rxjs/operator/do'), require('rxjs/operator/map'), require('rxjs/operator/publish'), require('rxjs/operator/switchMap'), require('rxjs/Subject'), require('rxjs/observable/merge'), require('rxjs/observable/never')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@angular/core', 'rxjs/operator/filter', 'rxjs/operator/take', 'rxjs/operator/toPromise', 'rxjs/observable/concat', 'rxjs/observable/defer', 'rxjs/observable/fromEvent', 'rxjs/observable/of', 'rxjs/observable/throw', 'rxjs/operator/do', 'rxjs/operator/map', 'rxjs/operator/publish', 'rxjs/operator/switchMap', 'rxjs/Subject', 'rxjs/observable/merge', 'rxjs/observable/never'], factory) :
+	(factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}),global.ng.core,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx,global.Rx.Observable,global.Rx.Observable));
+}(this, (function (exports,_angular_core,rxjs_operator_filter,rxjs_operator_take,rxjs_operator_toPromise,rxjs_observable_concat,rxjs_observable_defer,rxjs_observable_fromEvent,rxjs_observable_of,rxjs_observable_throw,rxjs_operator_do,rxjs_operator_map,rxjs_operator_publish,rxjs_operator_switchMap,rxjs_Subject,rxjs_observable_merge,rxjs_observable_never) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -36,7 +36,7 @@ var __assign = Object.assign || function __assign(t) {
 };
 
 /**
- * @license Angular v5.1.0-rc.0-60a3081
+ * @license Angular v5.1.0-rc.0-b9a91a5
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -51,7 +51,7 @@ var __assign = Object.assign || function __assign(t) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-var ERR_SW_NOT_SUPPORTED = 'Service workers are not supported by this browser';
+var ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 /**
  * @record
  */
@@ -78,8 +78,9 @@ function errorObservable(message) {
  */
 var NgswCommChannel = /** @class */ (function () {
     function NgswCommChannel(serviceWorker) {
+        this.serviceWorker = serviceWorker;
         if (!serviceWorker) {
-            this.worker = this.events = errorObservable(ERR_SW_NOT_SUPPORTED);
+            this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
             var /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((rxjs_observable_fromEvent.fromEvent(serviceWorker, 'controllerchange')));
@@ -212,6 +213,14 @@ var NgswCommChannel = /** @class */ (function () {
         })));
         return rxjs_operator_toPromise.toPromise.call(mapErrorAndValue);
     };
+    Object.defineProperty(NgswCommChannel.prototype, "isEnabled", {
+        get: /**
+         * @return {?}
+         */
+        function () { return !!this.serviceWorker; },
+        enumerable: true,
+        configurable: true
+    });
     return NgswCommChannel;
 }());
 
@@ -235,12 +244,31 @@ var SwPush = /** @class */ (function () {
     function SwPush(sw) {
         this.sw = sw;
         this.subscriptionChanges = new rxjs_Subject.Subject();
+        if (!sw.isEnabled) {
+            this.messages = rxjs_observable_never.never();
+            this.subscription = rxjs_observable_never.never();
+            return;
+        }
         this.messages =
             rxjs_operator_map.map.call(this.sw.eventsOfType('PUSH'), function (message) { return message.data; });
         this.pushManager = /** @type {?} */ ((rxjs_operator_map.map.call(this.sw.registration, function (registration) { return registration.pushManager; })));
         var /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.pushManager, function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); })));
         this.subscription = rxjs_observable_merge.merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
+    Object.defineProperty(SwPush.prototype, "isEnabled", {
+        /**
+         * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+         * ServiceWorkerModule).
+         */
+        get: /**
+         * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+         * ServiceWorkerModule).
+         * @return {?}
+         */
+        function () { return this.sw.isEnabled; },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * @param {?} options
      * @return {?}
@@ -251,6 +279,9 @@ var SwPush = /** @class */ (function () {
      */
     function (options) {
         var _this = this;
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         var /** @type {?} */ pushOptions = { userVisibleOnly: true };
         var /** @type {?} */ key = atob(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
         var /** @type {?} */ applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
@@ -273,6 +304,9 @@ var SwPush = /** @class */ (function () {
      */
     function () {
         var _this = this;
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         var /** @type {?} */ unsubscribe = rxjs_operator_switchMap.switchMap.call(this.subscription, function (sub) {
             if (sub !== null) {
                 return sub.unsubscribe().then(function (success) {
@@ -322,9 +356,28 @@ var SwPush = /** @class */ (function () {
 var SwUpdate = /** @class */ (function () {
     function SwUpdate(sw) {
         this.sw = sw;
+        if (!sw.isEnabled) {
+            this.available = rxjs_observable_never.never();
+            this.activated = rxjs_observable_never.never();
+            return;
+        }
         this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
         this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
     }
+    Object.defineProperty(SwUpdate.prototype, "isEnabled", {
+        /**
+         * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+         * ServiceWorkerModule).
+         */
+        get: /**
+         * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+         * ServiceWorkerModule).
+         * @return {?}
+         */
+        function () { return this.sw.isEnabled; },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * @return {?}
      */
@@ -332,6 +385,9 @@ var SwUpdate = /** @class */ (function () {
      * @return {?}
      */
     function () {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         var /** @type {?} */ statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', { statusNonce: statusNonce }, statusNonce);
     };
@@ -342,6 +398,9 @@ var SwUpdate = /** @class */ (function () {
      * @return {?}
      */
     function () {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         var /** @type {?} */ statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
     };
@@ -366,8 +425,15 @@ var SwUpdate = /** @class */ (function () {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+ * @abstract
+ */
+var RegistrationOptions = /** @class */ (function () {
+    function RegistrationOptions() {
+    }
+    return RegistrationOptions;
+}());
 var SCRIPT = new _angular_core.InjectionToken('NGSW_REGISTER_SCRIPT');
-var OPTS = new _angular_core.InjectionToken('NGSW_REGISTER_OPTIONS');
 /**
  * @param {?} injector
  * @param {?} script
@@ -377,7 +443,7 @@ var OPTS = new _angular_core.InjectionToken('NGSW_REGISTER_OPTIONS');
 function ngswAppInitializer(injector, script, options) {
     var /** @type {?} */ initializer = function () {
         var /** @type {?} */ app = injector.get(_angular_core.ApplicationRef);
-        if (!('serviceWorker' in navigator)) {
+        if (!('serviceWorker' in navigator) || options.enabled === false) {
             return;
         }
         var /** @type {?} */ onStable = /** @type {?} */ (rxjs_operator_filter.filter.call(app.isStable, function (stable) { return !!stable; }));
@@ -385,15 +451,16 @@ function ngswAppInitializer(injector, script, options) {
         var /** @type {?} */ whenStable = /** @type {?} */ (rxjs_operator_toPromise.toPromise.call(isStable));
         // Don't return the Promise, as that will block the application until the SW is registered, and
         // cause a crash if the SW registration fails.
-        whenStable.then(function () { return navigator.serviceWorker.register(script, options); });
+        whenStable.then(function () { return navigator.serviceWorker.register(script, { scope: options.scope }); });
     };
     return initializer;
 }
 /**
+ * @param {?} opts
  * @return {?}
  */
-function ngswCommChannelFactory() {
-    return new NgswCommChannel(navigator.serviceWorker);
+function ngswCommChannelFactory(opts) {
+    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined);
 }
 /**
  * \@experimental
@@ -402,11 +469,25 @@ var ServiceWorkerModule = /** @class */ (function () {
     function ServiceWorkerModule() {
     }
     /**
+     * Register the given Angular Service Worker script.
+     *
+     * If `enabled` is set to `false` in the given options, the module will behave as if service
+     * workers are not supported by the browser, and the service worker will not be registered.
+     */
+    /**
+     * Register the given Angular Service Worker script.
+     *
+     * If `enabled` is set to `false` in the given options, the module will behave as if service
+     * workers are not supported by the browser, and the service worker will not be registered.
      * @param {?} script
      * @param {?=} opts
      * @return {?}
      */
     ServiceWorkerModule.register = /**
+     * Register the given Angular Service Worker script.
+     *
+     * If `enabled` is set to `false` in the given options, the module will behave as if service
+     * workers are not supported by the browser, and the service worker will not be registered.
      * @param {?} script
      * @param {?=} opts
      * @return {?}
@@ -417,12 +498,12 @@ var ServiceWorkerModule = /** @class */ (function () {
             ngModule: ServiceWorkerModule,
             providers: [
                 { provide: SCRIPT, useValue: script },
-                { provide: OPTS, useValue: opts },
-                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory },
+                { provide: RegistrationOptions, useValue: opts },
+                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory, deps: [RegistrationOptions] },
                 {
                     provide: _angular_core.APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [_angular_core.Injector, SCRIPT, OPTS],
+                    deps: [_angular_core.Injector, SCRIPT, RegistrationOptions],
                     multi: true,
                 },
             ],
@@ -442,8 +523,8 @@ exports.ServiceWorkerModule = ServiceWorkerModule;
 exports.SwPush = SwPush;
 exports.SwUpdate = SwUpdate;
 exports.ɵe = NgswCommChannel;
-exports.ɵb = OPTS;
-exports.ɵa = SCRIPT;
+exports.ɵa = RegistrationOptions;
+exports.ɵb = SCRIPT;
 exports.ɵc = ngswAppInitializer;
 exports.ɵd = ngswCommChannelFactory;
 
