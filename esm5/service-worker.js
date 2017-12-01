@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.4-445d833
+ * @license Angular v5.0.5-9dc310e
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -19,12 +19,13 @@ import { publish } from 'rxjs/operator/publish';
 import { switchMap } from 'rxjs/operator/switchMap';
 import { Subject } from 'rxjs/Subject';
 import { merge } from 'rxjs/observable/merge';
+import { never } from 'rxjs/observable/never';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-var ERR_SW_NOT_SUPPORTED = 'Service workers are not supported by this browser';
+var ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 /**
  * @record
  */
@@ -51,8 +52,9 @@ function errorObservable(message) {
  */
 var NgswCommChannel = (function () {
     function NgswCommChannel(serviceWorker) {
+        this.serviceWorker = serviceWorker;
         if (!serviceWorker) {
-            this.worker = this.events = errorObservable(ERR_SW_NOT_SUPPORTED);
+            this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
             var /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
@@ -185,6 +187,14 @@ var NgswCommChannel = (function () {
         })));
         return toPromise.call(mapErrorAndValue);
     };
+    Object.defineProperty(NgswCommChannel.prototype, "isEnabled", {
+        get: /**
+         * @return {?}
+         */
+        function () { return !!this.serviceWorker; },
+        enumerable: true,
+        configurable: true
+    });
     return NgswCommChannel;
 }());
 
@@ -208,12 +218,31 @@ var SwPush = (function () {
     function SwPush(sw) {
         this.sw = sw;
         this.subscriptionChanges = new Subject();
+        if (!sw.isEnabled) {
+            this.messages = never();
+            this.subscription = never();
+            return;
+        }
         this.messages =
             map.call(this.sw.eventsOfType('PUSH'), function (message) { return message.data; });
         this.pushManager = /** @type {?} */ ((map.call(this.sw.registration, function (registration) { return registration.pushManager; })));
         var /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((switchMap.call(this.pushManager, function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); })));
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
+    Object.defineProperty(SwPush.prototype, "isEnabled", {
+        /**
+         * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+         * ServiceWorkerModule).
+         */
+        get: /**
+         * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+         * ServiceWorkerModule).
+         * @return {?}
+         */
+        function () { return this.sw.isEnabled; },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * @param {?} options
      * @return {?}
@@ -224,6 +253,9 @@ var SwPush = (function () {
      */
     function (options) {
         var _this = this;
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         var /** @type {?} */ pushOptions = { userVisibleOnly: true };
         var /** @type {?} */ key = atob(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
         var /** @type {?} */ applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
@@ -246,6 +278,9 @@ var SwPush = (function () {
      */
     function () {
         var _this = this;
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         var /** @type {?} */ unsubscribe = switchMap.call(this.subscription, function (sub) {
             if (sub !== null) {
                 return sub.unsubscribe().then(function (success) {
@@ -295,9 +330,28 @@ var SwPush = (function () {
 var SwUpdate = (function () {
     function SwUpdate(sw) {
         this.sw = sw;
+        if (!sw.isEnabled) {
+            this.available = never();
+            this.activated = never();
+            return;
+        }
         this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
         this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
     }
+    Object.defineProperty(SwUpdate.prototype, "isEnabled", {
+        /**
+         * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+         * ServiceWorkerModule).
+         */
+        get: /**
+         * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+         * ServiceWorkerModule).
+         * @return {?}
+         */
+        function () { return this.sw.isEnabled; },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * @return {?}
      */
@@ -305,6 +359,9 @@ var SwUpdate = (function () {
      * @return {?}
      */
     function () {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         var /** @type {?} */ statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', { statusNonce: statusNonce }, statusNonce);
     };
@@ -315,6 +372,9 @@ var SwUpdate = (function () {
      * @return {?}
      */
     function () {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         var /** @type {?} */ statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
     };
@@ -339,8 +399,15 @@ var SwUpdate = (function () {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+ * @abstract
+ */
+var RegistrationOptions = (function () {
+    function RegistrationOptions() {
+    }
+    return RegistrationOptions;
+}());
 var SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
-var OPTS = new InjectionToken('NGSW_REGISTER_OPTIONS');
 /**
  * @param {?} injector
  * @param {?} script
@@ -350,23 +417,32 @@ var OPTS = new InjectionToken('NGSW_REGISTER_OPTIONS');
 function ngswAppInitializer(injector, script, options) {
     var /** @type {?} */ initializer = function () {
         var /** @type {?} */ app = injector.get(ApplicationRef);
-        if (!('serviceWorker' in navigator)) {
+        if (!('serviceWorker' in navigator) || options.enabled === false) {
             return;
         }
         var /** @type {?} */ onStable = /** @type {?} */ (filter.call(app.isStable, function (stable) { return !!stable; }));
         var /** @type {?} */ isStable = /** @type {?} */ (take.call(onStable, 1));
         var /** @type {?} */ whenStable = /** @type {?} */ (toPromise.call(isStable));
+        // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+        // becomes active. This allows the SW to initialize itself even if there is no application
+        // traffic.
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (navigator.serviceWorker.controller !== null) {
+                navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
+            }
+        });
         // Don't return the Promise, as that will block the application until the SW is registered, and
         // cause a crash if the SW registration fails.
-        whenStable.then(function () { return navigator.serviceWorker.register(script, options); });
+        whenStable.then(function () { return navigator.serviceWorker.register(script, { scope: options.scope }); });
     };
     return initializer;
 }
 /**
+ * @param {?} opts
  * @return {?}
  */
-function ngswCommChannelFactory() {
-    return new NgswCommChannel(navigator.serviceWorker);
+function ngswCommChannelFactory(opts) {
+    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined);
 }
 /**
  * \@experimental
@@ -375,11 +451,25 @@ var ServiceWorkerModule = (function () {
     function ServiceWorkerModule() {
     }
     /**
+     * Register the given Angular Service Worker script.
+     *
+     * If `enabled` is set to `false` in the given options, the module will behave as if service
+     * workers are not supported by the browser, and the service worker will not be registered.
+     */
+    /**
+     * Register the given Angular Service Worker script.
+     *
+     * If `enabled` is set to `false` in the given options, the module will behave as if service
+     * workers are not supported by the browser, and the service worker will not be registered.
      * @param {?} script
      * @param {?=} opts
      * @return {?}
      */
     ServiceWorkerModule.register = /**
+     * Register the given Angular Service Worker script.
+     *
+     * If `enabled` is set to `false` in the given options, the module will behave as if service
+     * workers are not supported by the browser, and the service worker will not be registered.
      * @param {?} script
      * @param {?=} opts
      * @return {?}
@@ -390,12 +480,12 @@ var ServiceWorkerModule = (function () {
             ngModule: ServiceWorkerModule,
             providers: [
                 { provide: SCRIPT, useValue: script },
-                { provide: OPTS, useValue: opts },
-                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory },
+                { provide: RegistrationOptions, useValue: opts },
+                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory, deps: [RegistrationOptions] },
                 {
                     provide: APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [Injector, SCRIPT, OPTS],
+                    deps: [Injector, SCRIPT, RegistrationOptions],
                     multi: true,
                 },
             ],
@@ -457,5 +547,5 @@ var ServiceWorkerModule = (function () {
  * Generated bundle index. Do not edit.
  */
 
-export { ServiceWorkerModule, SwPush, SwUpdate, NgswCommChannel as ɵe, OPTS as ɵb, SCRIPT as ɵa, ngswAppInitializer as ɵc, ngswCommChannelFactory as ɵd };
+export { ServiceWorkerModule, SwPush, SwUpdate, NgswCommChannel as ɵe, RegistrationOptions as ɵa, SCRIPT as ɵb, ngswAppInitializer as ɵc, ngswCommChannelFactory as ɵd };
 //# sourceMappingURL=service-worker.js.map

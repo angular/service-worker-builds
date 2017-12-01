@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.0.4-445d833
+ * @license Angular v5.0.5-9dc310e
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -18,12 +18,13 @@ import { publish } from 'rxjs/operator/publish';
 import { switchMap } from 'rxjs/operator/switchMap';
 import { Subject } from 'rxjs/Subject';
 import { merge } from 'rxjs/observable/merge';
+import { never } from 'rxjs/observable/never';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const ERR_SW_NOT_SUPPORTED = 'Service workers are not supported by this browser';
+const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 /**
  * @record
  */
@@ -53,8 +54,9 @@ class NgswCommChannel {
      * @param {?} serviceWorker
      */
     constructor(serviceWorker) {
+        this.serviceWorker = serviceWorker;
         if (!serviceWorker) {
-            this.worker = this.events = errorObservable(ERR_SW_NOT_SUPPORTED);
+            this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
             const /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
@@ -135,6 +137,10 @@ class NgswCommChannel {
         })));
         return toPromise.call(mapErrorAndValue);
     }
+    /**
+     * @return {?}
+     */
+    get isEnabled() { return !!this.serviceWorker; }
 }
 
 /**
@@ -160,6 +166,11 @@ class SwPush {
     constructor(sw) {
         this.sw = sw;
         this.subscriptionChanges = new Subject();
+        if (!sw.isEnabled) {
+            this.messages = never();
+            this.subscription = never();
+            return;
+        }
         this.messages =
             map.call(this.sw.eventsOfType('PUSH'), (message) => message.data);
         this.pushManager = /** @type {?} */ ((map.call(this.sw.registration, (registration) => { return registration.pushManager; })));
@@ -167,10 +178,19 @@ class SwPush {
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
+     * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+     * ServiceWorkerModule).
+     * @return {?}
+     */
+    get isEnabled() { return this.sw.isEnabled; }
+    /**
      * @param {?} options
      * @return {?}
      */
     requestSubscription(options) {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         const /** @type {?} */ pushOptions = { userVisibleOnly: true };
         let /** @type {?} */ key = atob(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
         let /** @type {?} */ applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
@@ -189,6 +209,9 @@ class SwPush {
      * @return {?}
      */
     unsubscribe() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         const /** @type {?} */ unsubscribe = switchMap.call(this.subscription, (sub) => {
             if (sub !== null) {
                 return sub.unsubscribe().then(success => {
@@ -240,13 +263,27 @@ class SwUpdate {
      */
     constructor(sw) {
         this.sw = sw;
+        if (!sw.isEnabled) {
+            this.available = never();
+            this.activated = never();
+            return;
+        }
         this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
         this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
     }
     /**
+     * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+     * ServiceWorkerModule).
+     * @return {?}
+     */
+    get isEnabled() { return this.sw.isEnabled; }
+    /**
      * @return {?}
      */
     checkForUpdate() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         const /** @type {?} */ statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', { statusNonce }, statusNonce);
     }
@@ -254,6 +291,9 @@ class SwUpdate {
      * @return {?}
      */
     activateUpdate() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
         const /** @type {?} */ statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce }, statusNonce);
     }
@@ -277,8 +317,12 @@ SwUpdate.ctorParameters = () => [
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+ * @abstract
+ */
+class RegistrationOptions {
+}
 const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
-const OPTS = new InjectionToken('NGSW_REGISTER_OPTIONS');
 /**
  * @param {?} injector
  * @param {?} script
@@ -288,29 +332,42 @@ const OPTS = new InjectionToken('NGSW_REGISTER_OPTIONS');
 function ngswAppInitializer(injector, script, options) {
     const /** @type {?} */ initializer = () => {
         const /** @type {?} */ app = injector.get(ApplicationRef);
-        if (!('serviceWorker' in navigator)) {
+        if (!('serviceWorker' in navigator) || options.enabled === false) {
             return;
         }
         const /** @type {?} */ onStable = /** @type {?} */ (filter.call(app.isStable, (stable) => !!stable));
         const /** @type {?} */ isStable = /** @type {?} */ (take.call(onStable, 1));
         const /** @type {?} */ whenStable = /** @type {?} */ (toPromise.call(isStable));
+        // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+        // becomes active. This allows the SW to initialize itself even if there is no application
+        // traffic.
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (navigator.serviceWorker.controller !== null) {
+                navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
+            }
+        });
         // Don't return the Promise, as that will block the application until the SW is registered, and
         // cause a crash if the SW registration fails.
-        whenStable.then(() => navigator.serviceWorker.register(script, options));
+        whenStable.then(() => navigator.serviceWorker.register(script, { scope: options.scope }));
     };
     return initializer;
 }
 /**
+ * @param {?} opts
  * @return {?}
  */
-function ngswCommChannelFactory() {
-    return new NgswCommChannel(navigator.serviceWorker);
+function ngswCommChannelFactory(opts) {
+    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined);
 }
 /**
  * \@experimental
  */
 class ServiceWorkerModule {
     /**
+     * Register the given Angular Service Worker script.
+     *
+     * If `enabled` is set to `false` in the given options, the module will behave as if service
+     * workers are not supported by the browser, and the service worker will not be registered.
      * @param {?} script
      * @param {?=} opts
      * @return {?}
@@ -320,12 +377,12 @@ class ServiceWorkerModule {
             ngModule: ServiceWorkerModule,
             providers: [
                 { provide: SCRIPT, useValue: script },
-                { provide: OPTS, useValue: opts },
-                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory },
+                { provide: RegistrationOptions, useValue: opts },
+                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory, deps: [RegistrationOptions] },
                 {
                     provide: APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [Injector, SCRIPT, OPTS],
+                    deps: [Injector, SCRIPT, RegistrationOptions],
                     multi: true,
                 },
             ],
@@ -386,5 +443,5 @@ ServiceWorkerModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { ServiceWorkerModule, SwPush, SwUpdate, NgswCommChannel as ɵe, OPTS as ɵb, SCRIPT as ɵa, ngswAppInitializer as ɵc, ngswCommChannelFactory as ɵd };
+export { ServiceWorkerModule, SwPush, SwUpdate, NgswCommChannel as ɵe, RegistrationOptions as ɵa, SCRIPT as ɵb, ngswAppInitializer as ɵc, ngswCommChannelFactory as ɵd };
 //# sourceMappingURL=service-worker.js.map
