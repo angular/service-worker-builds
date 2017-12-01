@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.1.0-rc.0-f841fbe
+ * @license Angular v5.1.0-rc.0-f582620
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -430,6 +430,14 @@ function ngswAppInitializer(injector, script, options) {
         var /** @type {?} */ onStable = /** @type {?} */ (filter.call(app.isStable, function (stable) { return !!stable; }));
         var /** @type {?} */ isStable = /** @type {?} */ (take.call(onStable, 1));
         var /** @type {?} */ whenStable = /** @type {?} */ (toPromise.call(isStable));
+        // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+        // becomes active. This allows the SW to initialize itself even if there is no application
+        // traffic.
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (navigator.serviceWorker.controller !== null) {
+                navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
+            }
+        });
         // Don't return the Promise, as that will block the application until the SW is registered, and
         // cause a crash if the SW registration fails.
         whenStable.then(function () { return navigator.serviceWorker.register(script, { scope: options.scope }); });
