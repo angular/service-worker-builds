@@ -1,10 +1,3 @@
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 import { InjectionToken, Injector, ModuleWithProviders } from '@angular/core';
 import { NgswCommChannel } from './low_level';
 export declare abstract class RegistrationOptions {
@@ -12,8 +5,8 @@ export declare abstract class RegistrationOptions {
     enabled?: boolean;
 }
 export declare const SCRIPT: InjectionToken<string>;
-export declare function ngswAppInitializer(injector: Injector, script: string, options: RegistrationOptions): Function;
-export declare function ngswCommChannelFactory(opts: RegistrationOptions): NgswCommChannel;
+export declare function ngswAppInitializer(injector: Injector, script: string, options: RegistrationOptions, platformId: string): Function;
+export declare function ngswCommChannelFactory(opts: RegistrationOptions, platformId: string): NgswCommChannel;
 /**
  * @experimental
  */

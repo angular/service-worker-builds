@@ -1,9 +1,10 @@
 /**
- * @license Angular v5.0.5-c91c0d4
+ * @license Angular v5.0.5-d824cc2
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
-import { APP_INITIALIZER, ApplicationRef, Injectable, InjectionToken, Injector, NgModule } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { APP_INITIALIZER, ApplicationRef, Inject, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
 import { filter } from 'rxjs/operator/filter';
 import { take } from 'rxjs/operator/take';
 import { toPromise } from 'rxjs/operator/toPromise';
@@ -24,6 +25,13 @@ import { never } from 'rxjs/observable/never';
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 var ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 /**
@@ -51,9 +59,10 @@ function errorObservable(message) {
  * \@experimental
  */
 var NgswCommChannel = (function () {
-    function NgswCommChannel(serviceWorker) {
+    function NgswCommChannel(serviceWorker, platformId) {
         this.serviceWorker = serviceWorker;
-        if (!serviceWorker) {
+        if (!serviceWorker || !isPlatformBrowser(platformId)) {
+            this.serviceWorker = undefined;
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
@@ -195,6 +204,11 @@ var NgswCommChannel = (function () {
         enumerable: true,
         configurable: true
     });
+    /** @nocollapse */
+    NgswCommChannel.ctorParameters = function () { return [
+        null,
+        { type: undefined, decorators: [{ type: Inject, args: [PLATFORM_ID,] },] },
+    ]; };
     return NgswCommChannel;
 }());
 
@@ -412,12 +426,14 @@ var SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
  * @param {?} injector
  * @param {?} script
  * @param {?} options
+ * @param {?} platformId
  * @return {?}
  */
-function ngswAppInitializer(injector, script, options) {
+function ngswAppInitializer(injector, script, options, platformId) {
     var /** @type {?} */ initializer = function () {
         var /** @type {?} */ app = injector.get(ApplicationRef);
-        if (!('serviceWorker' in navigator) || options.enabled === false) {
+        if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
+            options.enabled !== false)) {
             return;
         }
         var /** @type {?} */ onStable = /** @type {?} */ (filter.call(app.isStable, function (stable) { return !!stable; }));
@@ -439,10 +455,11 @@ function ngswAppInitializer(injector, script, options) {
 }
 /**
  * @param {?} opts
+ * @param {?} platformId
  * @return {?}
  */
-function ngswCommChannelFactory(opts) {
-    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined);
+function ngswCommChannelFactory(opts, platformId) {
+    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
 }
 /**
  * \@experimental
@@ -481,11 +498,15 @@ var ServiceWorkerModule = (function () {
             providers: [
                 { provide: SCRIPT, useValue: script },
                 { provide: RegistrationOptions, useValue: opts },
-                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory, deps: [RegistrationOptions] },
+                {
+                    provide: NgswCommChannel,
+                    useFactory: ngswCommChannelFactory,
+                    deps: [RegistrationOptions, PLATFORM_ID]
+                },
                 {
                     provide: APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [Injector, SCRIPT, RegistrationOptions],
+                    deps: [Injector, SCRIPT, RegistrationOptions, PLATFORM_ID],
                     multi: true,
                 },
             ],
