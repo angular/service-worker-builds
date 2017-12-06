@@ -1,9 +1,10 @@
 /**
- * @license Angular v5.1.0-rc.1-be99449
+ * @license Angular v5.1.0-rc.1-b78ada1
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
-import { APP_INITIALIZER, ApplicationRef, Injectable, InjectionToken, Injector, NgModule } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { APP_INITIALIZER, ApplicationRef, Inject, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
 import { filter } from 'rxjs/operator/filter';
 import { take } from 'rxjs/operator/take';
 import { toPromise } from 'rxjs/operator/toPromise';
@@ -59,10 +60,12 @@ function errorObservable(message) {
 class NgswCommChannel {
     /**
      * @param {?} serviceWorker
+     * @param {?} platformId
      */
-    constructor(serviceWorker) {
+    constructor(serviceWorker, platformId) {
         this.serviceWorker = serviceWorker;
-        if (!serviceWorker) {
+        if (!serviceWorker || !isPlatformBrowser(platformId)) {
+            this.serviceWorker = undefined;
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
@@ -149,6 +152,11 @@ class NgswCommChannel {
      */
     get isEnabled() { return !!this.serviceWorker; }
 }
+/** @nocollapse */
+NgswCommChannel.ctorParameters = () => [
+    null,
+    { type: undefined, decorators: [{ type: Inject, args: [PLATFORM_ID,] },] },
+];
 
 /**
  * @fileoverview added by tsickle
@@ -334,12 +342,14 @@ const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
  * @param {?} injector
  * @param {?} script
  * @param {?} options
+ * @param {?} platformId
  * @return {?}
  */
-function ngswAppInitializer(injector, script, options) {
+function ngswAppInitializer(injector, script, options, platformId) {
     const /** @type {?} */ initializer = () => {
         const /** @type {?} */ app = injector.get(ApplicationRef);
-        if (!('serviceWorker' in navigator) || options.enabled === false) {
+        if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
+            options.enabled !== false)) {
             return;
         }
         const /** @type {?} */ onStable = /** @type {?} */ (filter.call(app.isStable, (stable) => !!stable));
@@ -361,10 +371,11 @@ function ngswAppInitializer(injector, script, options) {
 }
 /**
  * @param {?} opts
+ * @param {?} platformId
  * @return {?}
  */
-function ngswCommChannelFactory(opts) {
-    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined);
+function ngswCommChannelFactory(opts, platformId) {
+    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
 }
 /**
  * \@experimental
@@ -385,11 +396,15 @@ class ServiceWorkerModule {
             providers: [
                 { provide: SCRIPT, useValue: script },
                 { provide: RegistrationOptions, useValue: opts },
-                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory, deps: [RegistrationOptions] },
+                {
+                    provide: NgswCommChannel,
+                    useFactory: ngswCommChannelFactory,
+                    deps: [RegistrationOptions, PLATFORM_ID]
+                },
                 {
                     provide: APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [Injector, SCRIPT, RegistrationOptions],
+                    deps: [Injector, SCRIPT, RegistrationOptions, PLATFORM_ID],
                     multi: true,
                 },
             ],

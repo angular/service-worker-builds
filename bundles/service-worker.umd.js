@@ -1,13 +1,13 @@
 /**
- * @license Angular v5.1.0-rc.1-be99449
+ * @license Angular v5.1.0-rc.1-b78ada1
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs/operator/filter'), require('rxjs/operator/take'), require('rxjs/operator/toPromise'), require('rxjs/observable/concat'), require('rxjs/observable/defer'), require('rxjs/observable/fromEvent'), require('rxjs/observable/of'), require('rxjs/observable/throw'), require('rxjs/operator/do'), require('rxjs/operator/map'), require('rxjs/operator/publish'), require('rxjs/operator/switchMap'), require('rxjs/Subject'), require('rxjs/observable/merge'), require('rxjs/observable/never')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@angular/core', 'rxjs/operator/filter', 'rxjs/operator/take', 'rxjs/operator/toPromise', 'rxjs/observable/concat', 'rxjs/observable/defer', 'rxjs/observable/fromEvent', 'rxjs/observable/of', 'rxjs/observable/throw', 'rxjs/operator/do', 'rxjs/operator/map', 'rxjs/operator/publish', 'rxjs/operator/switchMap', 'rxjs/Subject', 'rxjs/observable/merge', 'rxjs/observable/never'], factory) :
-	(factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}),global.ng.core,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx,global.Rx.Observable,global.Rx.Observable));
-}(this, (function (exports,_angular_core,rxjs_operator_filter,rxjs_operator_take,rxjs_operator_toPromise,rxjs_observable_concat,rxjs_observable_defer,rxjs_observable_fromEvent,rxjs_observable_of,rxjs_observable_throw,rxjs_operator_do,rxjs_operator_map,rxjs_operator_publish,rxjs_operator_switchMap,rxjs_Subject,rxjs_observable_merge,rxjs_observable_never) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('rxjs/operator/filter'), require('rxjs/operator/take'), require('rxjs/operator/toPromise'), require('rxjs/observable/concat'), require('rxjs/observable/defer'), require('rxjs/observable/fromEvent'), require('rxjs/observable/of'), require('rxjs/observable/throw'), require('rxjs/operator/do'), require('rxjs/operator/map'), require('rxjs/operator/publish'), require('rxjs/operator/switchMap'), require('rxjs/Subject'), require('rxjs/observable/merge'), require('rxjs/observable/never')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@angular/common', '@angular/core', 'rxjs/operator/filter', 'rxjs/operator/take', 'rxjs/operator/toPromise', 'rxjs/observable/concat', 'rxjs/observable/defer', 'rxjs/observable/fromEvent', 'rxjs/observable/of', 'rxjs/observable/throw', 'rxjs/operator/do', 'rxjs/operator/map', 'rxjs/operator/publish', 'rxjs/operator/switchMap', 'rxjs/Subject', 'rxjs/observable/merge', 'rxjs/observable/never'], factory) :
+	(factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}),global.ng.common,global.ng.core,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx,global.Rx.Observable,global.Rx.Observable));
+}(this, (function (exports,_angular_common,_angular_core,rxjs_operator_filter,rxjs_operator_take,rxjs_operator_toPromise,rxjs_observable_concat,rxjs_observable_defer,rxjs_observable_fromEvent,rxjs_observable_of,rxjs_observable_throw,rxjs_operator_do,rxjs_operator_map,rxjs_operator_publish,rxjs_operator_switchMap,rxjs_Subject,rxjs_observable_merge,rxjs_observable_never) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -36,7 +36,7 @@ var __assign = Object.assign || function __assign(t) {
 };
 
 /**
- * @license Angular v5.1.0-rc.1-be99449
+ * @license Angular v5.1.0-rc.1-b78ada1
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -77,9 +77,10 @@ function errorObservable(message) {
  * \@experimental
  */
 var NgswCommChannel = /** @class */ (function () {
-    function NgswCommChannel(serviceWorker) {
+    function NgswCommChannel(serviceWorker, platformId) {
         this.serviceWorker = serviceWorker;
-        if (!serviceWorker) {
+        if (!serviceWorker || !_angular_common.isPlatformBrowser(platformId)) {
+            this.serviceWorker = undefined;
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
@@ -221,6 +222,11 @@ var NgswCommChannel = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /** @nocollapse */
+    NgswCommChannel.ctorParameters = function () { return [
+        null,
+        { type: undefined, decorators: [{ type: _angular_core.Inject, args: [_angular_core.PLATFORM_ID,] },] },
+    ]; };
     return NgswCommChannel;
 }());
 
@@ -438,12 +444,14 @@ var SCRIPT = new _angular_core.InjectionToken('NGSW_REGISTER_SCRIPT');
  * @param {?} injector
  * @param {?} script
  * @param {?} options
+ * @param {?} platformId
  * @return {?}
  */
-function ngswAppInitializer(injector, script, options) {
+function ngswAppInitializer(injector, script, options, platformId) {
     var /** @type {?} */ initializer = function () {
         var /** @type {?} */ app = injector.get(_angular_core.ApplicationRef);
-        if (!('serviceWorker' in navigator) || options.enabled === false) {
+        if (!(_angular_common.isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
+            options.enabled !== false)) {
             return;
         }
         var /** @type {?} */ onStable = /** @type {?} */ (rxjs_operator_filter.filter.call(app.isStable, function (stable) { return !!stable; }));
@@ -465,10 +473,11 @@ function ngswAppInitializer(injector, script, options) {
 }
 /**
  * @param {?} opts
+ * @param {?} platformId
  * @return {?}
  */
-function ngswCommChannelFactory(opts) {
-    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined);
+function ngswCommChannelFactory(opts, platformId) {
+    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
 }
 /**
  * \@experimental
@@ -507,11 +516,15 @@ var ServiceWorkerModule = /** @class */ (function () {
             providers: [
                 { provide: SCRIPT, useValue: script },
                 { provide: RegistrationOptions, useValue: opts },
-                { provide: NgswCommChannel, useFactory: ngswCommChannelFactory, deps: [RegistrationOptions] },
+                {
+                    provide: NgswCommChannel,
+                    useFactory: ngswCommChannelFactory,
+                    deps: [RegistrationOptions, _angular_core.PLATFORM_ID]
+                },
                 {
                     provide: _angular_core.APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [_angular_core.Injector, SCRIPT, RegistrationOptions],
+                    deps: [_angular_core.Injector, SCRIPT, RegistrationOptions, _angular_core.PLATFORM_ID],
                     multi: true,
                 },
             ],
