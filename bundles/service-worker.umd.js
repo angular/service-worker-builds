@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.2.0-beta.0-b89e7c2
+ * @license Angular v5.2.0-beta.0-2e7e935
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -36,7 +36,7 @@ var __assign = Object.assign || function __assign(t) {
 };
 
 /**
- * @license Angular v5.2.0-beta.0-b89e7c2
+ * @license Angular v5.2.0-beta.0-2e7e935
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
