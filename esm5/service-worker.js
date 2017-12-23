@@ -1,5 +1,5 @@
 /**
- * @license Angular v5.2.0-beta.1-83c1383
+ * @license Angular v5.2.0-beta.1-83d207d
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -533,13 +533,6 @@ var ServiceWorkerModule = /** @class */ (function () {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
 
 /**
  * @fileoverview added by tsickle

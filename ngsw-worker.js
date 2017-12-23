@@ -116,7 +116,7 @@ class CacheTable {
     request(key) { return this.adapter.newRequest('/' + key); }
     'delete'(key) { return this.cache.delete(this.request(key)); }
     keys() {
-        return this.cache.keys().then(keys => keys.map(key => key.substr(1)));
+        return this.cache.keys().then(requests => requests.map(req => req.url.substr(1)));
     }
     read(key) {
         return this.cache.match(this.request(key)).then(res => {
@@ -536,6 +536,7 @@ class AssetGroup {
         const cache = await this.cache;
         // Start with the set of all cached URLs.
         return (await cache.keys())
+            .map(request => request.url)
             .filter(url => !this.hashes.has(url));
     }
     /**
