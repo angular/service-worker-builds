@@ -152,6 +152,20 @@ var UpdateCacheStatus;
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+class SwCriticalError extends Error {
+    constructor() {
+        super(...arguments);
+        this.isCritical = true;
+    }
+}
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /**
  * Compute the SHA1 of the given string
  *
@@ -594,7 +608,7 @@ class AssetGroup {
         if (res['redirected'] && !!res.url) {
             // If the redirect limit is exhausted, fail with an error.
             if (redirectLimit === 0) {
-                throw new Error(`Response hit redirect limit (fetchFromNetwork): request redirected too many times, next is ${res.url}`);
+                throw new SwCriticalError(`Response hit redirect limit (fetchFromNetwork): request redirected too many times, next is ${res.url}`);
             }
             // Unwrap the redirect directly.
             return this.fetchFromNetwork(this.adapter.newRequest(res.url), redirectLimit - 1);
@@ -648,14 +662,14 @@ class AssetGroup {
                 const cacheBustedResult = await this.safeFetch(cacheBustReq);
                 // If the response was unsuccessful, there's nothing more that can be done.
                 if (!cacheBustedResult.ok) {
-                    throw new Error(`Response not Ok (cacheBustedFetchFromNetwork): cache busted request for ${req.url} returned response ${cacheBustedResult.status} ${cacheBustedResult.statusText}`);
+                    throw new SwCriticalError(`Response not Ok (cacheBustedFetchFromNetwork): cache busted request for ${req.url} returned response ${cacheBustedResult.status} ${cacheBustedResult.statusText}`);
                 }
                 // Hash the contents.
                 const cacheBustedHash = sha1Binary(await cacheBustedResult.clone().arrayBuffer());
                 // If the cache-busted version doesn't match, then the manifest is not an accurate
                 // representation of the server's current set of files, and the SW should give up.
                 if (canonicalHash !== cacheBustedHash) {
-                    throw new Error(`Hash mismatch (cacheBustedFetchFromNetwork): ${req.url}: expected ${canonicalHash}, got ${cacheBustedHash} (after cache busting)`);
+                    throw new SwCriticalError(`Hash mismatch (cacheBustedFetchFromNetwork): ${req.url}: expected ${canonicalHash}, got ${cacheBustedHash} (after cache busting)`);
                 }
                 // If it does match, then use the cache-busted result.
                 return cacheBustedResult;
@@ -1939,8 +1953,21 @@ class Driver {
             event.waitUntil(this.idle.trigger());
             return this.safeFetch(event.request);
         }
-        // Handle the request. First try the AppVersion. If that doesn't work, fall back on the network.
-        const res = await appVersion.handleFetch(event.request, event);
+        let res = null;
+        try {
+            // Handle the request. First try the AppVersion. If that doesn't work, fall back on the
+            // network.
+            res = await appVersion.handleFetch(event.request, event);
+        }
+        catch (err) {
+            if (err.isCritical) {
+                // Something went wrong with the activation of this version.
+                await this.versionFailed(appVersion, err, this.latestHash === appVersion.manifestHash);
+                event.waitUntil(this.idle.trigger());
+                return this.safeFetch(event.request);
+            }
+            throw err;
+        }
         // The AppVersion will only return null if the manifest doesn't specify what to do about this
         // request. In that case, just fall back on the network.
         if (res === null) {
@@ -2052,7 +2079,7 @@ class Driver {
                 // Attempt to schedule or initialize this version. If this operation is
                 // successful, then initialization either succeeded or was scheduled. If
                 // it fails, then full initialization was attempted and failed.
-                await this.scheduleInitialization(this.versions.get(hash));
+                await this.scheduleInitialization(this.versions.get(hash), this.latestHash === hash);
             }
             catch (err) {
                 this.debugger.log(err, `initialize: schedule init of ${hash}`);
@@ -2177,14 +2204,14 @@ class Driver {
      * when the SW is not busy and has connectivity. This returns a Promise which must be
      * awaited, as under some conditions the AppVersion might be initialized immediately.
      */
-    async scheduleInitialization(appVersion) {
+    async scheduleInitialization(appVersion, latest) {
         const initialize = async () => {
             try {
                 await appVersion.initializeFully();
             }
             catch (err) {
                 this.debugger.log(err, `initializeFully for ${appVersion.manifestHash}`);
-                await this.versionFailed(appVersion, err);
+                await this.versionFailed(appVersion, err, latest);
             }
         };
         // TODO: better logic for detecting localhost.
@@ -2193,7 +2220,7 @@ class Driver {
         }
         this.idle.schedule(`initialization(${appVersion.manifestHash})`, initialize);
     }
-    async versionFailed(appVersion, err) {
+    async versionFailed(appVersion, err, latest) {
         // This particular AppVersion is broken. First, find the manifest hash.
         const broken = Array.from(this.versions.entries()).find(([hash, version]) => version === appVersion);
         if (broken === undefined) {
@@ -2204,7 +2231,7 @@ class Driver {
         // TODO: notify affected apps.
         // The action taken depends on whether the broken manifest is the active (latest) or not.
         // If so, the SW cannot accept new clients, but can continue to service old ones.
-        if (this.latestHash === brokenHash) {
+        if (this.latestHash === brokenHash || latest) {
             // The latest manifest is broken. This means that new clients are at the mercy of the
             // network, but caches continue to be valid for previous versions. This is
             // unfortunate but unavoidable.
@@ -2252,9 +2279,10 @@ class Driver {
         await this.notifyClientsAboutUpdate();
     }
     async checkForUpdate() {
+        let hash = '(unknown)';
         try {
             const manifest = await this.fetchLatestManifest();
-            const hash = hashManifest(manifest);
+            hash = hashManifest(manifest);
             // Check whether this is really an update.
             if (this.versions.has(hash)) {
                 return false;
@@ -2262,7 +2290,10 @@ class Driver {
             await this.setupUpdate(manifest, hash);
             return true;
         }
-        catch (_) {
+        catch (err) {
+            this.debugger.log(err, `Error occurred while updating to manifest ${hash}`);
+            this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
+            this.stateMessage = `Degraded due to failed initialization: ${errorToString(err)}`;
             return false;
         }
     }
