@@ -1861,7 +1861,7 @@ class Driver {
         }
     }
     async handlePush(data) {
-        this.broadcast({
+        await this.broadcast({
             type: 'PUSH',
             data,
         });
@@ -1872,7 +1872,7 @@ class Driver {
         let options = {};
         NOTIFICATION_OPTION_NAMES.filter(name => desc.hasOwnProperty(name))
             .forEach(name => options[name] = desc[name]);
-        this.scope.registration.showNotification(desc['title'], options);
+        await this.scope.registration.showNotification(desc['title'], options);
     }
     async reportStatus(client, promise, nonce) {
         const response = { type: 'STATUS', nonce, status: true };
@@ -2182,7 +2182,7 @@ class Driver {
         if (!res.ok) {
             if (res.status === 404) {
                 await this.deleteAllCaches();
-                this.scope.registration.unregister();
+                await this.scope.registration.unregister();
             }
             throw new Error('Manifest fetch failed!');
         }
@@ -2265,7 +2265,7 @@ class Driver {
         // Firstly, check if the manifest version is correct.
         if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {
             await this.deleteAllCaches();
-            this.scope.registration.unregister();
+            await this.scope.registration.unregister();
             throw new Error(`Invalid config version: expected ${SUPPORTED_CONFIG_VERSION}, got ${manifest.configVersion}.`);
         }
         // Cause the new version to become fully initialized. If this fails, then the
