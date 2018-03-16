@@ -1,8 +1,10 @@
 /**
- * @license Angular v6.0.0-beta.7-44de10e
+ * @license Angular v6.0.0-beta.7-f9247e4
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
+import { __awaiter } from 'tslib';
+
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
@@ -104,14 +106,6 @@ function globToRegex(glob) {
     return regex;
 }
 
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
