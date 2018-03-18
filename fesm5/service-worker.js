@@ -3,43 +3,25 @@
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('rxjs/operator/filter'), require('rxjs/operator/take'), require('rxjs/operator/toPromise'), require('rxjs/observable/concat'), require('rxjs/observable/defer'), require('rxjs/observable/fromEvent'), require('rxjs/observable/of'), require('rxjs/observable/throw'), require('rxjs/operator/do'), require('rxjs/operator/map'), require('rxjs/operator/publish'), require('rxjs/operator/switchMap'), require('rxjs/Subject'), require('rxjs/observable/merge'), require('rxjs/observable/never')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@angular/common', '@angular/core', 'rxjs/operator/filter', 'rxjs/operator/take', 'rxjs/operator/toPromise', 'rxjs/observable/concat', 'rxjs/observable/defer', 'rxjs/observable/fromEvent', 'rxjs/observable/of', 'rxjs/observable/throw', 'rxjs/operator/do', 'rxjs/operator/map', 'rxjs/operator/publish', 'rxjs/operator/switchMap', 'rxjs/Subject', 'rxjs/observable/merge', 'rxjs/observable/never'], factory) :
-	(factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}),global.ng.common,global.ng.core,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx,global.Rx.Observable,global.Rx.Observable));
-}(this, (function (exports,_angular_common,_angular_core,rxjs_operator_filter,rxjs_operator_take,rxjs_operator_toPromise,rxjs_observable_concat,rxjs_observable_defer,rxjs_observable_fromEvent,rxjs_observable_of,rxjs_observable_throw,rxjs_operator_do,rxjs_operator_map,rxjs_operator_publish,rxjs_operator_switchMap,rxjs_Subject,rxjs_observable_merge,rxjs_observable_never) { 'use strict';
+import { isPlatformBrowser } from '@angular/common';
+import { APP_INITIALIZER, ApplicationRef, Inject, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
+import { filter } from 'rxjs/operator/filter';
+import { take } from 'rxjs/operator/take';
+import { toPromise } from 'rxjs/operator/toPromise';
+import { __assign } from 'tslib';
+import { concat } from 'rxjs/observable/concat';
+import { defer } from 'rxjs/observable/defer';
+import { fromEvent } from 'rxjs/observable/fromEvent';
+import { of } from 'rxjs/observable/of';
+import { _throw } from 'rxjs/observable/throw';
+import { _do } from 'rxjs/operator/do';
+import { map } from 'rxjs/operator/map';
+import { publish } from 'rxjs/operator/publish';
+import { switchMap } from 'rxjs/operator/switchMap';
+import { Subject } from 'rxjs/Subject';
+import { merge } from 'rxjs/observable/merge';
+import { never } from 'rxjs/observable/never';
 
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-/* global Reflect, Promise */
-
-
-
-var __assign = Object.assign || function __assign(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-    return t;
-};
-
-/**
- * @license Angular v6.0.0-beta.7-ce63dc6
- * (c) 2010-2018 Google, Inc. https://angular.io/
- * License: MIT
- */
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
@@ -71,7 +53,7 @@ var ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by thi
  * @return {?}
  */
 function errorObservable(message) {
-    return rxjs_observable_defer.defer(function () { return rxjs_observable_throw._throw(new Error(message)); });
+    return defer(function () { return _throw(new Error(message)); });
 }
 /**
  * \@experimental
@@ -79,21 +61,21 @@ function errorObservable(message) {
 var NgswCommChannel = /** @class */ (function () {
     function NgswCommChannel(serviceWorker, platformId) {
         this.serviceWorker = serviceWorker;
-        if (!serviceWorker || !_angular_common.isPlatformBrowser(platformId)) {
+        if (!serviceWorker || !isPlatformBrowser(platformId)) {
             this.serviceWorker = undefined;
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
-            var /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((rxjs_observable_fromEvent.fromEvent(serviceWorker, 'controllerchange')));
-            var /** @type {?} */ controllerChanges = /** @type {?} */ ((rxjs_operator_map.map.call(controllerChangeEvents, function () { return serviceWorker.controller; })));
-            var /** @type {?} */ currentController = /** @type {?} */ ((rxjs_observable_defer.defer(function () { return rxjs_observable_of.of(serviceWorker.controller); })));
-            var /** @type {?} */ controllerWithChanges = /** @type {?} */ ((rxjs_observable_concat.concat(currentController, controllerChanges)));
-            this.worker = /** @type {?} */ ((rxjs_operator_filter.filter.call(controllerWithChanges, function (c) { return !!c; })));
-            this.registration = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.worker, function () { return serviceWorker.getRegistration(); })));
-            var /** @type {?} */ rawEvents = rxjs_observable_fromEvent.fromEvent(serviceWorker, 'message');
-            var /** @type {?} */ rawEventPayload = /** @type {?} */ ((rxjs_operator_map.map.call(rawEvents, function (event) { return event.data; })));
-            var /** @type {?} */ eventsUnconnected = /** @type {?} */ ((rxjs_operator_filter.filter.call(rawEventPayload, function (event) { return !!event && !!(/** @type {?} */ (event))['type']; })));
-            var /** @type {?} */ events = /** @type {?} */ ((rxjs_operator_publish.publish.call(eventsUnconnected)));
+            var /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
+            var /** @type {?} */ controllerChanges = /** @type {?} */ ((map.call(controllerChangeEvents, function () { return serviceWorker.controller; })));
+            var /** @type {?} */ currentController = /** @type {?} */ ((defer(function () { return of(serviceWorker.controller); })));
+            var /** @type {?} */ controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
+            this.worker = /** @type {?} */ ((filter.call(controllerWithChanges, function (c) { return !!c; })));
+            this.registration = /** @type {?} */ ((switchMap.call(this.worker, function () { return serviceWorker.getRegistration(); })));
+            var /** @type {?} */ rawEvents = fromEvent(serviceWorker, 'message');
+            var /** @type {?} */ rawEventPayload = /** @type {?} */ ((map.call(rawEvents, function (event) { return event.data; })));
+            var /** @type {?} */ eventsUnconnected = /** @type {?} */ ((filter.call(rawEventPayload, function (event) { return !!event && !!(/** @type {?} */ (event))['type']; })));
+            var /** @type {?} */ events = /** @type {?} */ ((publish.call(eventsUnconnected)));
             this.events = events;
             events.connect();
         }
@@ -114,11 +96,11 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (action, payload) {
-        var /** @type {?} */ worker = rxjs_operator_take.take.call(this.worker, 1);
-        var /** @type {?} */ sideEffect = rxjs_operator_do._do.call(worker, function (sw) {
+        var /** @type {?} */ worker = take.call(this.worker, 1);
+        var /** @type {?} */ sideEffect = _do.call(worker, function (sw) {
             sw.postMessage(__assign({ action: action }, payload));
         });
-        return /** @type {?} */ ((rxjs_operator_toPromise.toPromise.call(sideEffect).then(function () { return undefined; })));
+        return /** @type {?} */ ((toPromise.call(sideEffect).then(function () { return undefined; })));
     };
     /**
      * @internal
@@ -170,7 +152,7 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (type) {
-        return /** @type {?} */ ((rxjs_operator_filter.filter.call(this.events, function (event) { return event.type === type; })));
+        return /** @type {?} */ ((filter.call(this.events, function (event) { return event.type === type; })));
     };
     /**
      * @internal
@@ -188,7 +170,7 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (type) {
-        return /** @type {?} */ ((rxjs_operator_take.take.call(this.eventsOfType(type), 1)));
+        return /** @type {?} */ ((take.call(this.eventsOfType(type), 1)));
     };
     /**
      * @internal
@@ -204,15 +186,15 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (nonce) {
-        var /** @type {?} */ statusEventsWithNonce = /** @type {?} */ ((rxjs_operator_filter.filter.call(this.eventsOfType('STATUS'), function (event) { return event.nonce === nonce; })));
-        var /** @type {?} */ singleStatusEvent = /** @type {?} */ ((rxjs_operator_take.take.call(statusEventsWithNonce, 1)));
-        var /** @type {?} */ mapErrorAndValue = /** @type {?} */ ((rxjs_operator_map.map.call(singleStatusEvent, function (event) {
+        var /** @type {?} */ statusEventsWithNonce = /** @type {?} */ ((filter.call(this.eventsOfType('STATUS'), function (event) { return event.nonce === nonce; })));
+        var /** @type {?} */ singleStatusEvent = /** @type {?} */ ((take.call(statusEventsWithNonce, 1)));
+        var /** @type {?} */ mapErrorAndValue = /** @type {?} */ ((map.call(singleStatusEvent, function (event) {
             if (event.status) {
                 return undefined;
             }
             throw new Error(/** @type {?} */ ((event.error)));
         })));
-        return rxjs_operator_toPromise.toPromise.call(mapErrorAndValue);
+        return toPromise.call(mapErrorAndValue);
     };
     Object.defineProperty(NgswCommChannel.prototype, "isEnabled", {
         get: /**
@@ -225,7 +207,7 @@ var NgswCommChannel = /** @class */ (function () {
     /** @nocollapse */
     NgswCommChannel.ctorParameters = function () { return [
         null,
-        { type: undefined, decorators: [{ type: _angular_core.Inject, args: [_angular_core.PLATFORM_ID,] },] },
+        { type: undefined, decorators: [{ type: Inject, args: [PLATFORM_ID,] },] },
     ]; };
     return NgswCommChannel;
 }());
@@ -249,17 +231,17 @@ var NgswCommChannel = /** @class */ (function () {
 var SwPush = /** @class */ (function () {
     function SwPush(sw) {
         this.sw = sw;
-        this.subscriptionChanges = new rxjs_Subject.Subject();
+        this.subscriptionChanges = new Subject();
         if (!sw.isEnabled) {
-            this.messages = rxjs_observable_never.never();
-            this.subscription = rxjs_observable_never.never();
+            this.messages = never();
+            this.subscription = never();
             return;
         }
         this.messages =
-            rxjs_operator_map.map.call(this.sw.eventsOfType('PUSH'), function (message) { return message.data; });
-        this.pushManager = /** @type {?} */ ((rxjs_operator_map.map.call(this.sw.registration, function (registration) { return registration.pushManager; })));
-        var /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.pushManager, function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); })));
-        this.subscription = rxjs_observable_merge.merge(workerDrivenSubscriptions, this.subscriptionChanges);
+            map.call(this.sw.eventsOfType('PUSH'), function (message) { return message.data; });
+        this.pushManager = /** @type {?} */ ((map.call(this.sw.registration, function (registration) { return registration.pushManager; })));
+        var /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((switchMap.call(this.pushManager, function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); })));
+        this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     Object.defineProperty(SwPush.prototype, "isEnabled", {
         /**
@@ -295,9 +277,9 @@ var SwPush = /** @class */ (function () {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
-        var /** @type {?} */ subscribe = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.pushManager, function (pm) { return pm.subscribe(pushOptions); })));
-        var /** @type {?} */ subscribeOnce = rxjs_operator_take.take.call(subscribe, 1);
-        return (/** @type {?} */ (rxjs_operator_toPromise.toPromise.call(subscribeOnce))).then(function (sub) {
+        var /** @type {?} */ subscribe = /** @type {?} */ ((switchMap.call(this.pushManager, function (pm) { return pm.subscribe(pushOptions); })));
+        var /** @type {?} */ subscribeOnce = take.call(subscribe, 1);
+        return (/** @type {?} */ (toPromise.call(subscribeOnce))).then(function (sub) {
             _this.subscriptionChanges.next(sub);
             return sub;
         });
@@ -313,7 +295,7 @@ var SwPush = /** @class */ (function () {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        var /** @type {?} */ unsubscribe = rxjs_operator_switchMap.switchMap.call(this.subscription, function (sub) {
+        var /** @type {?} */ unsubscribe = switchMap.call(this.subscription, function (sub) {
             if (sub !== null) {
                 return sub.unsubscribe().then(function (success) {
                     if (success) {
@@ -329,11 +311,11 @@ var SwPush = /** @class */ (function () {
                 throw new Error('Not subscribed to push notifications.');
             }
         });
-        var /** @type {?} */ unsubscribeOnce = rxjs_operator_take.take.call(unsubscribe, 1);
-        return /** @type {?} */ (rxjs_operator_toPromise.toPromise.call(unsubscribeOnce));
+        var /** @type {?} */ unsubscribeOnce = take.call(unsubscribe, 1);
+        return /** @type {?} */ (toPromise.call(unsubscribeOnce));
     };
     SwPush.decorators = [
-        { type: _angular_core.Injectable },
+        { type: Injectable },
     ];
     /** @nocollapse */
     SwPush.ctorParameters = function () { return [
@@ -363,8 +345,8 @@ var SwUpdate = /** @class */ (function () {
     function SwUpdate(sw) {
         this.sw = sw;
         if (!sw.isEnabled) {
-            this.available = rxjs_observable_never.never();
-            this.activated = rxjs_observable_never.never();
+            this.available = never();
+            this.activated = never();
             return;
         }
         this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
@@ -411,7 +393,7 @@ var SwUpdate = /** @class */ (function () {
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
     };
     SwUpdate.decorators = [
-        { type: _angular_core.Injectable },
+        { type: Injectable },
     ];
     /** @nocollapse */
     SwUpdate.ctorParameters = function () { return [
@@ -439,7 +421,7 @@ var RegistrationOptions = /** @class */ (function () {
     }
     return RegistrationOptions;
 }());
-var SCRIPT = new _angular_core.InjectionToken('NGSW_REGISTER_SCRIPT');
+var SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
 /**
  * @param {?} injector
  * @param {?} script
@@ -449,14 +431,14 @@ var SCRIPT = new _angular_core.InjectionToken('NGSW_REGISTER_SCRIPT');
  */
 function ngswAppInitializer(injector, script, options, platformId) {
     var /** @type {?} */ initializer = function () {
-        var /** @type {?} */ app = injector.get(_angular_core.ApplicationRef);
-        if (!(_angular_common.isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
+        var /** @type {?} */ app = injector.get(ApplicationRef);
+        if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
             options.enabled !== false)) {
             return;
         }
-        var /** @type {?} */ onStable = /** @type {?} */ (rxjs_operator_filter.filter.call(app.isStable, function (stable) { return !!stable; }));
-        var /** @type {?} */ isStable = /** @type {?} */ (rxjs_operator_take.take.call(onStable, 1));
-        var /** @type {?} */ whenStable = /** @type {?} */ (rxjs_operator_toPromise.toPromise.call(isStable));
+        var /** @type {?} */ onStable = /** @type {?} */ (filter.call(app.isStable, function (stable) { return !!stable; }));
+        var /** @type {?} */ isStable = /** @type {?} */ (take.call(onStable, 1));
+        var /** @type {?} */ whenStable = /** @type {?} */ (toPromise.call(isStable));
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
         // becomes active. This allows the SW to initialize itself even if there is no application
         // traffic.
@@ -519,19 +501,19 @@ var ServiceWorkerModule = /** @class */ (function () {
                 {
                     provide: NgswCommChannel,
                     useFactory: ngswCommChannelFactory,
-                    deps: [RegistrationOptions, _angular_core.PLATFORM_ID]
+                    deps: [RegistrationOptions, PLATFORM_ID]
                 },
                 {
-                    provide: _angular_core.APP_INITIALIZER,
+                    provide: APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [_angular_core.Injector, SCRIPT, RegistrationOptions, _angular_core.PLATFORM_ID],
+                    deps: [Injector, SCRIPT, RegistrationOptions, PLATFORM_ID],
                     multi: true,
                 },
             ],
         };
     };
     ServiceWorkerModule.decorators = [
-        { type: _angular_core.NgModule, args: [{
+        { type: NgModule, args: [{
                     providers: [SwPush, SwUpdate],
                 },] },
     ];
@@ -540,16 +522,44 @@ var ServiceWorkerModule = /** @class */ (function () {
     return ServiceWorkerModule;
 }());
 
-exports.ServiceWorkerModule = ServiceWorkerModule;
-exports.SwPush = SwPush;
-exports.SwUpdate = SwUpdate;
-exports.ɵe = NgswCommChannel;
-exports.ɵa = RegistrationOptions;
-exports.ɵb = SCRIPT;
-exports.ɵc = ngswAppInitializer;
-exports.ɵd = ngswCommChannelFactory;
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-Object.defineProperty(exports, '__esModule', { value: true });
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * @module
+ * @description
+ * Entry point for all public APIs of this package.
+ */
 
-})));
-//# sourceMappingURL=service-worker.umd.js.map
+// This file only reexports content of the `src` folder. Keep it that way.
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { ServiceWorkerModule, SwPush, SwUpdate, NgswCommChannel as ɵe, RegistrationOptions as ɵa, SCRIPT as ɵb, ngswAppInitializer as ɵc, ngswCommChannelFactory as ɵd };
+//# sourceMappingURL=service-worker.js.map
