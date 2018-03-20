@@ -10,7 +10,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import { Injectable } from '@angular/core';
-import { never as obs_never } from 'rxjs/observable/never';
+import { NEVER } from 'rxjs';
 import { ERR_SW_NOT_SUPPORTED, NgswCommChannel } from './low_level';
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
@@ -25,8 +25,8 @@ export class SwUpdate {
     constructor(sw) {
         this.sw = sw;
         if (!sw.isEnabled) {
-            this.available = obs_never();
-            this.activated = obs_never();
+            this.available = NEVER;
+            this.activated = NEVER;
             return;
         }
         this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');

@@ -11,18 +11,8 @@
  */
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID } from '@angular/core';
-import { concat as obs_concat } from 'rxjs/observable/concat';
-import { defer as obs_defer } from 'rxjs/observable/defer';
-import { fromEvent as obs_fromEvent } from 'rxjs/observable/fromEvent';
-import { of as obs_of } from 'rxjs/observable/of';
-import { _throw as obs_throw } from 'rxjs/observable/throw';
-import { _do as op_do } from 'rxjs/operator/do';
-import { filter as op_filter } from 'rxjs/operator/filter';
-import { map as op_map } from 'rxjs/operator/map';
-import { publish as op_publish } from 'rxjs/operator/publish';
-import { switchMap as op_switchMap } from 'rxjs/operator/switchMap';
-import { take as op_take } from 'rxjs/operator/take';
-import { toPromise as op_toPromise } from 'rxjs/operator/toPromise';
+import { concat, defer, fromEvent, of, throwError } from 'rxjs';
+import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
 export const /** @type {?} */ ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 /**
  * @record
@@ -63,7 +53,7 @@ function UpdateActivatedEvent_tsickle_Closure_declarations() {
 /**
  * @record
  */
-function TypedEvent() { }
+export function TypedEvent() { }
 function TypedEvent_tsickle_Closure_declarations() {
     /** @type {?} */
     TypedEvent.prototype.type;
@@ -87,7 +77,7 @@ function StatusEvent_tsickle_Closure_declarations() {
  * @return {?}
  */
 function errorObservable(message) {
-    return obs_defer(() => obs_throw(new Error(message)));
+    return defer(() => throwError(new Error(message)));
 }
 /**
  * \@experimental
@@ -104,16 +94,16 @@ export class NgswCommChannel {
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
-            const /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((obs_fromEvent(serviceWorker, 'controllerchange')));
-            const /** @type {?} */ controllerChanges = /** @type {?} */ ((op_map.call(controllerChangeEvents, () => serviceWorker.controller)));
-            const /** @type {?} */ currentController = /** @type {?} */ ((obs_defer(() => obs_of(serviceWorker.controller))));
-            const /** @type {?} */ controllerWithChanges = /** @type {?} */ ((obs_concat(currentController, controllerChanges)));
-            this.worker = /** @type {?} */ ((op_filter.call(controllerWithChanges, (c) => !!c)));
-            this.registration = /** @type {?} */ ((op_switchMap.call(this.worker, () => serviceWorker.getRegistration())));
-            const /** @type {?} */ rawEvents = obs_fromEvent(serviceWorker, 'message');
-            const /** @type {?} */ rawEventPayload = /** @type {?} */ ((op_map.call(rawEvents, (event) => event.data)));
-            const /** @type {?} */ eventsUnconnected = /** @type {?} */ ((op_filter.call(rawEventPayload, (event) => !!event && !!(/** @type {?} */ (event))['type'])));
-            const /** @type {?} */ events = /** @type {?} */ ((op_publish.call(eventsUnconnected)));
+            const /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
+            const /** @type {?} */ controllerChanges = /** @type {?} */ ((controllerChangeEvents.pipe(map(() => serviceWorker.controller))));
+            const /** @type {?} */ currentController = /** @type {?} */ ((defer(() => of(serviceWorker.controller))));
+            const /** @type {?} */ controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
+            this.worker = /** @type {?} */ ((controllerWithChanges.pipe(filter((c) => !!c))));
+            this.registration = /** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))));
+            const /** @type {?} */ rawEvents = fromEvent(serviceWorker, 'message');
+            const /** @type {?} */ rawEventPayload = rawEvents.pipe(map((event) => event.data));
+            const /** @type {?} */ eventsUnconnected = (rawEventPayload.pipe(filter((event) => !!event && !!(/** @type {?} */ (event))['type'])));
+            const /** @type {?} */ events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
             this.events = events;
             events.connect();
         }
@@ -125,11 +115,12 @@ export class NgswCommChannel {
      * @return {?}
      */
     postMessage(action, payload) {
-        const /** @type {?} */ worker = op_take.call(this.worker, 1);
-        const /** @type {?} */ sideEffect = op_do.call(worker, (sw) => {
+        return this.worker
+            .pipe(take(1), tap((sw) => {
             sw.postMessage(Object.assign({ action }, payload));
-        });
-        return /** @type {?} */ ((op_toPromise.call(sideEffect).then(() => undefined)));
+        }))
+            .toPromise()
+            .then(() => undefined);
     }
     /**
      * \@internal
@@ -155,7 +146,7 @@ export class NgswCommChannel {
      * @return {?}
      */
     eventsOfType(type) {
-        return /** @type {?} */ ((op_filter.call(this.events, (event) => { return event.type === type; })));
+        return /** @type {?} */ (this.events.pipe(filter((event) => { return event.type === type; })));
     }
     /**
      * \@internal
@@ -164,7 +155,7 @@ export class NgswCommChannel {
      * @return {?}
      */
     nextEventOfType(type) {
-        return /** @type {?} */ ((op_take.call(this.eventsOfType(type), 1)));
+        return /** @type {?} */ ((this.eventsOfType(type).pipe(take(1))));
     }
     /**
      * \@internal
@@ -172,15 +163,14 @@ export class NgswCommChannel {
      * @return {?}
      */
     waitForStatus(nonce) {
-        const /** @type {?} */ statusEventsWithNonce = /** @type {?} */ ((op_filter.call(this.eventsOfType('STATUS'), (event) => event.nonce === nonce)));
-        const /** @type {?} */ singleStatusEvent = /** @type {?} */ ((op_take.call(statusEventsWithNonce, 1)));
-        const /** @type {?} */ mapErrorAndValue = /** @type {?} */ ((op_map.call(singleStatusEvent, (event) => {
+        return this.eventsOfType('STATUS')
+            .pipe(filter((event) => event.nonce === nonce), take(1), map((event) => {
             if (event.status) {
                 return undefined;
             }
             throw new Error(/** @type {?} */ ((event.error)));
-        })));
-        return op_toPromise.call(mapErrorAndValue);
+        }))
+            .toPromise();
     }
     /**
      * @return {?}

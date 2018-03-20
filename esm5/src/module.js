@@ -11,9 +11,7 @@
  */
 import { isPlatformBrowser } from '@angular/common';
 import { APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
-import { filter as op_filter } from 'rxjs/operator/filter';
-import { take as op_take } from 'rxjs/operator/take';
-import { toPromise as op_toPromise } from 'rxjs/operator/toPromise';
+import { filter, take } from 'rxjs/operators';
 import { NgswCommChannel } from './low_level';
 import { SwPush } from './push';
 import { SwUpdate } from './update';
@@ -53,9 +51,7 @@ export function ngswAppInitializer(injector, script, options, platformId) {
             options.enabled !== false)) {
             return;
         }
-        var /** @type {?} */ onStable = /** @type {?} */ (op_filter.call(app.isStable, function (stable) { return !!stable; }));
-        var /** @type {?} */ isStable = /** @type {?} */ (op_take.call(onStable, 1));
-        var /** @type {?} */ whenStable = /** @type {?} */ (op_toPromise.call(isStable));
+        var /** @type {?} */ whenStable = app.isStable.pipe(filter(function (stable) { return !!stable; }), take(1)).toPromise();
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
         // becomes active. This allows the SW to initialize itself even if there is no application
         // traffic.

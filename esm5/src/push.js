@@ -10,13 +10,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
-import { merge as obs_merge } from 'rxjs/observable/merge';
-import { never as obs_never } from 'rxjs/observable/never';
-import { map as op_map } from 'rxjs/operator/map';
-import { switchMap as op_switchMap } from 'rxjs/operator/switchMap';
-import { take as op_take } from 'rxjs/operator/take';
-import { toPromise as op_toPromise } from 'rxjs/operator/toPromise';
+import { NEVER, Subject, merge } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
 import { ERR_SW_NOT_SUPPORTED, NgswCommChannel } from './low_level';
 /**
  * Subscribe and listen to push notifications from the Service Worker.
@@ -28,15 +23,14 @@ var SwPush = /** @class */ (function () {
         this.sw = sw;
         this.subscriptionChanges = new Subject();
         if (!sw.isEnabled) {
-            this.messages = obs_never();
-            this.subscription = obs_never();
+            this.messages = NEVER;
+            this.subscription = NEVER;
             return;
         }
-        this.messages =
-            op_map.call(this.sw.eventsOfType('PUSH'), function (message) { return message.data; });
-        this.pushManager = /** @type {?} */ ((op_map.call(this.sw.registration, function (registration) { return registration.pushManager; })));
-        var /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((op_switchMap.call(this.pushManager, function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); })));
-        this.subscription = obs_merge(workerDrivenSubscriptions, this.subscriptionChanges);
+        this.messages = this.sw.eventsOfType('PUSH').pipe(map(function (message) { return message.data; }));
+        this.pushManager = this.sw.registration.pipe(map(function (registration) { return registration.pushManager; }));
+        var /** @type {?} */ workerDrivenSubscriptions = this.pushManager.pipe(switchMap(function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); }));
+        this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     Object.defineProperty(SwPush.prototype, "isEnabled", {
         /**
@@ -72,9 +66,9 @@ var SwPush = /** @class */ (function () {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
-        var /** @type {?} */ subscribe = /** @type {?} */ ((op_switchMap.call(this.pushManager, function (pm) { return pm.subscribe(pushOptions); })));
-        var /** @type {?} */ subscribeOnce = op_take.call(subscribe, 1);
-        return (/** @type {?} */ (op_toPromise.call(subscribeOnce))).then(function (sub) {
+        return this.pushManager.pipe(switchMap(function (pm) { return pm.subscribe(pushOptions); }), take(1))
+            .toPromise()
+            .then(function (sub) {
             _this.subscriptionChanges.next(sub);
             return sub;
         });
@@ -90,7 +84,7 @@ var SwPush = /** @class */ (function () {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        var /** @type {?} */ unsubscribe = op_switchMap.call(this.subscription, function (sub) {
+        var /** @type {?} */ unsubscribe = this.subscription.pipe(switchMap(function (sub) {
             if (sub !== null) {
                 return sub.unsubscribe().then(function (success) {
                     if (success) {
@@ -105,9 +99,8 @@ var SwPush = /** @class */ (function () {
             else {
                 throw new Error('Not subscribed to push notifications.');
             }
-        });
-        var /** @type {?} */ unsubscribeOnce = op_take.call(unsubscribe, 1);
-        return /** @type {?} */ (op_toPromise.call(unsubscribeOnce));
+        }));
+        return unsubscribe.pipe(take(1)).toPromise();
     };
     SwPush.decorators = [
         { type: Injectable },

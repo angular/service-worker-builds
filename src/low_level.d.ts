@@ -20,6 +20,9 @@ export interface UpdateActivatedEvent {
     current: Version;
 }
 export declare type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent;
+export interface TypedEvent {
+    type: string;
+}
 /**
  * @experimental
 */

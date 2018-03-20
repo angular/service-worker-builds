@@ -12,18 +12,8 @@
 import * as tslib_1 from "tslib";
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID } from '@angular/core';
-import { concat as obs_concat } from 'rxjs/observable/concat';
-import { defer as obs_defer } from 'rxjs/observable/defer';
-import { fromEvent as obs_fromEvent } from 'rxjs/observable/fromEvent';
-import { of as obs_of } from 'rxjs/observable/of';
-import { _throw as obs_throw } from 'rxjs/observable/throw';
-import { _do as op_do } from 'rxjs/operator/do';
-import { filter as op_filter } from 'rxjs/operator/filter';
-import { map as op_map } from 'rxjs/operator/map';
-import { publish as op_publish } from 'rxjs/operator/publish';
-import { switchMap as op_switchMap } from 'rxjs/operator/switchMap';
-import { take as op_take } from 'rxjs/operator/take';
-import { toPromise as op_toPromise } from 'rxjs/operator/toPromise';
+import { concat, defer, fromEvent, of, throwError } from 'rxjs';
+import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
 export var /** @type {?} */ ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 /**
  * @record
@@ -64,7 +54,7 @@ function UpdateActivatedEvent_tsickle_Closure_declarations() {
 /**
  * @record
  */
-function TypedEvent() { }
+export function TypedEvent() { }
 function TypedEvent_tsickle_Closure_declarations() {
     /** @type {?} */
     TypedEvent.prototype.type;
@@ -88,7 +78,7 @@ function StatusEvent_tsickle_Closure_declarations() {
  * @return {?}
  */
 function errorObservable(message) {
-    return obs_defer(function () { return obs_throw(new Error(message)); });
+    return defer(function () { return throwError(new Error(message)); });
 }
 /**
  * \@experimental
@@ -101,16 +91,16 @@ var NgswCommChannel = /** @class */ (function () {
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
-            var /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((obs_fromEvent(serviceWorker, 'controllerchange')));
-            var /** @type {?} */ controllerChanges = /** @type {?} */ ((op_map.call(controllerChangeEvents, function () { return serviceWorker.controller; })));
-            var /** @type {?} */ currentController = /** @type {?} */ ((obs_defer(function () { return obs_of(serviceWorker.controller); })));
-            var /** @type {?} */ controllerWithChanges = /** @type {?} */ ((obs_concat(currentController, controllerChanges)));
-            this.worker = /** @type {?} */ ((op_filter.call(controllerWithChanges, function (c) { return !!c; })));
-            this.registration = /** @type {?} */ ((op_switchMap.call(this.worker, function () { return serviceWorker.getRegistration(); })));
-            var /** @type {?} */ rawEvents = obs_fromEvent(serviceWorker, 'message');
-            var /** @type {?} */ rawEventPayload = /** @type {?} */ ((op_map.call(rawEvents, function (event) { return event.data; })));
-            var /** @type {?} */ eventsUnconnected = /** @type {?} */ ((op_filter.call(rawEventPayload, function (event) { return !!event && !!(/** @type {?} */ (event))['type']; })));
-            var /** @type {?} */ events = /** @type {?} */ ((op_publish.call(eventsUnconnected)));
+            var /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
+            var /** @type {?} */ controllerChanges = /** @type {?} */ ((controllerChangeEvents.pipe(map(function () { return serviceWorker.controller; }))));
+            var /** @type {?} */ currentController = /** @type {?} */ ((defer(function () { return of(serviceWorker.controller); })));
+            var /** @type {?} */ controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
+            this.worker = /** @type {?} */ ((controllerWithChanges.pipe(filter(function (c) { return !!c; }))));
+            this.registration = /** @type {?} */ ((this.worker.pipe(switchMap(function () { return serviceWorker.getRegistration(); }))));
+            var /** @type {?} */ rawEvents = fromEvent(serviceWorker, 'message');
+            var /** @type {?} */ rawEventPayload = rawEvents.pipe(map(function (event) { return event.data; }));
+            var /** @type {?} */ eventsUnconnected = (rawEventPayload.pipe(filter(function (event) { return !!event && !!(/** @type {?} */ (event))['type']; })));
+            var /** @type {?} */ events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
             this.events = events;
             events.connect();
         }
@@ -131,11 +121,12 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (action, payload) {
-        var /** @type {?} */ worker = op_take.call(this.worker, 1);
-        var /** @type {?} */ sideEffect = op_do.call(worker, function (sw) {
+        return this.worker
+            .pipe(take(1), tap(function (sw) {
             sw.postMessage(tslib_1.__assign({ action: action }, payload));
-        });
-        return /** @type {?} */ ((op_toPromise.call(sideEffect).then(function () { return undefined; })));
+        }))
+            .toPromise()
+            .then(function () { return undefined; });
     };
     /**
      * @internal
@@ -174,6 +165,8 @@ var NgswCommChannel = /** @class */ (function () {
     /**
      * @internal
      */
+    // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
+    // types flow correctly
     /**
      * \@internal
      * @template T
@@ -187,11 +180,13 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (type) {
-        return /** @type {?} */ ((op_filter.call(this.events, function (event) { return event.type === type; })));
+        return /** @type {?} */ (this.events.pipe(filter(function (event) { return event.type === type; })));
     };
     /**
      * @internal
      */
+    // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
+    // types flow correctly
     /**
      * \@internal
      * @template T
@@ -205,7 +200,7 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (type) {
-        return /** @type {?} */ ((op_take.call(this.eventsOfType(type), 1)));
+        return /** @type {?} */ ((this.eventsOfType(type).pipe(take(1))));
     };
     /**
      * @internal
@@ -221,15 +216,14 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (nonce) {
-        var /** @type {?} */ statusEventsWithNonce = /** @type {?} */ ((op_filter.call(this.eventsOfType('STATUS'), function (event) { return event.nonce === nonce; })));
-        var /** @type {?} */ singleStatusEvent = /** @type {?} */ ((op_take.call(statusEventsWithNonce, 1)));
-        var /** @type {?} */ mapErrorAndValue = /** @type {?} */ ((op_map.call(singleStatusEvent, function (event) {
+        return this.eventsOfType('STATUS')
+            .pipe(filter(function (event) { return event.nonce === nonce; }), take(1), map(function (event) {
             if (event.status) {
                 return undefined;
             }
             throw new Error(/** @type {?} */ ((event.error)));
-        })));
-        return op_toPromise.call(mapErrorAndValue);
+        }))
+            .toPromise();
     };
     Object.defineProperty(NgswCommChannel.prototype, "isEnabled", {
         get: /**
