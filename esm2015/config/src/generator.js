@@ -1,9 +1,4 @@
 /**
- * @license Angular v6.0.0-beta.7-63cad11
- * (c) 2010-2018 Google, Inc. https://angular.io/
- * License: MIT
- */
-/**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
@@ -14,121 +9,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
-const PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
-/**
- * @param {?} duration
- * @return {?}
- */
-function parseDurationToMs(duration) {
-    const /** @type {?} */ matches = [];
-    let /** @type {?} */ array;
-    while ((array = PARSE_TO_PAIRS.exec(duration)) !== null) {
-        matches.push(array[0]);
-    }
-    return matches
-        .map(match => {
-        const /** @type {?} */ res = PAIR_SPLIT.exec(match);
-        if (res === null) {
-            throw new Error(`Not a valid duration: ${match}`);
-        }
-        let /** @type {?} */ factor = 0;
-        switch (res[2]) {
-            case 'd':
-                factor = 86400000;
-                break;
-            case 'h':
-                factor = 3600000;
-                break;
-            case 'm':
-                factor = 60000;
-                break;
-            case 's':
-                factor = 1000;
-                break;
-            case 'u':
-                factor = 1;
-                break;
-            default:
-                throw new Error(`Not a valid duration unit: ${res[2]}`);
-        }
-        return parseInt(res[1]) * factor;
-    })
-        .reduce((total, value) => total + value, 0);
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-const WILD_SINGLE = '[^\\/]+';
-const WILD_OPEN = '(?:.+\\/)?';
-const TO_ESCAPE = [
-    { replace: /\./g, with: '\\.' },
-    { replace: /\?/g, with: '\\?' },
-    { replace: /\+/g, with: '\\+' },
-    { replace: /\*/g, with: WILD_SINGLE },
-];
-/**
- * @param {?} glob
- * @return {?}
- */
-function globToRegex(glob) {
-    const /** @type {?} */ segments = glob.split('/').reverse();
-    let /** @type {?} */ regex = '';
-    while (segments.length > 0) {
-        const /** @type {?} */ segment = /** @type {?} */ ((segments.pop()));
-        if (segment === '**') {
-            if (segments.length > 0) {
-                regex += WILD_OPEN;
-            }
-            else {
-                regex += '.*';
-            }
-        }
-        else {
-            const /** @type {?} */ processed = TO_ESCAPE.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
-            regex += processed;
-            if (segments.length > 0) {
-                regex += '\\/';
-            }
-        }
-    }
-    return regex;
-}
-
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
+import * as tslib_1 from "tslib";
+import { parseDurationToMs } from './duration';
+import { globToRegex } from './glob';
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
  * \@experimental
  */
-class Generator {
+export class Generator {
     /**
      * @param {?} fs
      * @param {?} baseHref
@@ -142,7 +31,7 @@ class Generator {
      * @return {?}
      */
     process(config) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const /** @type {?} */ hashTable = {};
             return {
                 configVersion: 1,
@@ -159,9 +48,9 @@ class Generator {
      * @return {?}
      */
     processAssetGroups(config, hashTable) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const /** @type {?} */ seenMap = new Set();
-            return Promise.all((config.assetGroups || []).map((group) => __awaiter(this, void 0, void 0, function* () {
+            return Promise.all((config.assetGroups || []).map((group) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 const /** @type {?} */ fileMatcher = globListToMatcher(group.resources.files || []);
                 const /** @type {?} */ versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
                 const /** @type {?} */ allFiles = (yield this.fs.list('/'));
@@ -170,7 +59,7 @@ class Generator {
                 const /** @type {?} */ plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
                 plainFiles.forEach(file => seenMap.add(file));
                 // Add the hashes.
-                yield [...versionedFiles, ...plainFiles].reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
+                yield [...versionedFiles, ...plainFiles].reduce((previous, file) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                     yield previous;
                     const /** @type {?} */ hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
@@ -216,6 +105,12 @@ class Generator {
             };
         });
     }
+}
+function Generator_tsickle_Closure_declarations() {
+    /** @type {?} */
+    Generator.prototype.fs;
+    /** @type {?} */
+    Generator.prototype.baseHref;
 }
 /**
  * @param {?} globs
@@ -268,26 +163,4 @@ function joinUrls(a, b) {
     }
     return a + b;
 }
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * Generated bundle index. Do not edit.
- */
-
-export { Generator };
-//# sourceMappingURL=config.js.map
+//# sourceMappingURL=generator.js.map
