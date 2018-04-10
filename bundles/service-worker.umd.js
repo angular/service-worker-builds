@@ -1,13 +1,13 @@
 /**
- * @license Angular v5.1.0-5a0076f
- * (c) 2010-2017 Google, Inc. https://angular.io/
+ * @license Angular v6.0.0-rc.3-5992fe6
+ * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('rxjs/operator/filter'), require('rxjs/operator/take'), require('rxjs/operator/toPromise'), require('rxjs/observable/concat'), require('rxjs/observable/defer'), require('rxjs/observable/fromEvent'), require('rxjs/observable/of'), require('rxjs/observable/throw'), require('rxjs/operator/do'), require('rxjs/operator/map'), require('rxjs/operator/publish'), require('rxjs/operator/switchMap'), require('rxjs/Subject'), require('rxjs/observable/merge'), require('rxjs/observable/never')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@angular/common', '@angular/core', 'rxjs/operator/filter', 'rxjs/operator/take', 'rxjs/operator/toPromise', 'rxjs/observable/concat', 'rxjs/observable/defer', 'rxjs/observable/fromEvent', 'rxjs/observable/of', 'rxjs/observable/throw', 'rxjs/operator/do', 'rxjs/operator/map', 'rxjs/operator/publish', 'rxjs/operator/switchMap', 'rxjs/Subject', 'rxjs/observable/merge', 'rxjs/observable/never'], factory) :
-	(factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}),global.ng.common,global.ng.core,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx,global.Rx.Observable,global.Rx.Observable));
-}(this, (function (exports,_angular_common,_angular_core,rxjs_operator_filter,rxjs_operator_take,rxjs_operator_toPromise,rxjs_observable_concat,rxjs_observable_defer,rxjs_observable_fromEvent,rxjs_observable_of,rxjs_observable_throw,rxjs_operator_do,rxjs_operator_map,rxjs_operator_publish,rxjs_operator_switchMap,rxjs_Subject,rxjs_observable_merge,rxjs_observable_never) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('rxjs/operators'), require('rxjs')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@angular/common', '@angular/core', 'rxjs/operators', 'rxjs'], factory) :
+	(factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}),global.ng.common,global.ng.core,global.rxjs.operators,global.rxjs));
+}(this, (function (exports,_angular_common,_angular_core,rxjs_operators,rxjs) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -36,8 +36,8 @@ var __assign = Object.assign || function __assign(t) {
 };
 
 /**
- * @license Angular v5.1.0-5a0076f
- * (c) 2010-2017 Google, Inc. https://angular.io/
+ * @license Angular v6.0.0-rc.3-5992fe6
+ * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 /**
@@ -67,11 +67,15 @@ var ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by thi
  */
 
 /**
+ * @record
+ */
+
+/**
  * @param {?} message
  * @return {?}
  */
 function errorObservable(message) {
-    return rxjs_observable_defer.defer(function () { return rxjs_observable_throw._throw(new Error(message)); });
+    return rxjs.defer(function () { return rxjs.throwError(new Error(message)); });
 }
 /**
  * \@experimental
@@ -84,16 +88,16 @@ var NgswCommChannel = /** @class */ (function () {
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
-            var /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((rxjs_observable_fromEvent.fromEvent(serviceWorker, 'controllerchange')));
-            var /** @type {?} */ controllerChanges = /** @type {?} */ ((rxjs_operator_map.map.call(controllerChangeEvents, function () { return serviceWorker.controller; })));
-            var /** @type {?} */ currentController = /** @type {?} */ ((rxjs_observable_defer.defer(function () { return rxjs_observable_of.of(serviceWorker.controller); })));
-            var /** @type {?} */ controllerWithChanges = /** @type {?} */ ((rxjs_observable_concat.concat(currentController, controllerChanges)));
-            this.worker = /** @type {?} */ ((rxjs_operator_filter.filter.call(controllerWithChanges, function (c) { return !!c; })));
-            this.registration = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.worker, function () { return serviceWorker.getRegistration(); })));
-            var /** @type {?} */ rawEvents = rxjs_observable_fromEvent.fromEvent(serviceWorker, 'message');
-            var /** @type {?} */ rawEventPayload = /** @type {?} */ ((rxjs_operator_map.map.call(rawEvents, function (event) { return event.data; })));
-            var /** @type {?} */ eventsUnconnected = /** @type {?} */ ((rxjs_operator_filter.filter.call(rawEventPayload, function (event) { return !!event && !!(/** @type {?} */ (event))['type']; })));
-            var /** @type {?} */ events = /** @type {?} */ ((rxjs_operator_publish.publish.call(eventsUnconnected)));
+            var /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((rxjs.fromEvent(serviceWorker, 'controllerchange')));
+            var /** @type {?} */ controllerChanges = /** @type {?} */ ((controllerChangeEvents.pipe(rxjs_operators.map(function () { return serviceWorker.controller; }))));
+            var /** @type {?} */ currentController = /** @type {?} */ ((rxjs.defer(function () { return rxjs.of(serviceWorker.controller); })));
+            var /** @type {?} */ controllerWithChanges = /** @type {?} */ ((rxjs.concat(currentController, controllerChanges)));
+            this.worker = /** @type {?} */ ((controllerWithChanges.pipe(rxjs_operators.filter(function (c) { return !!c; }))));
+            this.registration = /** @type {?} */ ((this.worker.pipe(rxjs_operators.switchMap(function () { return serviceWorker.getRegistration(); }))));
+            var /** @type {?} */ rawEvents = rxjs.fromEvent(serviceWorker, 'message');
+            var /** @type {?} */ rawEventPayload = rawEvents.pipe(rxjs_operators.map(function (event) { return event.data; }));
+            var /** @type {?} */ eventsUnconnected = (rawEventPayload.pipe(rxjs_operators.filter(function (event) { return !!event && !!(/** @type {?} */ (event))['type']; })));
+            var /** @type {?} */ events = /** @type {?} */ (eventsUnconnected.pipe(rxjs_operators.publish()));
             this.events = events;
             events.connect();
         }
@@ -114,11 +118,12 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (action, payload) {
-        var /** @type {?} */ worker = rxjs_operator_take.take.call(this.worker, 1);
-        var /** @type {?} */ sideEffect = rxjs_operator_do._do.call(worker, function (sw) {
+        return this.worker
+            .pipe(rxjs_operators.take(1), rxjs_operators.tap(function (sw) {
             sw.postMessage(__assign({ action: action }, payload));
-        });
-        return /** @type {?} */ ((rxjs_operator_toPromise.toPromise.call(sideEffect).then(function () { return undefined; })));
+        }))
+            .toPromise()
+            .then(function () { return undefined; });
     };
     /**
      * @internal
@@ -157,6 +162,8 @@ var NgswCommChannel = /** @class */ (function () {
     /**
      * @internal
      */
+    // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
+    // types flow correctly
     /**
      * \@internal
      * @template T
@@ -170,11 +177,13 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (type) {
-        return /** @type {?} */ ((rxjs_operator_filter.filter.call(this.events, function (event) { return event.type === type; })));
+        return /** @type {?} */ (this.events.pipe(rxjs_operators.filter(function (event) { return event.type === type; })));
     };
     /**
      * @internal
      */
+    // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
+    // types flow correctly
     /**
      * \@internal
      * @template T
@@ -188,7 +197,7 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (type) {
-        return /** @type {?} */ ((rxjs_operator_take.take.call(this.eventsOfType(type), 1)));
+        return /** @type {?} */ ((this.eventsOfType(type).pipe(rxjs_operators.take(1))));
     };
     /**
      * @internal
@@ -204,15 +213,14 @@ var NgswCommChannel = /** @class */ (function () {
      * @return {?}
      */
     function (nonce) {
-        var /** @type {?} */ statusEventsWithNonce = /** @type {?} */ ((rxjs_operator_filter.filter.call(this.eventsOfType('STATUS'), function (event) { return event.nonce === nonce; })));
-        var /** @type {?} */ singleStatusEvent = /** @type {?} */ ((rxjs_operator_take.take.call(statusEventsWithNonce, 1)));
-        var /** @type {?} */ mapErrorAndValue = /** @type {?} */ ((rxjs_operator_map.map.call(singleStatusEvent, function (event) {
+        return this.eventsOfType('STATUS')
+            .pipe(rxjs_operators.filter(function (event) { return event.nonce === nonce; }), rxjs_operators.take(1), rxjs_operators.map(function (event) {
             if (event.status) {
                 return undefined;
             }
             throw new Error(/** @type {?} */ ((event.error)));
-        })));
-        return rxjs_operator_toPromise.toPromise.call(mapErrorAndValue);
+        }))
+            .toPromise();
     };
     Object.defineProperty(NgswCommChannel.prototype, "isEnabled", {
         get: /**
@@ -249,17 +257,16 @@ var NgswCommChannel = /** @class */ (function () {
 var SwPush = /** @class */ (function () {
     function SwPush(sw) {
         this.sw = sw;
-        this.subscriptionChanges = new rxjs_Subject.Subject();
+        this.subscriptionChanges = new rxjs.Subject();
         if (!sw.isEnabled) {
-            this.messages = rxjs_observable_never.never();
-            this.subscription = rxjs_observable_never.never();
+            this.messages = rxjs.NEVER;
+            this.subscription = rxjs.NEVER;
             return;
         }
-        this.messages =
-            rxjs_operator_map.map.call(this.sw.eventsOfType('PUSH'), function (message) { return message.data; });
-        this.pushManager = /** @type {?} */ ((rxjs_operator_map.map.call(this.sw.registration, function (registration) { return registration.pushManager; })));
-        var /** @type {?} */ workerDrivenSubscriptions = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.pushManager, function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); })));
-        this.subscription = rxjs_observable_merge.merge(workerDrivenSubscriptions, this.subscriptionChanges);
+        this.messages = this.sw.eventsOfType('PUSH').pipe(rxjs_operators.map(function (message) { return message.data; }));
+        this.pushManager = this.sw.registration.pipe(rxjs_operators.map(function (registration) { return registration.pushManager; }));
+        var /** @type {?} */ workerDrivenSubscriptions = this.pushManager.pipe(rxjs_operators.switchMap(function (pm) { return pm.getSubscription().then(function (sub) { return sub; }); }));
+        this.subscription = rxjs.merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     Object.defineProperty(SwPush.prototype, "isEnabled", {
         /**
@@ -295,9 +302,9 @@ var SwPush = /** @class */ (function () {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
-        var /** @type {?} */ subscribe = /** @type {?} */ ((rxjs_operator_switchMap.switchMap.call(this.pushManager, function (pm) { return pm.subscribe(pushOptions); })));
-        var /** @type {?} */ subscribeOnce = rxjs_operator_take.take.call(subscribe, 1);
-        return (/** @type {?} */ (rxjs_operator_toPromise.toPromise.call(subscribeOnce))).then(function (sub) {
+        return this.pushManager.pipe(rxjs_operators.switchMap(function (pm) { return pm.subscribe(pushOptions); }), rxjs_operators.take(1))
+            .toPromise()
+            .then(function (sub) {
             _this.subscriptionChanges.next(sub);
             return sub;
         });
@@ -313,7 +320,7 @@ var SwPush = /** @class */ (function () {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        var /** @type {?} */ unsubscribe = rxjs_operator_switchMap.switchMap.call(this.subscription, function (sub) {
+        var /** @type {?} */ unsubscribe = this.subscription.pipe(rxjs_operators.switchMap(function (sub) {
             if (sub !== null) {
                 return sub.unsubscribe().then(function (success) {
                     if (success) {
@@ -328,9 +335,8 @@ var SwPush = /** @class */ (function () {
             else {
                 throw new Error('Not subscribed to push notifications.');
             }
-        });
-        var /** @type {?} */ unsubscribeOnce = rxjs_operator_take.take.call(unsubscribe, 1);
-        return /** @type {?} */ (rxjs_operator_toPromise.toPromise.call(unsubscribeOnce));
+        }));
+        return unsubscribe.pipe(rxjs_operators.take(1)).toPromise();
     };
     SwPush.decorators = [
         { type: _angular_core.Injectable },
@@ -363,8 +369,8 @@ var SwUpdate = /** @class */ (function () {
     function SwUpdate(sw) {
         this.sw = sw;
         if (!sw.isEnabled) {
-            this.available = rxjs_observable_never.never();
-            this.activated = rxjs_observable_never.never();
+            this.available = rxjs.NEVER;
+            this.activated = rxjs.NEVER;
             return;
         }
         this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
@@ -454,9 +460,7 @@ function ngswAppInitializer(injector, script, options, platformId) {
             options.enabled !== false)) {
             return;
         }
-        var /** @type {?} */ onStable = /** @type {?} */ (rxjs_operator_filter.filter.call(app.isStable, function (stable) { return !!stable; }));
-        var /** @type {?} */ isStable = /** @type {?} */ (rxjs_operator_take.take.call(onStable, 1));
-        var /** @type {?} */ whenStable = /** @type {?} */ (rxjs_operator_toPromise.toPromise.call(isStable));
+        var /** @type {?} */ whenStable = app.isStable.pipe(rxjs_operators.filter(function (stable) { return !!stable; }), rxjs_operators.take(1)).toPromise();
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
         // becomes active. This allows the SW to initialize itself even if there is no application
         // traffic.
