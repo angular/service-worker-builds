@@ -9,7 +9,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const /** @type {?} */ WILD_SINGLE = '[^\\/]+';
+const /** @type {?} */ WILD_SINGLE = '[^\\/]*';
 const /** @type {?} */ WILD_OPEN = '(?:.+\\/)?';
 const /** @type {?} */ TO_ESCAPE = [
     { replace: /\./g, with: '\\.' },

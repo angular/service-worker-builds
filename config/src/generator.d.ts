@@ -13,3 +13,7 @@ export declare class Generator {
     private processAssetGroups(config, hashTable);
     private processDataGroups(config);
 }
+export declare function processNavigationUrls(baseHref: string, urls?: string[]): {
+    positive: boolean;
+    regex: string;
+}[];

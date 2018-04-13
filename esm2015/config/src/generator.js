@@ -12,6 +12,12 @@
 import * as tslib_1 from "tslib";
 import { parseDurationToMs } from './duration';
 import { globToRegex } from './glob';
+const /** @type {?} */ DEFAULT_NAVIGATION_URLS = [
+    '/**',
+    '!/**/*.*',
+    '!/**/*__*',
+    '!/**/*__*/**',
+];
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
@@ -35,10 +41,11 @@ export class Generator {
             const /** @type {?} */ hashTable = {};
             return {
                 configVersion: 1,
-                index: joinUrls(this.baseHref, config.index),
                 appData: config.appData,
+                index: joinUrls(this.baseHref, config.index),
                 assetGroups: yield this.processAssetGroups(config, hashTable),
                 dataGroups: this.processDataGroups(config), hashTable,
+                navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
             };
         });
     }
@@ -64,12 +71,6 @@ export class Generator {
                     const /** @type {?} */ hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
                 }), Promise.resolve());
-                // Figure out the patterns.
-                const /** @type {?} */ patterns = (group.resources.urls || [])
-                    .map(glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                    glob :
-                    joinUrls(this.baseHref, glob))
-                    .map(glob => globToRegex(glob));
                 return {
                     name: group.name,
                     installMode: group.installMode || 'prefetch',
@@ -78,7 +79,7 @@ export class Generator {
                         .concat(plainFiles)
                         .concat(versionedFiles)
                         .map(url => joinUrls(this.baseHref, url)),
-                    patterns,
+                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
                 };
             })));
         });
@@ -89,14 +90,9 @@ export class Generator {
      */
     processDataGroups(config) {
         return (config.dataGroups || []).map(group => {
-            const /** @type {?} */ patterns = group.urls
-                .map(glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                glob :
-                joinUrls(this.baseHref, glob))
-                .map(glob => globToRegex(glob));
             return {
                 name: group.name,
-                patterns,
+                patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -111,6 +107,18 @@ function Generator_tsickle_Closure_declarations() {
     Generator.prototype.fs;
     /** @type {?} */
     Generator.prototype.baseHref;
+}
+/**
+ * @param {?} baseHref
+ * @param {?=} urls
+ * @return {?}
+ */
+export function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
+    return urls.map(url => {
+        const /** @type {?} */ positive = !url.startsWith('!');
+        url = positive ? url : url.substr(1);
+        return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
+    });
 }
 /**
  * @param {?} globs
@@ -148,6 +156,17 @@ function matches(file, patterns) {
         }
     }, false);
     return res;
+}
+/**
+ * @param {?} url
+ * @param {?} baseHref
+ * @return {?}
+ */
+function urlToRegex(url, baseHref) {
+    if (!url.startsWith('/') && url.indexOf('://') === -1) {
+        url = joinUrls(baseHref, url);
+    }
+    return globToRegex(url);
 }
 /**
  * @param {?} a

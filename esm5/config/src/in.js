@@ -25,6 +25,8 @@ function Config_tsickle_Closure_declarations() {
     Config.prototype.assetGroups;
     /** @type {?|undefined} */
     Config.prototype.dataGroups;
+    /** @type {?|undefined} */
+    Config.prototype.navigationUrls;
 }
 /**
  * Configuration for a particular group of assets.

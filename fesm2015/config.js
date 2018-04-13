@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.0-rc.4-639d52f
+ * @license Angular v6.0.0-rc.4-6c2c958
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -70,7 +70,7 @@ function parseDurationToMs(duration) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const WILD_SINGLE = '[^\\/]+';
+const WILD_SINGLE = '[^\\/]*';
 const WILD_OPEN = '(?:.+\\/)?';
 const TO_ESCAPE = [
     { replace: /\./g, with: '\\.' },
@@ -117,6 +117,12 @@ function globToRegex(glob) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+const DEFAULT_NAVIGATION_URLS = [
+    '/**',
+    '!/**/*.*',
+    '!/**/*__*',
+    '!/**/*__*/**',
+];
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
@@ -140,10 +146,11 @@ class Generator {
             const /** @type {?} */ hashTable = {};
             return {
                 configVersion: 1,
-                index: joinUrls(this.baseHref, config.index),
                 appData: config.appData,
+                index: joinUrls(this.baseHref, config.index),
                 assetGroups: yield this.processAssetGroups(config, hashTable),
                 dataGroups: this.processDataGroups(config), hashTable,
+                navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
             };
         });
     }
@@ -169,12 +176,6 @@ class Generator {
                     const /** @type {?} */ hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
                 }), Promise.resolve());
-                // Figure out the patterns.
-                const /** @type {?} */ patterns = (group.resources.urls || [])
-                    .map(glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                    glob :
-                    joinUrls(this.baseHref, glob))
-                    .map(glob => globToRegex(glob));
                 return {
                     name: group.name,
                     installMode: group.installMode || 'prefetch',
@@ -183,7 +184,7 @@ class Generator {
                         .concat(plainFiles)
                         .concat(versionedFiles)
                         .map(url => joinUrls(this.baseHref, url)),
-                    patterns,
+                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
                 };
             })));
         });
@@ -194,14 +195,9 @@ class Generator {
      */
     processDataGroups(config) {
         return (config.dataGroups || []).map(group => {
-            const /** @type {?} */ patterns = group.urls
-                .map(glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                glob :
-                joinUrls(this.baseHref, glob))
-                .map(glob => globToRegex(glob));
             return {
                 name: group.name,
-                patterns,
+                patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -210,6 +206,18 @@ class Generator {
             };
         });
     }
+}
+/**
+ * @param {?} baseHref
+ * @param {?=} urls
+ * @return {?}
+ */
+function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
+    return urls.map(url => {
+        const /** @type {?} */ positive = !url.startsWith('!');
+        url = positive ? url : url.substr(1);
+        return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
+    });
 }
 /**
  * @param {?} globs
@@ -247,6 +255,17 @@ function matches(file, patterns) {
         }
     }, false);
     return res;
+}
+/**
+ * @param {?} url
+ * @param {?} baseHref
+ * @return {?}
+ */
+function urlToRegex(url, baseHref) {
+    if (!url.startsWith('/') && url.indexOf('://') === -1) {
+        url = joinUrls(baseHref, url);
+    }
+    return globToRegex(url);
 }
 /**
  * @param {?} a

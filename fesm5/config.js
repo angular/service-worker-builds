@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.0-rc.4-639d52f
+ * @license Angular v6.0.0-rc.4-6c2c958
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -70,7 +70,7 @@ function parseDurationToMs(duration) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-var WILD_SINGLE = '[^\\/]+';
+var WILD_SINGLE = '[^\\/]*';
 var WILD_OPEN = '(?:.+\\/)?';
 var TO_ESCAPE = [
     { replace: /\./g, with: '\\.' },
@@ -117,6 +117,12 @@ function globToRegex(glob) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+var DEFAULT_NAVIGATION_URLS = [
+    '/**',
+    '!/**/*.*',
+    '!/**/*__*',
+    '!/**/*__*/**',
+];
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
@@ -144,13 +150,14 @@ var Generator = /** @class */ (function () {
                         hashTable = {};
                         _a = {
                             configVersion: 1,
-                            index: joinUrls(this.baseHref, config.index),
-                            appData: config.appData
+                            appData: config.appData,
+                            index: joinUrls(this.baseHref, config.index)
                         };
                         return [4 /*yield*/, this.processAssetGroups(config, hashTable)];
                     case 1: return [2 /*return*/, (_a.assetGroups = _b.sent(),
                             _a.dataGroups = this.processDataGroups(config),
                             _a.hashTable = hashTable,
+                            _a.navigationUrls = processNavigationUrls(this.baseHref, config.navigationUrls),
                             _a)];
                 }
             });
@@ -174,7 +181,7 @@ var Generator = /** @class */ (function () {
                 seenMap = new Set();
                 return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
                         var _this = this;
-                        var fileMatcher, versionedMatcher, allFiles, versionedFiles, plainFiles, patterns;
+                        var fileMatcher, versionedMatcher, allFiles, versionedFiles, plainFiles;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -207,13 +214,6 @@ var Generator = /** @class */ (function () {
                                     // Add the hashes.
                                     // Add the hashes.
                                     _a.sent();
-                                    patterns = (group.resources.urls || [])
-                                        .map(function (glob) {
-                                        return glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                            glob :
-                                            joinUrls(_this.baseHref, glob);
-                                    })
-                                        .map(function (glob) { return globToRegex(glob); });
                                     return [2 /*return*/, {
                                             name: group.name,
                                             installMode: group.installMode || 'prefetch',
@@ -222,7 +222,7 @@ var Generator = /** @class */ (function () {
                                                 .concat(plainFiles)
                                                 .concat(versionedFiles)
                                                 .map(function (url) { return joinUrls(_this.baseHref, url); }),
-                                            patterns: patterns,
+                                            patterns: (group.resources.urls || []).map(function (url) { return urlToRegex(url, _this.baseHref); }),
                                         }];
                             }
                         });
@@ -241,16 +241,9 @@ var Generator = /** @class */ (function () {
     function (config) {
         var _this = this;
         return (config.dataGroups || []).map(function (group) {
-            var /** @type {?} */ patterns = group.urls
-                .map(function (glob) {
-                return glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                    glob :
-                    joinUrls(_this.baseHref, glob);
-            })
-                .map(function (glob) { return globToRegex(glob); });
             return {
                 name: group.name,
-                patterns: patterns,
+                patterns: group.urls.map(function (url) { return urlToRegex(url, _this.baseHref); }),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -261,6 +254,19 @@ var Generator = /** @class */ (function () {
     };
     return Generator;
 }());
+/**
+ * @param {?} baseHref
+ * @param {?=} urls
+ * @return {?}
+ */
+function processNavigationUrls(baseHref, urls) {
+    if (urls === void 0) { urls = DEFAULT_NAVIGATION_URLS; }
+    return urls.map(function (url) {
+        var /** @type {?} */ positive = !url.startsWith('!');
+        url = positive ? url : url.substr(1);
+        return { positive: positive, regex: "^" + urlToRegex(url, baseHref) + "$" };
+    });
+}
 /**
  * @param {?} globs
  * @return {?}
@@ -297,6 +303,17 @@ function matches(file, patterns) {
         }
     }, false);
     return res;
+}
+/**
+ * @param {?} url
+ * @param {?} baseHref
+ * @return {?}
+ */
+function urlToRegex(url, baseHref) {
+    if (!url.startsWith('/') && url.indexOf('://') === -1) {
+        url = joinUrls(baseHref, url);
+    }
+    return globToRegex(url);
 }
 /**
  * @param {?} a

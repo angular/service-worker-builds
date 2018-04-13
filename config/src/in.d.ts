@@ -23,6 +23,7 @@ export interface Config {
     index: string;
     assetGroups?: AssetGroup[];
     dataGroups?: DataGroup[];
+    navigationUrls?: string[];
 }
 /**
  * Configuration for a particular group of assets.
