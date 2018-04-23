@@ -1,4 +1,5 @@
+/// <amd-module name="@angular/service-worker/config/config" />
 /**
  * Generated bundle index. Do not edit.
  */
-export * from './public_api';
+export * from './index';

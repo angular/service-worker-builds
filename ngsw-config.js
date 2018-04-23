@@ -9,6 +9,30 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+var __read = (undefined && undefined.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m)
+        return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+            ar.push(r.value);
+    }
+    catch (error) {
+        e = { error: error };
+    }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"]))
+                m.call(i);
+        }
+        finally {
+            if (e)
+                throw e.error;
+        }
+    }
+    return ar;
+};
 /**
  * Compute the SHA1 of the given string
  *
@@ -26,11 +50,11 @@ function sha1Binary(buffer) {
 }
 function _sha1(words32, len) {
     var w = new Array(80);
-    var _a = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0], a = _a[0], b = _a[1], c = _a[2], d = _a[3], e = _a[4];
+    var _a = __read([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0], 5), a = _a[0], b = _a[1], c = _a[2], d = _a[3], e = _a[4];
     words32[len >> 5] |= 0x80 << (24 - len % 32);
     words32[((len + 64 >> 9) << 4) + 15] = len;
     for (var i = 0; i < words32.length; i += 16) {
-        var _b = [a, b, c, d, e], h0 = _b[0], h1 = _b[1], h2 = _b[2], h3 = _b[3], h4 = _b[4];
+        var _b = __read([a, b, c, d, e], 5), h0 = _b[0], h1 = _b[1], h2 = _b[2], h3 = _b[3], h4 = _b[4];
         for (var j = 0; j < 80; j++) {
             if (j < 16) {
                 w[j] = words32[i + j];
@@ -38,11 +62,11 @@ function _sha1(words32, len) {
             else {
                 w[j] = rol32(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
             }
-            var _c = fk(j, b, c, d), f = _c[0], k = _c[1];
+            var _c = __read(fk(j, b, c, d), 2), f = _c[0], k = _c[1];
             var temp = [rol32(a, 5), f, e, k, w[j]].reduce(add32);
-            _d = [d, c, rol32(b, 30), a, temp], e = _d[0], d = _d[1], c = _d[2], b = _d[3], a = _d[4];
+            _d = __read([d, c, rol32(b, 30), a, temp], 5), e = _d[0], d = _d[1], c = _d[2], b = _d[3], a = _d[4];
         }
-        _e = [add32(a, h0), add32(b, h1), add32(c, h2), add32(d, h3), add32(e, h4)], a = _e[0], b = _e[1], c = _e[2], d = _e[3], e = _e[4];
+        _e = __read([add32(a, h0), add32(b, h1), add32(c, h2), add32(d, h3), add32(e, h4)], 5), a = _e[0], b = _e[1], c = _e[2], d = _e[3], e = _e[4];
     }
     return byteStringToHexString(words32ToByteString([a, b, c, d, e]));
     var _d, _e;
@@ -59,11 +83,11 @@ function add32to64(a, b) {
 function rol32(a, count) {
     return (a << count) | (a >>> (32 - count));
 }
-var Endian;
-(function (Endian) {
+var Endian = /*@__PURE__*/ (function (Endian) {
     Endian[Endian["Little"] = 0] = "Little";
     Endian[Endian["Big"] = 1] = "Big";
-})(Endian || (Endian = {}));
+    return Endian;
+})({});
 function fk(index, b, c, d) {
     if (index < 20) {
         return [(b & c) | (~b & d), 0x5a827999];
@@ -124,33 +148,6 @@ function byteStringToHexString(str) {
     }
     return hex.toLowerCase();
 }
-// x and y decimal, lowest significant digit first
-function addBigInt(x, y) {
-    var sum = '';
-    var len = Math.max(x.length, y.length);
-    for (var i = 0, carry = 0; i < len || carry; i++) {
-        var tmpSum = carry + +(x[i] || 0) + +(y[i] || 0);
-        if (tmpSum >= 10) {
-            carry = 1;
-            sum += tmpSum - 10;
-        }
-        else {
-            carry = 0;
-            sum += tmpSum;
-        }
-    }
-    return sum;
-}
-function numberTimesBigInt(num, b) {
-    var product = '';
-    var bToThePower = b;
-    for (; num !== 0; num = num >>> 1) {
-        if (num & 1)
-            product = addBigInt(product, bToThePower);
-        bToThePower = addBigInt(bToThePower, bToThePower);
-    }
-    return product;
-}
 
 /**
  * @license
@@ -161,42 +158,94 @@ function numberTimesBigInt(num, b) {
  */
 var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function fulfilled(value) { try {
+            step(generator.next(value));
+        }
+        catch (e) {
+            reject(e);
+        } }
+        function rejected(value) { try {
+            step(generator["throw"](value));
+        }
+        catch (e) {
+            reject(e);
+        } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 var __generator$1 = (undefined && undefined.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function () { if (t[0] & 1)
+            throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function () { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
+        if (f)
+            throw new TypeError("Generator is already executing.");
+        while (_)
+            try {
+                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done)
+                    return t;
+                if (y = 0, t)
+                    op = [0, t.value];
+                switch (op[0]) {
+                    case 0:
+                    case 1:
+                        t = op;
+                        break;
+                    case 4:
+                        _.label++;
+                        return { value: op[1], done: false };
+                    case 5:
+                        _.label++;
+                        y = op[1];
+                        op = [0];
+                        continue;
+                    case 7:
+                        op = _.ops.pop();
+                        _.trys.pop();
+                        continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                            _ = 0;
+                            continue;
+                        }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                            _.label = op[1];
+                            break;
+                        }
+                        if (op[0] === 6 && _.label < t[1]) {
+                            _.label = t[1];
+                            t = op;
+                            break;
+                        }
+                        if (t && _.label < t[2]) {
+                            _.label = t[2];
+                            _.ops.push(op);
+                            break;
+                        }
+                        if (t[2])
+                            _.ops.pop();
+                        _.trys.pop();
+                        continue;
+                }
+                op = body.call(thisArg, _);
             }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+            catch (e) {
+                op = [6, e];
+                y = 0;
+            }
+            finally {
+                f = t = 0;
+            }
+        if (op[0] & 5)
+            throw op[1];
+        return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
 var fs$1 = require('fs');
 var path$1 = require('path');
-var NodeFilesystem = /** @class */ (function () {
+var NodeFilesystem = /*@__PURE__*/ (function () {
     function NodeFilesystem(base) {
         this.base = base;
     }
@@ -211,15 +260,20 @@ var NodeFilesystem = /** @class */ (function () {
                     .map(function (entry) { return path$1.posix.join(_path, entry.entry); });
                 return [2 /*return*/, entries.filter(function (entry) { return entry.stats.isDirectory(); })
                         .map(function (entry) { return path$1.posix.join(_path, entry.entry); })
-                        .reduce(function (list, subdir) { return __awaiter$1(_this, void 0, void 0, function () { var _a, _b; return __generator$1(this, function (_c) {
-                        switch (_c.label) {
-                            case 0: return [4 /*yield*/, list];
-                            case 1:
-                                _b = (_a = (_c.sent())).concat;
-                                return [4 /*yield*/, this.list(subdir)];
-                            case 2: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
-                        }
-                    }); }); }, Promise.resolve(files))];
+                        .reduce(function (list, subdir) {
+                        return __awaiter$1(_this, void 0, void 0, function () {
+                            var _a, _b;
+                            return __generator$1(this, function (_c) {
+                                switch (_c.label) {
+                                    case 0: return [4 /*yield*/, list];
+                                    case 1:
+                                        _b = (_a = (_c.sent())).concat;
+                                        return [4 /*yield*/, this.list(subdir)];
+                                    case 2: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
+                                }
+                            });
+                        });
+                    }, Promise.resolve(files))];
             });
         });
     };
@@ -327,3 +381,4 @@ var gen = new Generator(filesystem, baseHref);
 }); })();
 
 }());
+//# sourceMappingURL=ngsw_config.js.map

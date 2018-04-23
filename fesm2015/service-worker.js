@@ -1,8 +1,9 @@
 /**
- * @license Angular v6.0.0-rc.5-60e5507
+ * @license Angular v6.0.0-rc.5+73.sha-ace6440
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
+
 import { isPlatformBrowser } from '@angular/common';
 import { APP_INITIALIZER, ApplicationRef, Inject, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
@@ -237,7 +238,7 @@ class SwPush {
     }
 }
 SwPush.decorators = [
-    { type: Injectable },
+    { type: Injectable }
 ];
 /** @nocollapse */
 SwPush.ctorParameters = () => [
@@ -303,7 +304,7 @@ class SwUpdate {
     }
 }
 SwUpdate.decorators = [
-    { type: Injectable },
+    { type: Injectable }
 ];
 /** @nocollapse */
 SwUpdate.ctorParameters = () => [
@@ -401,7 +402,7 @@ class ServiceWorkerModule {
 ServiceWorkerModule.decorators = [
     { type: NgModule, args: [{
                 providers: [SwPush, SwUpdate],
-            },] },
+            },] }
 ];
 /** @nocollapse */
 ServiceWorkerModule.ctorParameters = () => [];
@@ -442,8 +443,20 @@ ServiceWorkerModule.ctorParameters = () => [];
  * @suppress {checkTypes} checked by tsc
  */
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// This file is not used to build this module. It is only used during editing
+// by the TypeScript language service and during build for verification. `ngc`
+// replaces this file with production index.ts when it rewrites private symbol
+// names.
+
+/**
  * Generated bundle index. Do not edit.
  */
 
-export { ServiceWorkerModule, SwPush, SwUpdate, NgswCommChannel as ɵe, RegistrationOptions as ɵa, SCRIPT as ɵb, ngswAppInitializer as ɵc, ngswCommChannelFactory as ɵd };
+export { NgswCommChannel as ɵangular_packages_service_worker_service_worker_e, RegistrationOptions as ɵangular_packages_service_worker_service_worker_a, SCRIPT as ɵangular_packages_service_worker_service_worker_b, ngswAppInitializer as ɵangular_packages_service_worker_service_worker_c, ngswCommChannelFactory as ɵangular_packages_service_worker_service_worker_d, ServiceWorkerModule, SwPush, SwUpdate };
 //# sourceMappingURL=service-worker.js.map

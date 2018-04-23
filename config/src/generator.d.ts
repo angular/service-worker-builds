@@ -1,3 +1,4 @@
+/// <amd-module name="@angular/service-worker/config/src/generator" />
 import { Filesystem } from './filesystem';
 import { Config } from './in';
 /**
