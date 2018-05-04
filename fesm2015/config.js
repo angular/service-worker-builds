@@ -1,8 +1,9 @@
 /**
- * @license Angular v6.0.0-373a47d
+ * @license Angular v6.0.0+23.sha-5eb9c01
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
+
 import { __awaiter } from 'tslib';
 
 /**
@@ -298,6 +299,18 @@ function joinUrls(a, b) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// This file is not used to build this module. It is only used during editing
+// by the TypeScript language service and during build for verification. `ngc`
+// replaces this file with production index.ts when it rewrites private symbol
+// names.
+
 /**
  * Generated bundle index. Do not edit.
  */

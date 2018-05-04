@@ -1,3 +1,4 @@
+/// <amd-module name="@angular/service-worker/config/src/in" />
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
