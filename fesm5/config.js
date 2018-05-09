@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.0-rc.5+150.sha-08e7efc
+ * @license Angular v6.0.0-rc.5+154.sha-f1e4a15
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -116,18 +116,22 @@ var Generator = /** @class */ (function () {
     }
     Generator.prototype.process = function (config) {
         return __awaiter(this, void 0, void 0, function () {
-            var hashTable, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var unorderedHashTable, assetGroups;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        hashTable = {};
-                        _a = {
-                            configVersion: 1,
-                            appData: config.appData,
-                            index: joinUrls(this.baseHref, config.index)
-                        };
-                        return [4 /*yield*/, this.processAssetGroups(config, hashTable)];
-                    case 1: return [2 /*return*/, (_a.assetGroups = _b.sent(), _a.dataGroups = this.processDataGroups(config), _a.hashTable = hashTable, _a.navigationUrls = processNavigationUrls(this.baseHref, config.navigationUrls), _a)];
+                        unorderedHashTable = {};
+                        return [4 /*yield*/, this.processAssetGroups(config, unorderedHashTable)];
+                    case 1:
+                        assetGroups = _a.sent();
+                        return [2 /*return*/, {
+                                configVersion: 1,
+                                appData: config.appData,
+                                index: joinUrls(this.baseHref, config.index), assetGroups: assetGroups,
+                                dataGroups: this.processDataGroups(config),
+                                hashTable: withOrderedKeys(unorderedHashTable),
+                                navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
+                            }];
                 }
             });
         });
@@ -140,7 +144,7 @@ var Generator = /** @class */ (function () {
                 seenMap = new Set();
                 return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
                         var _this = this;
-                        var fileMatcher, versionedMatcher, allFiles, versionedFiles, plainFiles;
+                        var fileMatcher, versionedMatcher, allFiles, plainFiles, versionedFiles, matchedFiles;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -148,13 +152,13 @@ var Generator = /** @class */ (function () {
                                     versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
                                     return [4 /*yield*/, this.fs.list('/')];
                                 case 1:
-                                    allFiles = (_a.sent());
-                                    versionedFiles = allFiles.filter(versionedMatcher).filter(function (file) { return !seenMap.has(file); });
-                                    versionedFiles.forEach(function (file) { return seenMap.add(file); });
+                                    allFiles = _a.sent();
                                     plainFiles = allFiles.filter(fileMatcher).filter(function (file) { return !seenMap.has(file); });
                                     plainFiles.forEach(function (file) { return seenMap.add(file); });
-                                    // Add the hashes.
-                                    return [4 /*yield*/, __spread(versionedFiles, plainFiles).reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
+                                    versionedFiles = allFiles.filter(versionedMatcher).filter(function (file) { return !seenMap.has(file); });
+                                    versionedFiles.forEach(function (file) { return seenMap.add(file); });
+                                    matchedFiles = __spread(plainFiles, versionedFiles).sort();
+                                    return [4 /*yield*/, matchedFiles.reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
                                             var hash;
                                             return __generator(this, function (_a) {
                                                 switch (_a.label) {
@@ -170,17 +174,12 @@ var Generator = /** @class */ (function () {
                                             });
                                         }); }, Promise.resolve())];
                                 case 2:
-                                    // Add the hashes.
-                                    // Add the hashes.
                                     _a.sent();
                                     return [2 /*return*/, {
                                             name: group.name,
                                             installMode: group.installMode || 'prefetch',
                                             updateMode: group.updateMode || group.installMode || 'prefetch',
-                                            urls: []
-                                                .concat(plainFiles)
-                                                .concat(versionedFiles)
-                                                .map(function (url) { return joinUrls(_this.baseHref, url); }),
+                                            urls: matchedFiles.map(function (url) { return joinUrls(_this.baseHref, url); }),
                                             patterns: (group.resources.urls || []).map(function (url) { return urlToRegex(url, _this.baseHref); }),
                                         }];
                             }
@@ -255,6 +254,11 @@ function joinUrls(a, b) {
         return a + '/' + b;
     }
     return a + b;
+}
+function withOrderedKeys(unorderedObj) {
+    var orderedObj = {};
+    Object.keys(unorderedObj).sort().forEach(function (key) { return orderedObj[key] = unorderedObj[key]; });
+    return orderedObj;
 }
 
 /**
