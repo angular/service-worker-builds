@@ -1,14 +1,11 @@
 /**
- * @license Angular v5.1.0-9e1ef61
- * (c) 2010-2017 Google, Inc. https://angular.io/
+ * @license Angular v6.0.0-rc.5+145.sha-741fa9e
+ * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
-import { __awaiter, __generator } from 'tslib';
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
+import { __awaiter, __generator, __spread } from 'tslib';
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -18,23 +15,19 @@ import { __awaiter, __generator } from 'tslib';
  */
 var PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
 var PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
-/**
- * @param {?} duration
- * @return {?}
- */
 function parseDurationToMs(duration) {
-    var /** @type {?} */ matches = [];
-    var /** @type {?} */ array;
+    var matches = [];
+    var array;
     while ((array = PARSE_TO_PAIRS.exec(duration)) !== null) {
         matches.push(array[0]);
     }
     return matches
         .map(function (match) {
-        var /** @type {?} */ res = PAIR_SPLIT.exec(match);
+        var res = PAIR_SPLIT.exec(match);
         if (res === null) {
             throw new Error("Not a valid duration: " + match);
         }
-        var /** @type {?} */ factor = 0;
+        var factor = 0;
         switch (res[2]) {
             case 'd':
                 factor = 86400000;
@@ -60,17 +53,13 @@ function parseDurationToMs(duration) {
 }
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-var WILD_SINGLE = '[^\\/]+';
+var WILD_SINGLE = '[^\\/]*';
 var WILD_OPEN = '(?:.+\\/)?';
 var TO_ESCAPE = [
     { replace: /\./g, with: '\\.' },
@@ -78,15 +67,11 @@ var TO_ESCAPE = [
     { replace: /\+/g, with: '\\+' },
     { replace: /\*/g, with: WILD_SINGLE },
 ];
-/**
- * @param {?} glob
- * @return {?}
- */
 function globToRegex(glob) {
-    var /** @type {?} */ segments = glob.split('/').reverse();
-    var /** @type {?} */ regex = '';
+    var segments = glob.split('/').reverse();
+    var regex = '';
     while (segments.length > 0) {
-        var /** @type {?} */ segment = /** @type {?} */ ((segments.pop()));
+        var segment = (segments.pop());
         if (segment === '**') {
             if (segments.length > 0) {
                 regex += WILD_OPEN;
@@ -96,7 +81,7 @@ function globToRegex(glob) {
             }
         }
         else {
-            var /** @type {?} */ processed = TO_ESCAPE.reduce(function (segment, escape) { return segment.replace(escape.replace, escape.with); }, segment);
+            var processed = TO_ESCAPE.reduce(function (segment, escape) { return segment.replace(escape.replace, escape.with); }, segment);
             regex += processed;
             if (segments.length > 0) {
                 regex += '\\/';
@@ -107,35 +92,29 @@ function globToRegex(glob) {
 }
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+var DEFAULT_NAVIGATION_URLS = [
+    '/**',
+    '!/**/*.*',
+    '!/**/*__*',
+    '!/**/*__*/**',
+];
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
- * \@experimental
+ * @experimental
  */
 var Generator = /** @class */ (function () {
     function Generator(fs, baseHref) {
         this.fs = fs;
         this.baseHref = baseHref;
     }
-    /**
-     * @param {?} config
-     * @return {?}
-     */
-    Generator.prototype.process = /**
-     * @param {?} config
-     * @return {?}
-     */
-    function (config) {
+    Generator.prototype.process = function (config) {
         return __awaiter(this, void 0, void 0, function () {
             var hashTable, _a;
             return __generator(this, function (_b) {
@@ -144,29 +123,16 @@ var Generator = /** @class */ (function () {
                         hashTable = {};
                         _a = {
                             configVersion: 1,
-                            index: joinUrls(this.baseHref, config.index),
-                            appData: config.appData
+                            appData: config.appData,
+                            index: joinUrls(this.baseHref, config.index)
                         };
                         return [4 /*yield*/, this.processAssetGroups(config, hashTable)];
-                    case 1: return [2 /*return*/, (_a.assetGroups = _b.sent(),
-                            _a.dataGroups = this.processDataGroups(config),
-                            _a.hashTable = hashTable,
-                            _a)];
+                    case 1: return [2 /*return*/, (_a.assetGroups = _b.sent(), _a.dataGroups = this.processDataGroups(config), _a.hashTable = hashTable, _a.navigationUrls = processNavigationUrls(this.baseHref, config.navigationUrls), _a)];
                 }
             });
         });
     };
-    /**
-     * @param {?} config
-     * @param {?} hashTable
-     * @return {?}
-     */
-    Generator.prototype.processAssetGroups = /**
-     * @param {?} config
-     * @param {?} hashTable
-     * @return {?}
-     */
-    function (config, hashTable) {
+    Generator.prototype.processAssetGroups = function (config, hashTable) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             var seenMap;
@@ -174,7 +140,7 @@ var Generator = /** @class */ (function () {
                 seenMap = new Set();
                 return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
                         var _this = this;
-                        var fileMatcher, versionedMatcher, allFiles, versionedFiles, plainFiles, patterns;
+                        var fileMatcher, versionedMatcher, allFiles, versionedFiles, plainFiles;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -188,7 +154,7 @@ var Generator = /** @class */ (function () {
                                     plainFiles = allFiles.filter(fileMatcher).filter(function (file) { return !seenMap.has(file); });
                                     plainFiles.forEach(function (file) { return seenMap.add(file); });
                                     // Add the hashes.
-                                    return [4 /*yield*/, versionedFiles.concat(plainFiles).reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
+                                    return [4 /*yield*/, __spread(versionedFiles, plainFiles).reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
                                             var hash;
                                             return __generator(this, function (_a) {
                                                 switch (_a.label) {
@@ -207,22 +173,15 @@ var Generator = /** @class */ (function () {
                                     // Add the hashes.
                                     // Add the hashes.
                                     _a.sent();
-                                    patterns = (group.resources.urls || [])
-                                        .map(function (glob) {
-                                        return glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                            glob :
-                                            joinUrls(_this.baseHref, glob);
-                                    })
-                                        .map(function (glob) { return globToRegex(glob); });
                                     return [2 /*return*/, {
                                             name: group.name,
                                             installMode: group.installMode || 'prefetch',
                                             updateMode: group.updateMode || group.installMode || 'prefetch',
-                                            urls: (/** @type {?} */ ([]))
+                                            urls: []
                                                 .concat(plainFiles)
                                                 .concat(versionedFiles)
                                                 .map(function (url) { return joinUrls(_this.baseHref, url); }),
-                                            patterns: patterns,
+                                            patterns: (group.resources.urls || []).map(function (url) { return urlToRegex(url, _this.baseHref); }),
                                         }];
                             }
                         });
@@ -230,27 +189,12 @@ var Generator = /** @class */ (function () {
             });
         });
     };
-    /**
-     * @param {?} config
-     * @return {?}
-     */
-    Generator.prototype.processDataGroups = /**
-     * @param {?} config
-     * @return {?}
-     */
-    function (config) {
+    Generator.prototype.processDataGroups = function (config) {
         var _this = this;
         return (config.dataGroups || []).map(function (group) {
-            var /** @type {?} */ patterns = group.urls
-                .map(function (glob) {
-                return glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                    glob :
-                    joinUrls(_this.baseHref, glob);
-            })
-                .map(function (glob) { return globToRegex(glob); });
             return {
                 name: group.name,
-                patterns: patterns,
+                patterns: group.urls.map(function (url) { return urlToRegex(url, _this.baseHref); }),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -261,12 +205,16 @@ var Generator = /** @class */ (function () {
     };
     return Generator;
 }());
-/**
- * @param {?} globs
- * @return {?}
- */
+function processNavigationUrls(baseHref, urls) {
+    if (urls === void 0) { urls = DEFAULT_NAVIGATION_URLS; }
+    return urls.map(function (url) {
+        var positive = !url.startsWith('!');
+        url = positive ? url : url.substr(1);
+        return { positive: positive, regex: "^" + urlToRegex(url, baseHref) + "$" };
+    });
+}
 function globListToMatcher(globs) {
-    var /** @type {?} */ patterns = globs.map(function (pattern) {
+    var patterns = globs.map(function (pattern) {
         if (pattern.startsWith('!')) {
             return {
                 positive: false,
@@ -282,13 +230,8 @@ function globListToMatcher(globs) {
     });
     return function (file) { return matches(file, patterns); };
 }
-/**
- * @param {?} file
- * @param {?} patterns
- * @return {?}
- */
 function matches(file, patterns) {
-    var /** @type {?} */ res = patterns.reduce(function (isMatch, pattern) {
+    var res = patterns.reduce(function (isMatch, pattern) {
         if (pattern.positive) {
             return isMatch || pattern.regex.test(file);
         }
@@ -298,11 +241,12 @@ function matches(file, patterns) {
     }, false);
     return res;
 }
-/**
- * @param {?} a
- * @param {?} b
- * @return {?}
- */
+function urlToRegex(url, baseHref) {
+    if (!url.startsWith('/') && url.indexOf('://') === -1) {
+        url = joinUrls(baseHref, url);
+    }
+    return globToRegex(url);
+}
 function joinUrls(a, b) {
     if (a.endsWith('/') && b.startsWith('/')) {
         return a + b.substr(1);
@@ -314,10 +258,6 @@ function joinUrls(a, b) {
 }
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
@@ -326,9 +266,13 @@ function joinUrls(a, b) {
  */
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
+
 /**
  * Generated bundle index. Do not edit.
  */

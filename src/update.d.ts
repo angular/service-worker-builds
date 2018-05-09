@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { NgswCommChannel, UpdateActivatedEvent, UpdateAvailableEvent } from './low_level';
 /**
  * Subscribe to update notifications from the Service Worker, trigger update

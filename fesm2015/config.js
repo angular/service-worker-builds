@@ -1,8 +1,11 @@
 /**
- * @license Angular v5.1.0-9e1ef61
- * (c) 2010-2017 Google, Inc. https://angular.io/
+ * @license Angular v6.0.0-rc.5+145.sha-741fa9e
+ * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
+
+import { __awaiter } from 'tslib';
+
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
@@ -68,7 +71,7 @@ function parseDurationToMs(duration) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const WILD_SINGLE = '[^\\/]+';
+const WILD_SINGLE = '[^\\/]*';
 const WILD_OPEN = '(?:.+\\/)?';
 const TO_ESCAPE = [
     { replace: /\./g, with: '\\.' },
@@ -104,14 +107,6 @@ function globToRegex(glob) {
     return regex;
 }
 
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
@@ -123,6 +118,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+const DEFAULT_NAVIGATION_URLS = [
+    '/**',
+    '!/**/*.*',
+    '!/**/*__*',
+    '!/**/*__*/**',
+];
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
@@ -146,10 +147,11 @@ class Generator {
             const /** @type {?} */ hashTable = {};
             return {
                 configVersion: 1,
-                index: joinUrls(this.baseHref, config.index),
                 appData: config.appData,
+                index: joinUrls(this.baseHref, config.index),
                 assetGroups: yield this.processAssetGroups(config, hashTable),
                 dataGroups: this.processDataGroups(config), hashTable,
+                navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
             };
         });
     }
@@ -175,12 +177,6 @@ class Generator {
                     const /** @type {?} */ hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
                 }), Promise.resolve());
-                // Figure out the patterns.
-                const /** @type {?} */ patterns = (group.resources.urls || [])
-                    .map(glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                    glob :
-                    joinUrls(this.baseHref, glob))
-                    .map(glob => globToRegex(glob));
                 return {
                     name: group.name,
                     installMode: group.installMode || 'prefetch',
@@ -189,7 +185,7 @@ class Generator {
                         .concat(plainFiles)
                         .concat(versionedFiles)
                         .map(url => joinUrls(this.baseHref, url)),
-                    patterns,
+                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
                 };
             })));
         });
@@ -200,14 +196,9 @@ class Generator {
      */
     processDataGroups(config) {
         return (config.dataGroups || []).map(group => {
-            const /** @type {?} */ patterns = group.urls
-                .map(glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                glob :
-                joinUrls(this.baseHref, glob))
-                .map(glob => globToRegex(glob));
             return {
                 name: group.name,
-                patterns,
+                patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -216,6 +207,18 @@ class Generator {
             };
         });
     }
+}
+/**
+ * @param {?} baseHref
+ * @param {?=} urls
+ * @return {?}
+ */
+function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
+    return urls.map(url => {
+        const /** @type {?} */ positive = !url.startsWith('!');
+        url = positive ? url : url.substr(1);
+        return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
+    });
 }
 /**
  * @param {?} globs
@@ -255,6 +258,17 @@ function matches(file, patterns) {
     return res;
 }
 /**
+ * @param {?} url
+ * @param {?} baseHref
+ * @return {?}
+ */
+function urlToRegex(url, baseHref) {
+    if (!url.startsWith('/') && url.indexOf('://') === -1) {
+        url = joinUrls(baseHref, url);
+    }
+    return globToRegex(url);
+}
+/**
  * @param {?} a
  * @param {?} b
  * @return {?}
@@ -285,6 +299,18 @@ function joinUrls(a, b) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// This file is not used to build this module. It is only used during editing
+// by the TypeScript language service and during build for verification. `ngc`
+// replaces this file with production index.ts when it rewrites private symbol
+// names.
+
 /**
  * Generated bundle index. Do not edit.
  */
