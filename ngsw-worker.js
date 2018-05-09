@@ -2202,10 +2202,10 @@ class Driver {
      */
     assignVersion(event) {
         return __awaiter(this, void 0, void 0, function* () {
-            // First, check whether the event has a client ID. If it does, the version may
+            // First, check whether the event has a (non empty) client ID. If it does, the version may
             // already be associated.
             const clientId = event.clientId;
-            if (clientId !== null) {
+            if (clientId) {
                 // Check if there is an assigned client id.
                 if (this.clientVersionMap.has(clientId)) {
                     // There is an assignment for this client already.
