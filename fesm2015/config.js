@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.0+37.sha-2254ac2
+ * @license Angular v6.0.0+40.sha-f109791
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -144,13 +144,14 @@ class Generator {
      */
     process(config) {
         return __awaiter(this, void 0, void 0, function* () {
-            const /** @type {?} */ hashTable = {};
+            const /** @type {?} */ unorderedHashTable = {};
+            const /** @type {?} */ assetGroups = yield this.processAssetGroups(config, unorderedHashTable);
             return {
                 configVersion: 1,
                 appData: config.appData,
-                index: joinUrls(this.baseHref, config.index),
-                assetGroups: yield this.processAssetGroups(config, hashTable),
-                dataGroups: this.processDataGroups(config), hashTable,
+                index: joinUrls(this.baseHref, config.index), assetGroups,
+                dataGroups: this.processDataGroups(config),
+                hashTable: withOrderedKeys(unorderedHashTable),
                 navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
             };
         });
@@ -166,13 +167,14 @@ class Generator {
             return Promise.all((config.assetGroups || []).map((group) => __awaiter(this, void 0, void 0, function* () {
                 const /** @type {?} */ fileMatcher = globListToMatcher(group.resources.files || []);
                 const /** @type {?} */ versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
-                const /** @type {?} */ allFiles = (yield this.fs.list('/'));
-                const /** @type {?} */ versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
-                versionedFiles.forEach(file => seenMap.add(file));
+                const /** @type {?} */ allFiles = yield this.fs.list('/');
                 const /** @type {?} */ plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
                 plainFiles.forEach(file => seenMap.add(file));
+                const /** @type {?} */ versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
+                versionedFiles.forEach(file => seenMap.add(file));
                 // Add the hashes.
-                yield [...versionedFiles, ...plainFiles].reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
+                const /** @type {?} */ matchedFiles = [...plainFiles, ...versionedFiles].sort();
+                yield matchedFiles.reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
                     yield previous;
                     const /** @type {?} */ hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
@@ -181,10 +183,7 @@ class Generator {
                     name: group.name,
                     installMode: group.installMode || 'prefetch',
                     updateMode: group.updateMode || group.installMode || 'prefetch',
-                    urls: (/** @type {?} */ ([]))
-                        .concat(plainFiles)
-                        .concat(versionedFiles)
-                        .map(url => joinUrls(this.baseHref, url)),
+                    urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
                     patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
                 };
             })));
@@ -281,6 +280,16 @@ function joinUrls(a, b) {
         return a + '/' + b;
     }
     return a + b;
+}
+/**
+ * @template T
+ * @param {?} unorderedObj
+ * @return {?}
+ */
+function withOrderedKeys(unorderedObj) {
+    const /** @type {?} */ orderedObj = /** @type {?} */ ({});
+    Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
+    return orderedObj;
 }
 
 /**
