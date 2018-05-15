@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.0-rc.5+184.sha-e5e5c24
+ * @license Angular v6.0.0-rc.5+185.sha-5cf82f8
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -421,8 +421,6 @@ var ServiceWorkerModule = /** @class */ (function () {
                     providers: [SwPush, SwUpdate],
                 },] }
     ];
-    /** @nocollapse */
-    ServiceWorkerModule.ctorParameters = function () { return []; };
     return ServiceWorkerModule;
 }());
 

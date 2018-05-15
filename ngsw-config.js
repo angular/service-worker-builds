@@ -245,7 +245,7 @@ var __generator$1 = (undefined && undefined.__generator) || function (thisArg, b
 };
 var fs$1 = require('fs');
 var path$1 = require('path');
-var NodeFilesystem = /*@__PURE__*/ (function () {
+var NodeFilesystem = /** @class */ /*@__PURE__*/ (function () {
     function NodeFilesystem(base) {
         this.base = base;
     }
