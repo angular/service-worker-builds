@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.0+61.sha-ad6052e
+ * @license Angular v6.0.1+12.sha-c6b618d
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -148,6 +148,11 @@ var Generator = /** @class */ (function () {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
+                                    if (group.resources.versionedFiles) {
+                                        console.warn("Asset-group '" + group.name + "' in 'ngsw-config.json' uses the 'versionedFiles' option.\n" +
+                                            'As of v6 \'versionedFiles\' and \'files\' options have the same behavior. ' +
+                                            'Use \'files\' instead.');
+                                    }
                                     fileMatcher = globListToMatcher(group.resources.files || []);
                                     versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
                                     return [4 /*yield*/, this.fs.list('/')];

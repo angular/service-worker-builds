@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.0+61.sha-ad6052e
+ * @license Angular v6.0.1+12.sha-c6b618d
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -165,6 +165,11 @@ class Generator {
         return __awaiter(this, void 0, void 0, function* () {
             const /** @type {?} */ seenMap = new Set();
             return Promise.all((config.assetGroups || []).map((group) => __awaiter(this, void 0, void 0, function* () {
+                if (group.resources.versionedFiles) {
+                    console.warn(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option.\n` +
+                        'As of v6 \'versionedFiles\' and \'files\' options have the same behavior. ' +
+                        'Use \'files\' instead.');
+                }
                 const /** @type {?} */ fileMatcher = globListToMatcher(group.resources.files || []);
                 const /** @type {?} */ versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
                 const /** @type {?} */ allFiles = yield this.fs.list('/');
