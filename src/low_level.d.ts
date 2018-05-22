@@ -28,6 +28,6 @@ export interface TypedEvent {
 */
 export declare class NgswCommChannel {
     private serviceWorker;
-    constructor(serviceWorker: ServiceWorkerContainer | undefined, platformId: string);
+    constructor(serviceWorker: ServiceWorkerContainer | undefined);
     readonly isEnabled: boolean;
 }
