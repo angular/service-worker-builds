@@ -1,11 +1,11 @@
 /**
- * @license Angular v6.0.2+19.sha-23f2a70
+ * @license Angular v6.0.2+21.sha-0ee5b7e
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
 import { isPlatformBrowser } from '@angular/common';
-import { APP_INITIALIZER, ApplicationRef, Inject, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
+import { APP_INITIALIZER, ApplicationRef, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
 import { NEVER, Subject, concat, defer, fromEvent, merge, of, throwError } from 'rxjs';
 
@@ -52,12 +52,10 @@ function errorObservable(message) {
 class NgswCommChannel {
     /**
      * @param {?} serviceWorker
-     * @param {?} platformId
      */
-    constructor(serviceWorker, platformId) {
+    constructor(serviceWorker) {
         this.serviceWorker = serviceWorker;
-        if (!serviceWorker || !isPlatformBrowser(platformId)) {
-            this.serviceWorker = undefined;
+        if (!serviceWorker) {
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
@@ -144,11 +142,6 @@ class NgswCommChannel {
      */
     get isEnabled() { return !!this.serviceWorker; }
 }
-/** @nocollapse */
-NgswCommChannel.ctorParameters = () => [
-    null,
-    { type: undefined, decorators: [{ type: Inject, args: [PLATFORM_ID,] },] },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -363,7 +356,8 @@ function ngswAppInitializer(injector, script, options, platformId) {
  * @return {?}
  */
 function ngswCommChannelFactory(opts, platformId) {
-    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
+    return new NgswCommChannel(isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
+        undefined);
 }
 /**
  * \@experimental
