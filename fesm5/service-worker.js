@@ -1,11 +1,11 @@
 /**
- * @license Angular v6.0.0-rc.5+78.sha-e1c4930
+ * @license Angular v6.0.0-rc.5+215.sha-23a98b9
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
 import { isPlatformBrowser } from '@angular/common';
-import { APP_INITIALIZER, ApplicationRef, Inject, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
+import { APP_INITIALIZER, ApplicationRef, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
 import { __assign } from 'tslib';
 import { NEVER, Subject, concat, defer, fromEvent, merge, of, throwError } from 'rxjs';
@@ -25,10 +25,9 @@ function errorObservable(message) {
  * @experimental
 */
 var NgswCommChannel = /** @class */ (function () {
-    function NgswCommChannel(serviceWorker, platformId) {
+    function NgswCommChannel(serviceWorker) {
         this.serviceWorker = serviceWorker;
-        if (!serviceWorker || !isPlatformBrowser(platformId)) {
-            this.serviceWorker = undefined;
+        if (!serviceWorker) {
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
@@ -147,11 +146,6 @@ var NgswCommChannel = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    /** @nocollapse */
-    NgswCommChannel.ctorParameters = function () { return [
-        null,
-        { type: undefined, decorators: [{ type: Inject, args: [PLATFORM_ID,] },] },
-    ]; };
     return NgswCommChannel;
 }());
 
@@ -343,7 +337,8 @@ function ngswAppInitializer(injector, script, options, platformId) {
     return initializer;
 }
 function ngswCommChannelFactory(opts, platformId) {
-    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
+    return new NgswCommChannel(isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
+        undefined);
 }
 /**
  * @experimental
@@ -395,8 +390,6 @@ var ServiceWorkerModule = /** @class */ (function () {
                     providers: [SwPush, SwUpdate],
                 },] }
     ];
-    /** @nocollapse */
-    ServiceWorkerModule.ctorParameters = function () { return []; };
     return ServiceWorkerModule;
 }());
 

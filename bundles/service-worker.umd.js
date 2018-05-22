@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.0-rc.5+78.sha-e1c4930
+ * @license Angular v6.0.0-rc.5+215.sha-23a98b9
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -51,10 +51,9 @@ function errorObservable(message) {
  * @experimental
 */
 var NgswCommChannel = /** @class */ (function () {
-    function NgswCommChannel(serviceWorker, platformId) {
+    function NgswCommChannel(serviceWorker) {
         this.serviceWorker = serviceWorker;
-        if (!serviceWorker || !common.isPlatformBrowser(platformId)) {
-            this.serviceWorker = undefined;
+        if (!serviceWorker) {
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
@@ -173,11 +172,6 @@ var NgswCommChannel = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    /** @nocollapse */
-    NgswCommChannel.ctorParameters = function () { return [
-        null,
-        { type: undefined, decorators: [{ type: core.Inject, args: [core.PLATFORM_ID,] },] },
-    ]; };
     return NgswCommChannel;
 }());
 
@@ -369,7 +363,8 @@ function ngswAppInitializer(injector, script, options, platformId) {
     return initializer;
 }
 function ngswCommChannelFactory(opts, platformId) {
-    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
+    return new NgswCommChannel(common.isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
+        undefined);
 }
 /**
  * @experimental
@@ -421,8 +416,6 @@ var ServiceWorkerModule = /** @class */ (function () {
                     providers: [SwPush, SwUpdate],
                 },] }
     ];
-    /** @nocollapse */
-    ServiceWorkerModule.ctorParameters = function () { return []; };
     return ServiceWorkerModule;
 }());
 
