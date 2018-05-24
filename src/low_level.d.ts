@@ -1,3 +1,4 @@
+export declare const ERR_SW_NOT_SUPPORTED = "Service workers are disabled or not supported by this browser";
 export interface Version {
     hash: string;
     appData?: Object;
@@ -19,9 +20,14 @@ export interface UpdateActivatedEvent {
     current: Version;
 }
 export declare type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent;
+export interface TypedEvent {
+    type: string;
+}
 /**
  * @experimental
 */
 export declare class NgswCommChannel {
+    private serviceWorker;
     constructor(serviceWorker: ServiceWorkerContainer | undefined);
+    readonly isEnabled: boolean;
 }
