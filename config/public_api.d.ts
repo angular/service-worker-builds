@@ -1,3 +1,4 @@
+/// <amd-module name="@angular/service-worker/config/public_api" />
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.

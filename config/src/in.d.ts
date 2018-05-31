@@ -1,3 +1,4 @@
+/// <amd-module name="@angular/service-worker/config/src/in" />
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -23,6 +24,7 @@ export interface Config {
     index: string;
     assetGroups?: AssetGroup[];
     dataGroups?: DataGroup[];
+    navigationUrls?: string[];
 }
 /**
  * Configuration for a particular group of assets.
@@ -35,6 +37,8 @@ export interface AssetGroup {
     updateMode?: 'prefetch' | 'lazy';
     resources: {
         files?: Glob[];
+        /** @deprecated As of v6 `versionedFiles` and `files` options have the same behavior. Use
+           `files` instead. */
         versionedFiles?: Glob[];
         urls?: Glob[];
     };

@@ -1,6 +1,6 @@
 /**
  * Generated bundle index. Do not edit.
  */
-export * from './public_api';
-export { NgswCommChannel as ɵe } from './src/low_level';
-export { RegistrationOptions as ɵa, SCRIPT as ɵb, ngswAppInitializer as ɵc, ngswCommChannelFactory as ɵd } from './src/module';
+export * from './index';
+export { NgswCommChannel as ɵangular_packages_service_worker_service_worker_e } from './src/low_level';
+export { RegistrationOptions as ɵangular_packages_service_worker_service_worker_a, SCRIPT as ɵangular_packages_service_worker_service_worker_b, ngswAppInitializer as ɵangular_packages_service_worker_service_worker_c, ngswCommChannelFactory as ɵangular_packages_service_worker_service_worker_d } from './src/module';

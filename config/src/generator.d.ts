@@ -1,3 +1,4 @@
+/// <amd-module name="@angular/service-worker/config/src/generator" />
 import { Filesystem } from './filesystem';
 import { Config } from './in';
 /**
@@ -13,3 +14,7 @@ export declare class Generator {
     private processAssetGroups(config, hashTable);
     private processDataGroups(config);
 }
+export declare function processNavigationUrls(baseHref: string, urls?: string[]): {
+    positive: boolean;
+    regex: string;
+}[];

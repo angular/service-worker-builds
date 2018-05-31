@@ -20,11 +20,14 @@ export interface UpdateActivatedEvent {
     current: Version;
 }
 export declare type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent;
+export interface TypedEvent {
+    type: string;
+}
 /**
  * @experimental
 */
 export declare class NgswCommChannel {
     private serviceWorker;
-    constructor(serviceWorker: ServiceWorkerContainer | undefined, platformId: string);
+    constructor(serviceWorker: ServiceWorkerContainer | undefined);
     readonly isEnabled: boolean;
 }
