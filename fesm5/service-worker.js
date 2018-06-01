@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.3+49.sha-2991b1b
+ * @license Angular v6.0.3+50.sha-d69ba73
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -48,13 +48,7 @@ var NgswCommChannel = /** @class */ (function () {
     /**
      * @internal
      */
-    /**
-       * @internal
-       */
-    NgswCommChannel.prototype.postMessage = /**
-       * @internal
-       */
-    function (action, payload) {
+    NgswCommChannel.prototype.postMessage = function (action, payload) {
         return this.worker
             .pipe(take(1), tap(function (sw) {
             sw.postMessage(__assign({ action: action }, payload));
@@ -65,13 +59,7 @@ var NgswCommChannel = /** @class */ (function () {
     /**
      * @internal
      */
-    /**
-       * @internal
-       */
-    NgswCommChannel.prototype.postMessageWithStatus = /**
-       * @internal
-       */
-    function (type, payload, nonce) {
+    NgswCommChannel.prototype.postMessageWithStatus = function (type, payload, nonce) {
         var waitForStatus = this.waitForStatus(nonce);
         var postMessage = this.postMessage(type, payload);
         return Promise.all([waitForStatus, postMessage]).then(function () { return undefined; });
@@ -79,29 +67,13 @@ var NgswCommChannel = /** @class */ (function () {
     /**
      * @internal
      */
-    /**
-       * @internal
-       */
-    NgswCommChannel.prototype.generateNonce = /**
-       * @internal
-       */
-    function () { return Math.round(Math.random() * 10000000); };
+    NgswCommChannel.prototype.generateNonce = function () { return Math.round(Math.random() * 10000000); };
     /**
      * @internal
      */
     // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
     // types flow correctly
-    /**
-       * @internal
-       */
-    // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
-    // types flow correctly
-    NgswCommChannel.prototype.eventsOfType = /**
-       * @internal
-       */
-    // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
-    // types flow correctly
-    function (type) {
+    NgswCommChannel.prototype.eventsOfType = function (type) {
         return this.events.pipe(filter(function (event) { return event.type === type; }));
     };
     /**
@@ -109,35 +81,19 @@ var NgswCommChannel = /** @class */ (function () {
      */
     // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
     // types flow correctly
-    /**
-       * @internal
-       */
-    // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
-    // types flow correctly
-    NgswCommChannel.prototype.nextEventOfType = /**
-       * @internal
-       */
-    // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
-    // types flow correctly
-    function (type) {
+    NgswCommChannel.prototype.nextEventOfType = function (type) {
         return (this.eventsOfType(type).pipe(take(1)));
     };
     /**
      * @internal
      */
-    /**
-       * @internal
-       */
-    NgswCommChannel.prototype.waitForStatus = /**
-       * @internal
-       */
-    function (nonce) {
+    NgswCommChannel.prototype.waitForStatus = function (nonce) {
         return this.eventsOfType('STATUS')
             .pipe(filter(function (event) { return event.nonce === nonce; }), take(1), map(function (event) {
             if (event.status) {
                 return undefined;
             }
-            throw new Error((event.error));
+            throw new Error(event.error);
         }))
             .toPromise();
     };
@@ -180,11 +136,7 @@ var SwPush = /** @class */ (function () {
          * Returns true if the Service Worker is enabled (supported by the browser and enabled via
          * ServiceWorkerModule).
          */
-        get: /**
-           * Returns true if the Service Worker is enabled (supported by the browser and enabled via
-           * ServiceWorkerModule).
-           */
-        function () { return this.sw.isEnabled; },
+        get: function () { return this.sw.isEnabled; },
         enumerable: true,
         configurable: true
     });
@@ -235,7 +187,7 @@ var SwPush = /** @class */ (function () {
     ];
     /** @nocollapse */
     SwPush.ctorParameters = function () { return [
-        { type: NgswCommChannel, },
+        { type: NgswCommChannel }
     ]; };
     return SwPush;
 }());
@@ -269,11 +221,7 @@ var SwUpdate = /** @class */ (function () {
          * Returns true if the Service Worker is enabled (supported by the browser and enabled via
          * ServiceWorkerModule).
          */
-        get: /**
-           * Returns true if the Service Worker is enabled (supported by the browser and enabled via
-           * ServiceWorkerModule).
-           */
-        function () { return this.sw.isEnabled; },
+        get: function () { return this.sw.isEnabled; },
         enumerable: true,
         configurable: true
     });
@@ -296,7 +244,7 @@ var SwUpdate = /** @class */ (function () {
     ];
     /** @nocollapse */
     SwUpdate.ctorParameters = function () { return [
-        { type: NgswCommChannel, },
+        { type: NgswCommChannel }
     ]; };
     return SwUpdate;
 }());
@@ -352,19 +300,7 @@ var ServiceWorkerModule = /** @class */ (function () {
      * If `enabled` is set to `false` in the given options, the module will behave as if service
      * workers are not supported by the browser, and the service worker will not be registered.
      */
-    /**
-       * Register the given Angular Service Worker script.
-       *
-       * If `enabled` is set to `false` in the given options, the module will behave as if service
-       * workers are not supported by the browser, and the service worker will not be registered.
-       */
-    ServiceWorkerModule.register = /**
-       * Register the given Angular Service Worker script.
-       *
-       * If `enabled` is set to `false` in the given options, the module will behave as if service
-       * workers are not supported by the browser, and the service worker will not be registered.
-       */
-    function (script, opts) {
+    ServiceWorkerModule.register = function (script, opts) {
         if (opts === void 0) { opts = {}; }
         return {
             ngModule: ServiceWorkerModule,
@@ -390,8 +326,6 @@ var ServiceWorkerModule = /** @class */ (function () {
                     providers: [SwPush, SwUpdate],
                 },] }
     ];
-    /** @nocollapse */
-    ServiceWorkerModule.ctorParameters = function () { return []; };
     return ServiceWorkerModule;
 }());
 
@@ -402,6 +336,13 @@ var ServiceWorkerModule = /** @class */ (function () {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+* @license
+* Copyright Google Inc. All Rights Reserved.
+*
+* Use of this source code is governed by an MIT-style license that can be
+* found in the LICENSE file at https://angular.io/license
+*/
 
 /**
  * @license
@@ -409,6 +350,11 @@ var ServiceWorkerModule = /** @class */ (function () {
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * @module
+ * @description
+ * Entry point for all public APIs of this package.
  */
 
 // This file only reexports content of the `src` folder. Keep it that way.
@@ -420,6 +366,10 @@ var ServiceWorkerModule = /** @class */ (function () {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+// This file is not used to build this module. It is only used during editing
+// by the TypeScript language service and during build for verification. `ngc`
+// replaces this file with production index.ts when it rewrites private symbol
+// names.
 
 /**
  * Generated bundle index. Do not edit.
