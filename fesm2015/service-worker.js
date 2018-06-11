@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.0+34.sha-8dd99ac
+ * @license Angular v6.1.0-beta.0+38.sha-3ed2d75
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -191,7 +191,7 @@ class SwPush {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
         const /** @type {?} */ pushOptions = { userVisibleOnly: true };
-        let /** @type {?} */ key = atob(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
+        let /** @type {?} */ key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
         let /** @type {?} */ applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
         for (let /** @type {?} */ i = 0; i < key.length; i++) {
             applicationServerKey[i] = key.charCodeAt(i);
@@ -211,24 +211,24 @@ class SwPush {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ unsubscribe = this.subscription.pipe(switchMap((sub) => {
-            if (sub !== null) {
-                return sub.unsubscribe().then(success => {
-                    if (success) {
-                        this.subscriptionChanges.next(null);
-                        return undefined;
-                    }
-                    else {
-                        throw new Error('Unsubscribe failed!');
-                    }
-                });
-            }
-            else {
+        const /** @type {?} */ doUnsubscribe = (sub) => {
+            if (sub === null) {
                 throw new Error('Not subscribed to push notifications.');
             }
-        }));
-        return unsubscribe.pipe(take(1)).toPromise();
+            return sub.unsubscribe().then(success => {
+                if (!success) {
+                    throw new Error('Unsubscribe failed!');
+                }
+                this.subscriptionChanges.next(null);
+            });
+        };
+        return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
     }
+    /**
+     * @param {?} input
+     * @return {?}
+     */
+    decodeBase64(input) { return atob(input); }
 }
 SwPush.decorators = [
     { type: Injectable }
