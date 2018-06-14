@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.0+30.sha-29eb24b
+ * @license Angular v6.1.0-beta.1+15.sha-e6516b0
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -172,7 +172,7 @@ var SwPush = /** @class */ (function () {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
         var pushOptions = { userVisibleOnly: true };
-        var key = atob(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
+        var key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
         var applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
         for (var i = 0; i < key.length; i++) {
             applicationServerKey[i] = key.charCodeAt(i);
@@ -190,24 +190,20 @@ var SwPush = /** @class */ (function () {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        var unsubscribe = this.subscription.pipe(operators.switchMap(function (sub) {
-            if (sub !== null) {
-                return sub.unsubscribe().then(function (success) {
-                    if (success) {
-                        _this.subscriptionChanges.next(null);
-                        return undefined;
-                    }
-                    else {
-                        throw new Error('Unsubscribe failed!');
-                    }
-                });
-            }
-            else {
+        var doUnsubscribe = function (sub) {
+            if (sub === null) {
                 throw new Error('Not subscribed to push notifications.');
             }
-        }));
-        return unsubscribe.pipe(operators.take(1)).toPromise();
+            return sub.unsubscribe().then(function (success) {
+                if (!success) {
+                    throw new Error('Unsubscribe failed!');
+                }
+                _this.subscriptionChanges.next(null);
+            });
+        };
+        return this.subscription.pipe(operators.take(1), operators.switchMap(doUnsubscribe)).toPromise();
     };
+    SwPush.prototype.decodeBase64 = function (input) { return atob(input); };
     SwPush.decorators = [
         { type: core.Injectable }
     ];
