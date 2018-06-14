@@ -21,4 +21,5 @@ export declare class SwPush {
         serverPublicKey: string;
     }): Promise<PushSubscription>;
     unsubscribe(): Promise<void>;
+    private decodeBase64(input);
 }
