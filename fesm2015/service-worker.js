@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.3+29.sha-0c3738a
+ * @license Angular v6.1.0-beta.3+35.sha-b6af870
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -229,6 +229,7 @@ SwUpdate = __decorate([
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+var ServiceWorkerModule_1;
 class RegistrationOptions {
 }
 const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
@@ -294,7 +295,6 @@ ServiceWorkerModule = ServiceWorkerModule_1 = __decorate([
         providers: [SwPush, SwUpdate],
     })
 ], ServiceWorkerModule);
-var ServiceWorkerModule_1;
 
 /**
  * @license
