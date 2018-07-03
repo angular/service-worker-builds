@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.3+29.sha-0c3738a
+ * @license Angular v6.1.0-beta.3+35.sha-b6af870
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -11,7 +11,7 @@ import { NEVER, Subject, concat, defer, fromEvent, merge, of, throwError } from 
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -20,6 +20,7 @@ import { NEVER, Subject, concat, defer, fromEvent, merge, of, throwError } from 
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** @type {?} */
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 /**
  * @record
@@ -59,16 +60,24 @@ class NgswCommChannel {
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
-            const /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
-            const /** @type {?} */ controllerChanges = /** @type {?} */ ((controllerChangeEvents.pipe(map(() => serviceWorker.controller))));
-            const /** @type {?} */ currentController = /** @type {?} */ ((defer(() => of(serviceWorker.controller))));
-            const /** @type {?} */ controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
+            /** @type {?} */
+            const controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
+            /** @type {?} */
+            const controllerChanges = /** @type {?} */ ((controllerChangeEvents.pipe(map(() => serviceWorker.controller))));
+            /** @type {?} */
+            const currentController = /** @type {?} */ ((defer(() => of(serviceWorker.controller))));
+            /** @type {?} */
+            const controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
             this.worker = /** @type {?} */ ((controllerWithChanges.pipe(filter((c) => !!c))));
             this.registration = /** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))));
-            const /** @type {?} */ rawEvents = fromEvent(serviceWorker, 'message');
-            const /** @type {?} */ rawEventPayload = rawEvents.pipe(map((event) => event.data));
-            const /** @type {?} */ eventsUnconnected = (rawEventPayload.pipe(filter((event) => !!event && !!(/** @type {?} */ (event))['type'])));
-            const /** @type {?} */ events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
+            /** @type {?} */
+            const rawEvents = fromEvent(serviceWorker, 'message');
+            /** @type {?} */
+            const rawEventPayload = rawEvents.pipe(map((event) => event.data));
+            /** @type {?} */
+            const eventsUnconnected = (rawEventPayload.pipe(filter((event) => !!event && !!(/** @type {?} */ (event))['type'])));
+            /** @type {?} */
+            const events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
             this.events = events;
             events.connect();
         }
@@ -95,8 +104,10 @@ class NgswCommChannel {
      * @return {?}
      */
     postMessageWithStatus(type, payload, nonce) {
-        const /** @type {?} */ waitForStatus = this.waitForStatus(nonce);
-        const /** @type {?} */ postMessage = this.postMessage(type, payload);
+        /** @type {?} */
+        const waitForStatus = this.waitForStatus(nonce);
+        /** @type {?} */
+        const postMessage = this.postMessage(type, payload);
         return Promise.all([waitForStatus, postMessage]).then(() => undefined);
     }
     /**
@@ -145,7 +156,7 @@ class NgswCommChannel {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -173,7 +184,8 @@ class SwPush {
         }
         this.messages = this.sw.eventsOfType('PUSH').pipe(map((message) => message.data));
         this.pushManager = this.sw.registration.pipe(map((registration) => { return registration.pushManager; }));
-        const /** @type {?} */ workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription().then(sub => { return sub; })));
+        /** @type {?} */
+        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription().then(sub => { return sub; })));
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
@@ -190,10 +202,13 @@ class SwPush {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ pushOptions = { userVisibleOnly: true };
-        let /** @type {?} */ key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
-        let /** @type {?} */ applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
-        for (let /** @type {?} */ i = 0; i < key.length; i++) {
+        /** @type {?} */
+        const pushOptions = { userVisibleOnly: true };
+        /** @type {?} */
+        let key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
+        /** @type {?} */
+        let applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
+        for (let i = 0; i < key.length; i++) {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
@@ -211,7 +226,8 @@ class SwPush {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ doUnsubscribe = (sub) => {
+        /** @type {?} */
+        const doUnsubscribe = (sub) => {
             if (sub === null) {
                 throw new Error('Not subscribed to push notifications.');
             }
@@ -240,7 +256,7 @@ SwPush.ctorParameters = () => [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -282,7 +298,8 @@ class SwUpdate {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ statusNonce = this.sw.generateNonce();
+        /** @type {?} */
+        const statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', { statusNonce }, statusNonce);
     }
     /**
@@ -292,7 +309,8 @@ class SwUpdate {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ statusNonce = this.sw.generateNonce();
+        /** @type {?} */
+        const statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce }, statusNonce);
     }
 }
@@ -306,7 +324,7 @@ SwUpdate.ctorParameters = () => [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -320,6 +338,7 @@ SwUpdate.ctorParameters = () => [
  */
 class RegistrationOptions {
 }
+/** @type {?} */
 const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
 /**
  * @param {?} injector
@@ -329,13 +348,16 @@ const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
  * @return {?}
  */
 function ngswAppInitializer(injector, script, options, platformId) {
-    const /** @type {?} */ initializer = () => {
-        const /** @type {?} */ app = injector.get(ApplicationRef);
+    /** @type {?} */
+    const initializer = () => {
+        /** @type {?} */
+        const app = injector.get(ApplicationRef);
         if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
             options.enabled !== false)) {
             return;
         }
-        const /** @type {?} */ whenStable = app.isStable.pipe(filter((stable) => !!stable), take(1)).toPromise();
+        /** @type {?} */
+        const whenStable = app.isStable.pipe(filter((stable) => !!stable), take(1)).toPromise();
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
         // becomes active. This allows the SW to initialize itself even if there is no application
         // traffic.
@@ -401,7 +423,7 @@ ServiceWorkerModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -413,7 +435,7 @@ ServiceWorkerModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -432,7 +454,7 @@ ServiceWorkerModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * @license

@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 export declare const ERR_SW_NOT_SUPPORTED = "Service workers are disabled or not supported by this browser";
 export interface Version {
     hash: string;

@@ -49,12 +49,13 @@ function sha1Binary(buffer) {
     return _sha1(words32, buffer.byteLength * 8);
 }
 function _sha1(words32, len) {
+    var _a, _b;
     var w = new Array(80);
-    var _a = __read([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0], 5), a = _a[0], b = _a[1], c = _a[2], d = _a[3], e = _a[4];
+    var _c = __read([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0], 5), a = _c[0], b = _c[1], c = _c[2], d = _c[3], e = _c[4];
     words32[len >> 5] |= 0x80 << (24 - len % 32);
     words32[((len + 64 >> 9) << 4) + 15] = len;
     for (var i = 0; i < words32.length; i += 16) {
-        var _b = __read([a, b, c, d, e], 5), h0 = _b[0], h1 = _b[1], h2 = _b[2], h3 = _b[3], h4 = _b[4];
+        var _d = __read([a, b, c, d, e], 5), h0 = _d[0], h1 = _d[1], h2 = _d[2], h3 = _d[3], h4 = _d[4];
         for (var j = 0; j < 80; j++) {
             if (j < 16) {
                 w[j] = words32[i + j];
@@ -62,14 +63,13 @@ function _sha1(words32, len) {
             else {
                 w[j] = rol32(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
             }
-            var _c = __read(fk(j, b, c, d), 2), f = _c[0], k = _c[1];
+            var _e = __read(fk(j, b, c, d), 2), f = _e[0], k = _e[1];
             var temp = [rol32(a, 5), f, e, k, w[j]].reduce(add32);
-            _d = __read([d, c, rol32(b, 30), a, temp], 5), e = _d[0], d = _d[1], c = _d[2], b = _d[3], a = _d[4];
+            _a = __read([d, c, rol32(b, 30), a, temp], 5), e = _a[0], d = _a[1], c = _a[2], b = _a[3], a = _a[4];
         }
-        _e = __read([add32(a, h0), add32(b, h1), add32(c, h2), add32(d, h3), add32(e, h4)], 5), a = _e[0], b = _e[1], c = _e[2], d = _e[3], e = _e[4];
+        _b = __read([add32(a, h0), add32(b, h1), add32(c, h2), add32(d, h3), add32(e, h4)], 5), a = _b[0], b = _b[1], c = _b[2], d = _b[3], e = _b[4];
     }
     return byteStringToHexString(words32ToByteString([a, b, c, d, e]));
-    var _d, _e;
 }
 function add32(a, b) {
     return add32to64(a, b)[1];
@@ -184,10 +184,10 @@ var __generator$1 = (undefined && undefined.__generator) || function (thisArg, b
             throw new TypeError("Generator is already executing.");
         while (_)
             try {
-                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done)
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
                     return t;
                 if (y = 0, t)
-                    op = [0, t.value];
+                    op = [op[0] & 2, t.value];
                 switch (op[0]) {
                     case 0:
                     case 1:
@@ -251,8 +251,8 @@ var NodeFilesystem = /** @class */ /*@__PURE__*/ (function () {
     }
     NodeFilesystem.prototype.list = function (_path) {
         return __awaiter$1(this, void 0, void 0, function () {
-            var _this = this;
             var dir, entries, files;
+            var _this = this;
             return __generator$1(this, function (_a) {
                 dir = this.canonical(_path);
                 entries = fs$1.readdirSync(dir).map(function (entry) { return ({ entry: entry, stats: fs$1.statSync(path$1.join(dir, entry)) }); });
@@ -345,10 +345,10 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
             throw new TypeError("Generator is already executing.");
         while (_)
             try {
-                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done)
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
                     return t;
                 if (y = 0, t)
-                    op = [0, t.value];
+                    op = [op[0] & 2, t.value];
                 switch (op[0]) {
                     case 0:
                     case 1:
