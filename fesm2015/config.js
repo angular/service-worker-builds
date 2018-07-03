@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.3+30.sha-e3064d5
+ * @license Angular v6.1.0-beta.3+29.sha-0c3738a
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -8,7 +8,7 @@ import { __awaiter } from 'tslib';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes} checked by tsc
  */
 /**
  * @license
@@ -17,31 +17,25 @@ import { __awaiter } from 'tslib';
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** @type {?} */
 const PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
-/** @type {?} */
 const PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
 /**
  * @param {?} duration
  * @return {?}
  */
 function parseDurationToMs(duration) {
-    /** @type {?} */
-    const matches = [];
-    /** @type {?} */
-    let array;
+    const /** @type {?} */ matches = [];
+    let /** @type {?} */ array;
     while ((array = PARSE_TO_PAIRS.exec(duration)) !== null) {
         matches.push(array[0]);
     }
     return matches
         .map(match => {
-        /** @type {?} */
-        const res = PAIR_SPLIT.exec(match);
+        const /** @type {?} */ res = PAIR_SPLIT.exec(match);
         if (res === null) {
             throw new Error(`Not a valid duration: ${match}`);
         }
-        /** @type {?} */
-        let factor = 0;
+        let /** @type {?} */ factor = 0;
         switch (res[2]) {
             case 'd':
                 factor = 86400000;
@@ -68,7 +62,7 @@ function parseDurationToMs(duration) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes} checked by tsc
  */
 /**
  * @license
@@ -77,11 +71,8 @@ function parseDurationToMs(duration) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** @type {?} */
 const WILD_SINGLE = '[^\\/]*';
-/** @type {?} */
 const WILD_OPEN = '(?:.+\\/)?';
-/** @type {?} */
 const TO_ESCAPE = [
     { replace: /\./g, with: '\\.' },
     { replace: /\?/g, with: '\\?' },
@@ -93,13 +84,10 @@ const TO_ESCAPE = [
  * @return {?}
  */
 function globToRegex(glob) {
-    /** @type {?} */
-    const segments = glob.split('/').reverse();
-    /** @type {?} */
-    let regex = '';
+    const /** @type {?} */ segments = glob.split('/').reverse();
+    let /** @type {?} */ regex = '';
     while (segments.length > 0) {
-        /** @type {?} */
-        const segment = /** @type {?} */ ((segments.pop()));
+        const /** @type {?} */ segment = /** @type {?} */ ((segments.pop()));
         if (segment === '**') {
             if (segments.length > 0) {
                 regex += WILD_OPEN;
@@ -109,8 +97,7 @@ function globToRegex(glob) {
             }
         }
         else {
-            /** @type {?} */
-            const processed = TO_ESCAPE.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
+            const /** @type {?} */ processed = TO_ESCAPE.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
             regex += processed;
             if (segments.length > 0) {
                 regex += '\\/';
@@ -122,7 +109,7 @@ function globToRegex(glob) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes} checked by tsc
  */
 /**
  * @license
@@ -131,7 +118,6 @@ function globToRegex(glob) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** @type {?} */
 const DEFAULT_NAVIGATION_URLS = [
     '/**',
     '!/**/*.*',
@@ -158,10 +144,8 @@ class Generator {
      */
     process(config) {
         return __awaiter(this, void 0, void 0, function* () {
-            /** @type {?} */
-            const unorderedHashTable = {};
-            /** @type {?} */
-            const assetGroups = yield this.processAssetGroups(config, unorderedHashTable);
+            const /** @type {?} */ unorderedHashTable = {};
+            const /** @type {?} */ assetGroups = yield this.processAssetGroups(config, unorderedHashTable);
             return {
                 configVersion: 1,
                 appData: config.appData,
@@ -179,32 +163,25 @@ class Generator {
      */
     processAssetGroups(config, hashTable) {
         return __awaiter(this, void 0, void 0, function* () {
-            /** @type {?} */
-            const seenMap = new Set();
+            const /** @type {?} */ seenMap = new Set();
             return Promise.all((config.assetGroups || []).map((group) => __awaiter(this, void 0, void 0, function* () {
                 if (group.resources.versionedFiles) {
                     console.warn(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option.\n` +
                         'As of v6 \'versionedFiles\' and \'files\' options have the same behavior. ' +
                         'Use \'files\' instead.');
                 }
-                /** @type {?} */
-                const fileMatcher = globListToMatcher(group.resources.files || []);
-                /** @type {?} */
-                const versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
-                /** @type {?} */
-                const allFiles = yield this.fs.list('/');
-                /** @type {?} */
-                const plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
+                const /** @type {?} */ fileMatcher = globListToMatcher(group.resources.files || []);
+                const /** @type {?} */ versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
+                const /** @type {?} */ allFiles = yield this.fs.list('/');
+                const /** @type {?} */ plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
                 plainFiles.forEach(file => seenMap.add(file));
-                /** @type {?} */
-                const versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
+                const /** @type {?} */ versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
                 versionedFiles.forEach(file => seenMap.add(file));
-                /** @type {?} */
-                const matchedFiles = [...plainFiles, ...versionedFiles].sort();
+                // Add the hashes.
+                const /** @type {?} */ matchedFiles = [...plainFiles, ...versionedFiles].sort();
                 yield matchedFiles.reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
                     yield previous;
-                    /** @type {?} */
-                    const hash = yield this.fs.hash(file);
+                    const /** @type {?} */ hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
                 }), Promise.resolve());
                 return {
@@ -242,8 +219,7 @@ class Generator {
  */
 function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
     return urls.map(url => {
-        /** @type {?} */
-        const positive = !url.startsWith('!');
+        const /** @type {?} */ positive = !url.startsWith('!');
         url = positive ? url : url.substr(1);
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
     });
@@ -253,8 +229,7 @@ function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
  * @return {?}
  */
 function globListToMatcher(globs) {
-    /** @type {?} */
-    const patterns = globs.map(pattern => {
+    const /** @type {?} */ patterns = globs.map(pattern => {
         if (pattern.startsWith('!')) {
             return {
                 positive: false,
@@ -276,8 +251,7 @@ function globListToMatcher(globs) {
  * @return {?}
  */
 function matches(file, patterns) {
-    /** @type {?} */
-    const res = patterns.reduce((isMatch, pattern) => {
+    const /** @type {?} */ res = patterns.reduce((isMatch, pattern) => {
         if (pattern.positive) {
             return isMatch || pattern.regex.test(file);
         }
@@ -318,15 +292,14 @@ function joinUrls(a, b) {
  * @return {?}
  */
 function withOrderedKeys(unorderedObj) {
-    /** @type {?} */
-    const orderedObj = /** @type {?} */ ({});
+    const /** @type {?} */ orderedObj = /** @type {?} */ ({});
     Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
     return orderedObj;
 }
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes} checked by tsc
  */
 /**
  * @license
@@ -338,7 +311,7 @@ function withOrderedKeys(unorderedObj) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes} checked by tsc
  */
 /**
  * @license

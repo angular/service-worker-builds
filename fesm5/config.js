@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.3+30.sha-e3064d5
+ * @license Angular v6.1.0-beta.3+29.sha-0c3738a
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -138,13 +138,13 @@ var Generator = /** @class */ (function () {
     };
     Generator.prototype.processAssetGroups = function (config, hashTable) {
         return __awaiter(this, void 0, void 0, function () {
-            var seenMap;
             var _this = this;
+            var seenMap;
             return __generator(this, function (_a) {
                 seenMap = new Set();
                 return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
-                        var fileMatcher, versionedMatcher, allFiles, plainFiles, versionedFiles, matchedFiles;
                         var _this = this;
+                        var fileMatcher, versionedMatcher, allFiles, plainFiles, versionedFiles, matchedFiles;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:

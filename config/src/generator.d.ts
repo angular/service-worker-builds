@@ -1,10 +1,3 @@
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /// <amd-module name="@angular/service-worker/config/src/generator" />
 import { Filesystem } from './filesystem';
 import { Config } from './in';
@@ -18,8 +11,8 @@ export declare class Generator {
     private baseHref;
     constructor(fs: Filesystem, baseHref: string);
     process(config: Config): Promise<Object>;
-    private processAssetGroups;
-    private processDataGroups;
+    private processAssetGroups(config, hashTable);
+    private processDataGroups(config);
 }
 export declare function processNavigationUrls(baseHref: string, urls?: string[]): {
     positive: boolean;
