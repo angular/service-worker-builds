@@ -48,13 +48,13 @@ var Generator = /** @class */ (function () {
     };
     Generator.prototype.processAssetGroups = function (config, hashTable) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var _this = this;
             var seenMap;
+            var _this = this;
             return tslib_1.__generator(this, function (_a) {
                 seenMap = new Set();
                 return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-                        var _this = this;
                         var fileMatcher, versionedMatcher, allFiles, plainFiles, versionedFiles, matchedFiles;
+                        var _this = this;
                         return tslib_1.__generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
