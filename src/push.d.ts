@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import { Observable } from 'rxjs';
 import { NgswCommChannel } from './low_level';
 /**
@@ -21,5 +28,5 @@ export declare class SwPush {
         serverPublicKey: string;
     }): Promise<PushSubscription>;
     unsubscribe(): Promise<void>;
-    private decodeBase64(input);
+    private decodeBase64;
 }
