@@ -1458,7 +1458,6 @@
          */
         lookupResourceWithHash(url, hash) {
             return __awaiter$2(this, void 0, void 0, function* () {
-                const req = this.adapter.newRequest(url);
                 // Verify that this version has the requested resource cached. If not,
                 // there's no point in trying.
                 if (!this.hashTable.has(url)) {
@@ -1469,12 +1468,8 @@
                 if (this.hashTable.get(url) !== hash) {
                     return null;
                 }
-                // TODO: no-op context and appropriate contract. Currently this is a violation
-                // of the typings and could cause issues if handleFetch() has side effects. A
-                // better strategy to deal with side effects is needed.
-                // TODO: this could result in network fetches if the response is lazy. Refactor
-                // to avoid them.
-                return this.handleFetch(req, null);
+                const cacheState = yield this.lookupResourceWithoutHash(url);
+                return cacheState && cacheState.response;
             });
         }
         /**
@@ -1923,15 +1918,19 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             // Initialization is the only event which is sent directly from the SW to itself,
             // and thus `event.source` is not a Client. Handle it here, before the check
             // for Client sources.
-            if (data.action === 'INITIALIZE' && this.initialized === null) {
-                // Initialize the SW.
-                this.initialized = this.initialize();
-                // Wait until initialization is properly scheduled, then trigger idle
-                // events to allow it to complete (assuming the SW is idle).
-                event.waitUntil((() => __awaiter$5(this, void 0, void 0, function* () {
-                    yield this.initialized;
-                    yield this.idle.trigger();
-                }))());
+            if (data.action === 'INITIALIZE') {
+                // Only initialize if not already initialized (or initializing).
+                if (this.initialized === null) {
+                    // Initialize the SW.
+                    this.initialized = this.initialize();
+                    // Wait until initialization is properly scheduled, then trigger idle
+                    // events to allow it to complete (assuming the SW is idle).
+                    event.waitUntil((() => __awaiter$5(this, void 0, void 0, function* () {
+                        yield this.initialized;
+                        yield this.idle.trigger();
+                    }))());
+                }
+                return;
             }
             // Only messages from true clients are accepted past this point (this is essentially
             // a typecast).
@@ -2376,14 +2375,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
         setupUpdate(manifest, hash) {
             return __awaiter$5(this, void 0, void 0, function* () {
                 const newVersion = new AppVersion(this.scope, this.adapter, this.db, this.idle, manifest, hash);
-                // Try to determine a version that's safe to update from.
-                let updateFrom = undefined;
-                // It's always safe to update from a version, even a broken one, as it will still
-                // only have valid resources cached. If there is no latest version, though, this
-                // update will have to install as a fresh version.
-                if (this.latestHash !== null) {
-                    updateFrom = this.versions.get(this.latestHash);
-                }
                 // Firstly, check if the manifest version is correct.
                 if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {
                     yield this.deleteAllCaches();
