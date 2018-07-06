@@ -35,16 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    /**
-     * Compute the SHA1 of the given string
-     *
-     * see http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
-     *
-     * WARNING: this function has not been designed not tested with security in mind.
-     *          DO NOT USE IT IN A SECURITY SENSITIVE CONTEXT.
-     *
-     * Borrowed from @angular/compiler/src/i18n/digest.ts
-     */
     function sha1Binary(buffer) {
         var words32 = arrayBufferToWords32(buffer, Endian.Big);
         return _sha1(words32, buffer.byteLength * 8);
@@ -156,92 +146,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try {
-                step(generator.next(value));
-            }
-            catch (e) {
-                reject(e);
-            } }
-            function rejected(value) { try {
-                step(generator["throw"](value));
-            }
-            catch (e) {
-                reject(e);
-            } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
-    var fs$1 = require('fs');
-    var path$1 = require('path');
-    var NodeFilesystem = /** @class */ (function () {
-        function NodeFilesystem(base) {
-            this.base = base;
-        }
-        NodeFilesystem.prototype.list = function (_path) {
-            return __awaiter$1(this, void 0, void 0, function () {
-                var _this = this;
-                var dir, entries, files;
-                return __generator(this, function (_a) {
-                    dir = this.canonical(_path);
-                    entries = fs$1.readdirSync(dir).map(function (entry) { return ({ entry: entry, stats: fs$1.statSync(path$1.join(dir, entry)) }); });
-                    files = entries.filter(function (entry) { return !entry.stats.isDirectory(); })
-                        .map(function (entry) { return path$1.posix.join(_path, entry.entry); });
-                    return [2 /*return*/, entries.filter(function (entry) { return entry.stats.isDirectory(); })
-                            .map(function (entry) { return path$1.posix.join(_path, entry.entry); })
-                            .reduce(function (list, subdir) { return __awaiter$1(_this, void 0, void 0, function () { var _a, _b; return __generator(this, function (_c) {
-                            switch (_c.label) {
-                                case 0: return [4 /*yield*/, list];
-                                case 1:
-                                    _b = (_a = (_c.sent())).concat;
-                                    return [4 /*yield*/, this.list(subdir)];
-                                case 2: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
-                            }
-                        }); }); }, Promise.resolve(files))];
-                });
-            });
-        };
-        NodeFilesystem.prototype.read = function (_path) {
-            return __awaiter$1(this, void 0, void 0, function () {
-                var file;
-                return __generator(this, function (_a) {
-                    file = this.canonical(_path);
-                    return [2 /*return*/, fs$1.readFileSync(file).toString()];
-                });
-            });
-        };
-        NodeFilesystem.prototype.hash = function (_path) {
-            return __awaiter$1(this, void 0, void 0, function () {
-                var file, contents;
-                return __generator(this, function (_a) {
-                    file = this.canonical(_path);
-                    contents = fs$1.readFileSync(file);
-                    return [2 /*return*/, sha1Binary(contents)];
-                });
-            });
-        };
-        NodeFilesystem.prototype.write = function (_path, contents) {
-            return __awaiter$1(this, void 0, void 0, function () {
-                var file;
-                return __generator(this, function (_a) {
-                    file = this.canonical(_path);
-                    fs$1.writeFileSync(file, contents);
-                    return [2 /*return*/];
-                });
-            });
-        };
-        NodeFilesystem.prototype.canonical = function (_path) { return path$1.posix.join(this.base, _path); };
-        return NodeFilesystem;
-    }());
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
     var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try {
@@ -260,17 +164,103 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
-    var _a = require('@angular/service-worker/config'), Generator = _a.Generator, NgswConfig = _a.NgswConfig;
     var fs = require('fs');
     var path = require('path');
+    var NodeFilesystem = /** @class */ (function () {
+        function NodeFilesystem(base) {
+            this.base = base;
+        }
+        NodeFilesystem.prototype.list = function (_path) {
+            return __awaiter(this, void 0, void 0, function () {
+                var _this = this;
+                var dir, entries, files;
+                return __generator(this, function (_a) {
+                    dir = this.canonical(_path);
+                    entries = fs.readdirSync(dir).map(function (entry) { return ({ entry: entry, stats: fs.statSync(path.join(dir, entry)) }); });
+                    files = entries.filter(function (entry) { return !entry.stats.isDirectory(); })
+                        .map(function (entry) { return path.posix.join(_path, entry.entry); });
+                    return [2 /*return*/, entries.filter(function (entry) { return entry.stats.isDirectory(); })
+                            .map(function (entry) { return path.posix.join(_path, entry.entry); })
+                            .reduce(function (list, subdir) { return __awaiter(_this, void 0, void 0, function () { var _a, _b; return __generator(this, function (_c) {
+                            switch (_c.label) {
+                                case 0: return [4 /*yield*/, list];
+                                case 1:
+                                    _b = (_a = (_c.sent())).concat;
+                                    return [4 /*yield*/, this.list(subdir)];
+                                case 2: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
+                            }
+                        }); }); }, Promise.resolve(files))];
+                });
+            });
+        };
+        NodeFilesystem.prototype.read = function (_path) {
+            return __awaiter(this, void 0, void 0, function () {
+                var file;
+                return __generator(this, function (_a) {
+                    file = this.canonical(_path);
+                    return [2 /*return*/, fs.readFileSync(file).toString()];
+                });
+            });
+        };
+        NodeFilesystem.prototype.hash = function (_path) {
+            return __awaiter(this, void 0, void 0, function () {
+                var file, contents;
+                return __generator(this, function (_a) {
+                    file = this.canonical(_path);
+                    contents = fs.readFileSync(file);
+                    return [2 /*return*/, sha1Binary(contents)];
+                });
+            });
+        };
+        NodeFilesystem.prototype.write = function (_path, contents) {
+            return __awaiter(this, void 0, void 0, function () {
+                var file;
+                return __generator(this, function (_a) {
+                    file = this.canonical(_path);
+                    fs.writeFileSync(file, contents);
+                    return [2 /*return*/];
+                });
+            });
+        };
+        NodeFilesystem.prototype.canonical = function (_path) { return path.posix.join(this.base, _path); };
+        return NodeFilesystem;
+    }());
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+    var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try {
+                step(generator.next(value));
+            }
+            catch (e) {
+                reject(e);
+            } }
+            function rejected(value) { try {
+                step(generator["throw"](value));
+            }
+            catch (e) {
+                reject(e);
+            } }
+            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
+    var _a = require('@angular/service-worker/config'), Generator = _a.Generator, NgswConfig = _a.NgswConfig;
+    var fs$1 = require('fs');
+    var path$1 = require('path');
     var cwd = process.cwd();
-    var distDir = path.join(cwd, process.argv[2]);
-    var config = path.join(cwd, process.argv[3]);
+    var distDir = path$1.join(cwd, process.argv[2]);
+    var config = path$1.join(cwd, process.argv[3]);
     var baseHref = process.argv[4] || '/';
-    var configParsed = JSON.parse(fs.readFileSync(config).toString());
+    var configParsed = JSON.parse(fs$1.readFileSync(config).toString());
     var filesystem = new NodeFilesystem(distDir);
     var gen = new Generator(filesystem, baseHref);
-    (function () { return __awaiter(undefined, void 0, void 0, function () {
+    (function () { return __awaiter$1(undefined, void 0, void 0, function () {
         var control;
         return __generator(this, function (_a) {
             switch (_a.label) {

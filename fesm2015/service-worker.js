@@ -1,14 +1,14 @@
 /**
- * @license Angular v6.1.0-beta.3+46.sha-f62876b
+ * @license Angular v6.1.0-beta.3+61.sha-3980640
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
-import { __decorate, __metadata } from 'tslib';
-import { isPlatformBrowser } from '@angular/common';
-import { APP_INITIALIZER, ApplicationRef, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
+import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
-import { NEVER, Subject, concat, defer, fromEvent, merge, of, throwError } from 'rxjs';
+import { __decorate, __metadata } from 'tslib';
+import { Injectable, APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 /**
  * @license
@@ -303,13 +303,6 @@ ServiceWorkerModule = ServiceWorkerModule_1 = __decorate([
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
 
 /**
  * @license
@@ -318,12 +311,6 @@ ServiceWorkerModule = ServiceWorkerModule_1 = __decorate([
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/**
- * @module
- * @description
- * Entry point for all public APIs of this package.
- */
-
 // This file only reexports content of the `src` folder. Keep it that way.
 
 /**
@@ -333,10 +320,6 @@ ServiceWorkerModule = ServiceWorkerModule_1 = __decorate([
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-// This file is not used to build this module. It is only used during editing
-// by the TypeScript language service and during build for verification. `ngc`
-// replaces this file with production index.ts when it rewrites private symbol
-// names.
 
 export { ServiceWorkerModule, SwPush, SwUpdate };
 //# sourceMappingURL=service-worker.js.map
