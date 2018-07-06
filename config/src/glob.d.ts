@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /// <amd-module name="@angular/service-worker/config/src/glob" />
-export declare function globToRegex(glob: string): string;
+export declare function globToRegex(glob: string, literalQuestionMark?: boolean): string;

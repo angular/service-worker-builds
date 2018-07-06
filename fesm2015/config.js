@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.3+55.sha-d571a51
+ * @license Angular v6.1.0-beta.3+58.sha-250527c
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -78,21 +78,35 @@ function parseDurationToMs(duration) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** @type {?} */
-const WILD_SINGLE = '[^\\/]*';
+const QUESTION_MARK = '[^/]';
+/** @type {?} */
+const WILD_SINGLE = '[^/]*';
 /** @type {?} */
 const WILD_OPEN = '(?:.+\\/)?';
 /** @type {?} */
-const TO_ESCAPE = [
+const TO_ESCAPE_BASE = [
     { replace: /\./g, with: '\\.' },
-    { replace: /\?/g, with: '\\?' },
     { replace: /\+/g, with: '\\+' },
     { replace: /\*/g, with: WILD_SINGLE },
 ];
+/** @type {?} */
+const TO_ESCAPE_WILDCARD_QM = [
+    ...TO_ESCAPE_BASE,
+    { replace: /\?/g, with: QUESTION_MARK },
+];
+/** @type {?} */
+const TO_ESCAPE_LITERAL_QM = [
+    ...TO_ESCAPE_BASE,
+    { replace: /\?/g, with: '\\?' },
+];
 /**
  * @param {?} glob
+ * @param {?=} literalQuestionMark
  * @return {?}
  */
-function globToRegex(glob) {
+function globToRegex(glob, literalQuestionMark = false) {
+    /** @type {?} */
+    const toEscape = literalQuestionMark ? TO_ESCAPE_LITERAL_QM : TO_ESCAPE_WILDCARD_QM;
     /** @type {?} */
     const segments = glob.split('/').reverse();
     /** @type {?} */
@@ -110,7 +124,7 @@ function globToRegex(glob) {
         }
         else {
             /** @type {?} */
-            const processed = TO_ESCAPE.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
+            const processed = toEscape.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
             regex += processed;
             if (segments.length > 0) {
                 regex += '\\/';
@@ -205,7 +219,7 @@ class Generator {
                     installMode: group.installMode || 'prefetch',
                     updateMode: group.updateMode || group.installMode || 'prefetch',
                     urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
-                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
+                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
                 };
             })));
         });
@@ -218,7 +232,7 @@ class Generator {
         return (config.dataGroups || []).map(group => {
             return {
                 name: group.name,
-                patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
+                patterns: group.urls.map(url => urlToRegex(url, this.baseHref, true)),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -283,13 +297,14 @@ function matches(file, patterns) {
 /**
  * @param {?} url
  * @param {?} baseHref
+ * @param {?=} literalQuestionMark
  * @return {?}
  */
-function urlToRegex(url, baseHref) {
+function urlToRegex(url, baseHref, literalQuestionMark) {
     if (!url.startsWith('/') && url.indexOf('://') === -1) {
         url = joinUrls(baseHref, url);
     }
-    return globToRegex(url);
+    return globToRegex(url, literalQuestionMark);
 }
 /**
  * @param {?} a
