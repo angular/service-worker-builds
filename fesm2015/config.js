@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.3+46.sha-f62876b
+ * @license Angular v6.1.0-beta.3+61.sha-3980640
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -78,21 +78,35 @@ function parseDurationToMs(duration) {
  * found in the LICENSE file at https://angular.io/license
  */
 /** @type {?} */
-const WILD_SINGLE = '[^\\/]*';
+const QUESTION_MARK = '[^/]';
+/** @type {?} */
+const WILD_SINGLE = '[^/]*';
 /** @type {?} */
 const WILD_OPEN = '(?:.+\\/)?';
 /** @type {?} */
-const TO_ESCAPE = [
+const TO_ESCAPE_BASE = [
     { replace: /\./g, with: '\\.' },
-    { replace: /\?/g, with: '\\?' },
     { replace: /\+/g, with: '\\+' },
     { replace: /\*/g, with: WILD_SINGLE },
 ];
+/** @type {?} */
+const TO_ESCAPE_WILDCARD_QM = [
+    ...TO_ESCAPE_BASE,
+    { replace: /\?/g, with: QUESTION_MARK },
+];
+/** @type {?} */
+const TO_ESCAPE_LITERAL_QM = [
+    ...TO_ESCAPE_BASE,
+    { replace: /\?/g, with: '\\?' },
+];
 /**
  * @param {?} glob
+ * @param {?=} literalQuestionMark
  * @return {?}
  */
-function globToRegex(glob) {
+function globToRegex(glob, literalQuestionMark = false) {
+    /** @type {?} */
+    const toEscape = literalQuestionMark ? TO_ESCAPE_LITERAL_QM : TO_ESCAPE_WILDCARD_QM;
     /** @type {?} */
     const segments = glob.split('/').reverse();
     /** @type {?} */
@@ -110,7 +124,7 @@ function globToRegex(glob) {
         }
         else {
             /** @type {?} */
-            const processed = TO_ESCAPE.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
+            const processed = toEscape.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
             regex += processed;
             if (segments.length > 0) {
                 regex += '\\/';
@@ -123,13 +137,6 @@ function globToRegex(glob) {
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
  */
 /** @type {?} */
 const DEFAULT_NAVIGATION_URLS = [
@@ -212,7 +219,7 @@ class Generator {
                     installMode: group.installMode || 'prefetch',
                     updateMode: group.updateMode || group.installMode || 'prefetch',
                     urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
-                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
+                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
                 };
             })));
         });
@@ -225,7 +232,7 @@ class Generator {
         return (config.dataGroups || []).map(group => {
             return {
                 name: group.name,
-                patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
+                patterns: group.urls.map(url => urlToRegex(url, this.baseHref, true)),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -290,13 +297,14 @@ function matches(file, patterns) {
 /**
  * @param {?} url
  * @param {?} baseHref
+ * @param {?=} literalQuestionMark
  * @return {?}
  */
-function urlToRegex(url, baseHref) {
+function urlToRegex(url, baseHref, literalQuestionMark) {
     if (!url.startsWith('/') && url.indexOf('://') === -1) {
         url = joinUrls(baseHref, url);
     }
-    return globToRegex(url);
+    return globToRegex(url, literalQuestionMark);
 }
 /**
  * @param {?} a
@@ -328,29 +336,11 @@ function withOrderedKeys(unorderedObj) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-// This file is not used to build this module. It is only used during editing
-// by the TypeScript language service and during build for verification. `ngc`
-// replaces this file with production index.ts when it rewrites private symbol
-// names.
 
 /**
  * Generated bundle index. Do not edit.
