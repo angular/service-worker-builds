@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.1.0-beta.1+46.sha-a5799e6
+ * @license Angular v6.1.0-beta.3+80.sha-6c604bd
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -59,15 +59,23 @@ function parseDurationToMs(duration) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-var WILD_SINGLE = '[^\\/]*';
+var QUESTION_MARK = '[^/]';
+var WILD_SINGLE = '[^/]*';
 var WILD_OPEN = '(?:.+\\/)?';
-var TO_ESCAPE = [
+var TO_ESCAPE_BASE = [
     { replace: /\./g, with: '\\.' },
-    { replace: /\?/g, with: '\\?' },
     { replace: /\+/g, with: '\\+' },
     { replace: /\*/g, with: WILD_SINGLE },
 ];
-function globToRegex(glob) {
+var TO_ESCAPE_WILDCARD_QM = __spread(TO_ESCAPE_BASE, [
+    { replace: /\?/g, with: QUESTION_MARK },
+]);
+var TO_ESCAPE_LITERAL_QM = __spread(TO_ESCAPE_BASE, [
+    { replace: /\?/g, with: '\\?' },
+]);
+function globToRegex(glob, literalQuestionMark) {
+    if (literalQuestionMark === void 0) { literalQuestionMark = false; }
+    var toEscape = literalQuestionMark ? TO_ESCAPE_LITERAL_QM : TO_ESCAPE_WILDCARD_QM;
     var segments = glob.split('/').reverse();
     var regex = '';
     while (segments.length > 0) {
@@ -81,7 +89,7 @@ function globToRegex(glob) {
             }
         }
         else {
-            var processed = TO_ESCAPE.reduce(function (segment, escape) { return segment.replace(escape.replace, escape.with); }, segment);
+            var processed = toEscape.reduce(function (segment, escape) { return segment.replace(escape.replace, escape.with); }, segment);
             regex += processed;
             if (segments.length > 0) {
                 regex += '\\/';
@@ -138,13 +146,13 @@ var Generator = /** @class */ (function () {
     };
     Generator.prototype.processAssetGroups = function (config, hashTable) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
             var seenMap;
+            var _this = this;
             return __generator(this, function (_a) {
                 seenMap = new Set();
                 return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
-                        var _this = this;
                         var fileMatcher, versionedMatcher, allFiles, plainFiles, versionedFiles, matchedFiles;
+                        var _this = this;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -185,7 +193,7 @@ var Generator = /** @class */ (function () {
                                             installMode: group.installMode || 'prefetch',
                                             updateMode: group.updateMode || group.installMode || 'prefetch',
                                             urls: matchedFiles.map(function (url) { return joinUrls(_this.baseHref, url); }),
-                                            patterns: (group.resources.urls || []).map(function (url) { return urlToRegex(url, _this.baseHref); }),
+                                            patterns: (group.resources.urls || []).map(function (url) { return urlToRegex(url, _this.baseHref, true); }),
                                         }];
                             }
                         });
@@ -198,7 +206,7 @@ var Generator = /** @class */ (function () {
         return (config.dataGroups || []).map(function (group) {
             return {
                 name: group.name,
-                patterns: group.urls.map(function (url) { return urlToRegex(url, _this.baseHref); }),
+                patterns: group.urls.map(function (url) { return urlToRegex(url, _this.baseHref, true); }),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -245,11 +253,11 @@ function matches(file, patterns) {
     }, false);
     return res;
 }
-function urlToRegex(url, baseHref) {
+function urlToRegex(url, baseHref, literalQuestionMark) {
     if (!url.startsWith('/') && url.indexOf('://') === -1) {
         url = joinUrls(baseHref, url);
     }
-    return globToRegex(url);
+    return globToRegex(url, literalQuestionMark);
 }
 function joinUrls(a, b) {
     if (a.endsWith('/') && b.startsWith('/')) {
@@ -281,10 +289,6 @@ function withOrderedKeys(unorderedObj) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-// This file is not used to build this module. It is only used during editing
-// by the TypeScript language service and during build for verification. `ngc`
-// replaces this file with production index.ts when it rewrites private symbol
-// names.
 
 export { Generator };
 //# sourceMappingURL=config.js.map
