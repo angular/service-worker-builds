@@ -1,5 +1,5 @@
 /**
- * @license Angular v6.0.7+21.sha-0437598
+ * @license Angular v6.0.8+4.sha-48415ed
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -17,8 +17,8 @@ import { __awaiter } from 'tslib';
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
-const PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
+const /** @type {?} */ PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
+const /** @type {?} */ PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
 /**
  * @param {?} duration
  * @return {?}
@@ -71,9 +71,9 @@ function parseDurationToMs(duration) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const WILD_SINGLE = '[^\\/]*';
-const WILD_OPEN = '(?:.+\\/)?';
-const TO_ESCAPE = [
+const /** @type {?} */ WILD_SINGLE = '[^\\/]*';
+const /** @type {?} */ WILD_OPEN = '(?:.+\\/)?';
+const /** @type {?} */ TO_ESCAPE = [
     { replace: /\./g, with: '\\.' },
     { replace: /\?/g, with: '\\?' },
     { replace: /\+/g, with: '\\+' },
@@ -111,14 +111,7 @@ function globToRegex(glob) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-const DEFAULT_NAVIGATION_URLS = [
+const /** @type {?} */ DEFAULT_NAVIGATION_URLS = [
     '/**',
     '!/**/*.*',
     '!/**/*__*',
@@ -301,29 +294,11 @@ function withOrderedKeys(unorderedObj) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-// This file is not used to build this module. It is only used during editing
-// by the TypeScript language service and during build for verification. `ngc`
-// replaces this file with production index.ts when it rewrites private symbol
-// names.
 
 /**
  * Generated bundle index. Do not edit.
