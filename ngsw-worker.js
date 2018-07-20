@@ -2642,4 +2642,3 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
     const driver = new Driver(scope, adapter, new CacheDatabase(scope, adapter));
 
 }());
-//# sourceMappingURL=ngsw_worker.es6.js.map
