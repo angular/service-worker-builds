@@ -1,6 +1,6 @@
 {
   "name": "@angular/service-worker",
-  "version": "6.1.0-rc.3+60.sha-2cb0f68",
+  "version": "6.1.0-rc.3+64.sha-1ceddb6",
   "description": "Angular - service worker tooling!",
   "main": "./bundles/service-worker.umd.js",
   "module": "./fesm5/service-worker.js",
@@ -16,8 +16,8 @@
     "tslib": "^1.9.0"
   },
   "peerDependencies": {
-    "@angular/core": "6.1.0-rc.3+60.sha-2cb0f68",
-    "@angular/common": "6.1.0-rc.3+60.sha-2cb0f68"
+    "@angular/core": "6.1.0-rc.3+64.sha-1ceddb6",
+    "@angular/common": "6.1.0-rc.3+64.sha-1ceddb6"
   },
   "repository": {
     "type": "git",
