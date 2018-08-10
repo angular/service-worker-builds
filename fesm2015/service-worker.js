@@ -1,44 +1,20 @@
 /**
- * @license Angular v6.0.0-rc.5+145.sha-741fa9e
+ * @license Angular v7.0.0-beta.1+25.sha-ca8c683
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
-import { isPlatformBrowser } from '@angular/common';
-import { APP_INITIALIZER, ApplicationRef, Inject, Injectable, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
+import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
-import { NEVER, Subject, concat, defer, fromEvent, merge, of, throwError } from 'rxjs';
+import { Injectable, APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
+/** @type {?} */
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
-/**
- * @record
- */
-
-/**
- * \@experimental
- * @record
- */
-
-/**
- * \@experimental
- * @record
- */
-
-/**
- * @record
- */
-
 /**
  * @param {?} message
  * @return {?}
@@ -52,25 +28,31 @@ function errorObservable(message) {
 class NgswCommChannel {
     /**
      * @param {?} serviceWorker
-     * @param {?} platformId
      */
-    constructor(serviceWorker, platformId) {
+    constructor(serviceWorker) {
         this.serviceWorker = serviceWorker;
-        if (!serviceWorker || !isPlatformBrowser(platformId)) {
-            this.serviceWorker = undefined;
+        if (!serviceWorker) {
             this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
         }
         else {
-            const /** @type {?} */ controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
-            const /** @type {?} */ controllerChanges = /** @type {?} */ ((controllerChangeEvents.pipe(map(() => serviceWorker.controller))));
-            const /** @type {?} */ currentController = /** @type {?} */ ((defer(() => of(serviceWorker.controller))));
-            const /** @type {?} */ controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
+            /** @type {?} */
+            const controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
+            /** @type {?} */
+            const controllerChanges = /** @type {?} */ ((controllerChangeEvents.pipe(map(() => serviceWorker.controller))));
+            /** @type {?} */
+            const currentController = /** @type {?} */ ((defer(() => of(serviceWorker.controller))));
+            /** @type {?} */
+            const controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
             this.worker = /** @type {?} */ ((controllerWithChanges.pipe(filter((c) => !!c))));
             this.registration = /** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))));
-            const /** @type {?} */ rawEvents = fromEvent(serviceWorker, 'message');
-            const /** @type {?} */ rawEventPayload = rawEvents.pipe(map((event) => event.data));
-            const /** @type {?} */ eventsUnconnected = (rawEventPayload.pipe(filter((event) => !!event && !!(/** @type {?} */ (event))['type'])));
-            const /** @type {?} */ events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
+            /** @type {?} */
+            const rawEvents = fromEvent(serviceWorker, 'message');
+            /** @type {?} */
+            const rawEventPayload = rawEvents.pipe(map((event) => event.data));
+            /** @type {?} */
+            const eventsUnconnected = (rawEventPayload.pipe(filter((event) => !!event && !!(/** @type {?} */ (event))['type'])));
+            /** @type {?} */
+            const events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
             this.events = events;
             events.connect();
         }
@@ -97,8 +79,10 @@ class NgswCommChannel {
      * @return {?}
      */
     postMessageWithStatus(type, payload, nonce) {
-        const /** @type {?} */ waitForStatus = this.waitForStatus(nonce);
-        const /** @type {?} */ postMessage = this.postMessage(type, payload);
+        /** @type {?} */
+        const waitForStatus = this.waitForStatus(nonce);
+        /** @type {?} */
+        const postMessage = this.postMessage(type, payload);
         return Promise.all([waitForStatus, postMessage]).then(() => undefined);
     }
     /**
@@ -144,22 +128,10 @@ class NgswCommChannel {
      */
     get isEnabled() { return !!this.serviceWorker; }
 }
-/** @nocollapse */
-NgswCommChannel.ctorParameters = () => [
-    null,
-    { type: undefined, decorators: [{ type: Inject, args: [PLATFORM_ID,] },] },
-];
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * Subscribe and listen to push notifications from the Service Worker.
@@ -180,7 +152,8 @@ class SwPush {
         }
         this.messages = this.sw.eventsOfType('PUSH').pipe(map((message) => message.data));
         this.pushManager = this.sw.registration.pipe(map((registration) => { return registration.pushManager; }));
-        const /** @type {?} */ workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription().then(sub => { return sub; })));
+        /** @type {?} */
+        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription().then(sub => { return sub; })));
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
@@ -197,10 +170,13 @@ class SwPush {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ pushOptions = { userVisibleOnly: true };
-        let /** @type {?} */ key = atob(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
-        let /** @type {?} */ applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
-        for (let /** @type {?} */ i = 0; i < key.length; i++) {
+        /** @type {?} */
+        const pushOptions = { userVisibleOnly: true };
+        /** @type {?} */
+        let key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
+        /** @type {?} */
+        let applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
+        for (let i = 0; i < key.length; i++) {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
@@ -218,43 +194,37 @@ class SwPush {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ unsubscribe = this.subscription.pipe(switchMap((sub) => {
-            if (sub !== null) {
-                return sub.unsubscribe().then(success => {
-                    if (success) {
-                        this.subscriptionChanges.next(null);
-                        return undefined;
-                    }
-                    else {
-                        throw new Error('Unsubscribe failed!');
-                    }
-                });
-            }
-            else {
+        /** @type {?} */
+        const doUnsubscribe = (sub) => {
+            if (sub === null) {
                 throw new Error('Not subscribed to push notifications.');
             }
-        }));
-        return unsubscribe.pipe(take(1)).toPromise();
+            return sub.unsubscribe().then(success => {
+                if (!success) {
+                    throw new Error('Unsubscribe failed!');
+                }
+                this.subscriptionChanges.next(null);
+            });
+        };
+        return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
     }
+    /**
+     * @param {?} input
+     * @return {?}
+     */
+    decodeBase64(input) { return atob(input); }
 }
 SwPush.decorators = [
     { type: Injectable }
 ];
 /** @nocollapse */
 SwPush.ctorParameters = () => [
-    { type: NgswCommChannel, },
+    { type: NgswCommChannel }
 ];
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
@@ -289,7 +259,8 @@ class SwUpdate {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ statusNonce = this.sw.generateNonce();
+        /** @type {?} */
+        const statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', { statusNonce }, statusNonce);
     }
     /**
@@ -299,7 +270,8 @@ class SwUpdate {
         if (!this.sw.isEnabled) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
-        const /** @type {?} */ statusNonce = this.sw.generateNonce();
+        /** @type {?} */
+        const statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce }, statusNonce);
     }
 }
@@ -308,25 +280,19 @@ SwUpdate.decorators = [
 ];
 /** @nocollapse */
 SwUpdate.ctorParameters = () => [
-    { type: NgswCommChannel, },
+    { type: NgswCommChannel }
 ];
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
  * @abstract
  */
 class RegistrationOptions {
 }
+/** @type {?} */
 const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
 /**
  * @param {?} injector
@@ -336,13 +302,16 @@ const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
  * @return {?}
  */
 function ngswAppInitializer(injector, script, options, platformId) {
-    const /** @type {?} */ initializer = () => {
-        const /** @type {?} */ app = injector.get(ApplicationRef);
+    /** @type {?} */
+    const initializer = () => {
+        /** @type {?} */
+        const app = injector.get(ApplicationRef);
         if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
             options.enabled !== false)) {
             return;
         }
-        const /** @type {?} */ whenStable = app.isStable.pipe(filter((stable) => !!stable), take(1)).toPromise();
+        /** @type {?} */
+        const whenStable = app.isStable.pipe(filter((stable) => !!stable), take(1)).toPromise();
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
         // becomes active. This allows the SW to initialize itself even if there is no application
         // traffic.
@@ -363,7 +332,8 @@ function ngswAppInitializer(injector, script, options, platformId) {
  * @return {?}
  */
 function ngswCommChannelFactory(opts, platformId) {
-    return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
+    return new NgswCommChannel(isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
+        undefined);
 }
 /**
  * \@experimental
@@ -404,55 +374,22 @@ ServiceWorkerModule.decorators = [
                 providers: [SwPush, SwUpdate],
             },] }
 ];
-/** @nocollapse */
-ServiceWorkerModule.ctorParameters = () => [];
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * @module
- * @description
- * Entry point for all public APIs of this package.
- */
-
 // This file only reexports content of the `src` folder. Keep it that way.
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-// This file is not used to build this module. It is only used during editing
-// by the TypeScript language service and during build for verification. `ngc`
-// replaces this file with production index.ts when it rewrites private symbol
-// names.
 
 /**
  * Generated bundle index. Do not edit.

@@ -1,4 +1,3 @@
-/// <amd-module name="@angular/service-worker/config/src/in" />
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/// <amd-module name="@angular/service-worker/config/src/in" />
 /**
  * @experimental
  */
@@ -37,6 +37,8 @@ export interface AssetGroup {
     updateMode?: 'prefetch' | 'lazy';
     resources: {
         files?: Glob[];
+        /** @deprecated As of v6 `versionedFiles` and `files` options have the same behavior. Use
+           `files` instead. */
         versionedFiles?: Glob[];
         urls?: Glob[];
     };
