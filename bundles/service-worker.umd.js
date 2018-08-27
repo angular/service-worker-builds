@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.0.0-beta.3+30.sha-3d41739
+ * @license Angular v7.0.0-beta.3+39.sha-9bcd8c2
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -35,6 +35,17 @@
         };
         return __assign.apply(this, arguments);
     };
+
+    function __decorate(decorators, target, key, desc) {
+        var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+        return c > 3 && r && Object.defineProperty(target, key, r), r;
+    }
+
+    function __metadata(metadataKey, metadataValue) {
+        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+    }
 
     /**
      * @license
@@ -204,13 +215,10 @@
             return this.subscription.pipe(operators.take(1), operators.switchMap(doUnsubscribe)).toPromise();
         };
         SwPush.prototype.decodeBase64 = function (input) { return atob(input); };
-        SwPush.decorators = [
-            { type: core.Injectable }
-        ];
-        /** @nocollapse */
-        SwPush.ctorParameters = function () { return [
-            { type: NgswCommChannel }
-        ]; };
+        SwPush = __decorate([
+            core.Injectable(),
+            __metadata("design:paramtypes", [NgswCommChannel])
+        ], SwPush);
         return SwPush;
     }());
 
@@ -261,13 +269,10 @@
             var statusNonce = this.sw.generateNonce();
             return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
         };
-        SwUpdate.decorators = [
-            { type: core.Injectable }
-        ];
-        /** @nocollapse */
-        SwUpdate.ctorParameters = function () { return [
-            { type: NgswCommChannel }
-        ]; };
+        SwUpdate = __decorate([
+            core.Injectable(),
+            __metadata("design:paramtypes", [NgswCommChannel])
+        ], SwUpdate);
         return SwUpdate;
     }());
 
@@ -316,6 +321,7 @@
     var ServiceWorkerModule = /** @class */ (function () {
         function ServiceWorkerModule() {
         }
+        ServiceWorkerModule_1 = ServiceWorkerModule;
         /**
          * Register the given Angular Service Worker script.
          *
@@ -325,7 +331,7 @@
         ServiceWorkerModule.register = function (script, opts) {
             if (opts === void 0) { opts = {}; }
             return {
-                ngModule: ServiceWorkerModule,
+                ngModule: ServiceWorkerModule_1,
                 providers: [
                     { provide: SCRIPT, useValue: script },
                     { provide: RegistrationOptions, useValue: opts },
@@ -343,11 +349,12 @@
                 ],
             };
         };
-        ServiceWorkerModule.decorators = [
-            { type: core.NgModule, args: [{
-                        providers: [SwPush, SwUpdate],
-                    },] }
-        ];
+        var ServiceWorkerModule_1;
+        ServiceWorkerModule = ServiceWorkerModule_1 = __decorate([
+            core.NgModule({
+                providers: [SwPush, SwUpdate],
+            })
+        ], ServiceWorkerModule);
         return ServiceWorkerModule;
     }());
 
