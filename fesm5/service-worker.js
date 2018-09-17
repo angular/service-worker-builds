@@ -1,10 +1,10 @@
 /**
- * @license Angular v7.0.0-beta.2+28.sha-21a1440
+ * @license Angular v7.0.0-beta.5+32.sha-47f4412
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
-import { __assign } from 'tslib';
+import { __assign, __decorate, __metadata } from 'tslib';
 import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
 import { Injectable, APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
@@ -178,13 +178,10 @@ var SwPush = /** @class */ (function () {
         return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
     };
     SwPush.prototype.decodeBase64 = function (input) { return atob(input); };
-    SwPush.decorators = [
-        { type: Injectable }
-    ];
-    /** @nocollapse */
-    SwPush.ctorParameters = function () { return [
-        { type: NgswCommChannel }
-    ]; };
+    SwPush = __decorate([
+        Injectable(),
+        __metadata("design:paramtypes", [NgswCommChannel])
+    ], SwPush);
     return SwPush;
 }());
 
@@ -235,13 +232,10 @@ var SwUpdate = /** @class */ (function () {
         var statusNonce = this.sw.generateNonce();
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
     };
-    SwUpdate.decorators = [
-        { type: Injectable }
-    ];
-    /** @nocollapse */
-    SwUpdate.ctorParameters = function () { return [
-        { type: NgswCommChannel }
-    ]; };
+    SwUpdate = __decorate([
+        Injectable(),
+        __metadata("design:paramtypes", [NgswCommChannel])
+    ], SwUpdate);
     return SwUpdate;
 }());
 
@@ -290,6 +284,7 @@ function ngswCommChannelFactory(opts, platformId) {
 var ServiceWorkerModule = /** @class */ (function () {
     function ServiceWorkerModule() {
     }
+    ServiceWorkerModule_1 = ServiceWorkerModule;
     /**
      * Register the given Angular Service Worker script.
      *
@@ -299,7 +294,7 @@ var ServiceWorkerModule = /** @class */ (function () {
     ServiceWorkerModule.register = function (script, opts) {
         if (opts === void 0) { opts = {}; }
         return {
-            ngModule: ServiceWorkerModule,
+            ngModule: ServiceWorkerModule_1,
             providers: [
                 { provide: SCRIPT, useValue: script },
                 { provide: RegistrationOptions, useValue: opts },
@@ -317,11 +312,12 @@ var ServiceWorkerModule = /** @class */ (function () {
             ],
         };
     };
-    ServiceWorkerModule.decorators = [
-        { type: NgModule, args: [{
-                    providers: [SwPush, SwUpdate],
-                },] }
-    ];
+    var ServiceWorkerModule_1;
+    ServiceWorkerModule = ServiceWorkerModule_1 = __decorate([
+        NgModule({
+            providers: [SwPush, SwUpdate],
+        })
+    ], ServiceWorkerModule);
     return ServiceWorkerModule;
 }());
 
