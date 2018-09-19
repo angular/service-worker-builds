@@ -27,5 +27,5 @@ export declare class ServiceWorkerModule {
     static register(script: string, opts?: {
         scope?: string;
         enabled?: boolean;
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<ServiceWorkerModule>;
 }
