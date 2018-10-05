@@ -15,20 +15,14 @@ import { NgswCommChannel, UpdateActivatedEvent, UpdateAvailableEvent } from './l
  */
 export declare class SwUpdate {
     private sw;
-    /**
-     * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
-     */
     readonly available: Observable<UpdateAvailableEvent>;
-    /**
-     * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
-     */
     readonly activated: Observable<UpdateActivatedEvent>;
+    constructor(sw: NgswCommChannel);
     /**
-     * True if the Service Worker is enabled (supported by the browser and enabled via
-     * `ServiceWorkerModule`).
+     * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+     * ServiceWorkerModule).
      */
     readonly isEnabled: boolean;
-    constructor(sw: NgswCommChannel);
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
 }
