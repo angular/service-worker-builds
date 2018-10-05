@@ -14,16 +14,24 @@ import { NgswCommChannel } from './low_level';
  */
 export declare class SwPush {
     private sw;
+    /**
+     * Emits the payloads of the received push notification messages.
+     */
     readonly messages: Observable<object>;
+    /**
+     * Emits the currently active
+     * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
+     * associated to the Service Worker registration or `null` if there is no subscription.
+     */
     readonly subscription: Observable<PushSubscription | null>;
+    /**
+     * True if the Service Worker is enabled (supported by the browser and enabled via
+     * `ServiceWorkerModule`).
+     */
+    readonly isEnabled: boolean;
     private pushManager;
     private subscriptionChanges;
     constructor(sw: NgswCommChannel);
-    /**
-     * Returns true if the Service Worker is enabled (supported by the browser and enabled via
-     * ServiceWorkerModule).
-     */
-    readonly isEnabled: boolean;
     requestSubscription(options: {
         serverPublicKey: string;
     }): Promise<PushSubscription>;
