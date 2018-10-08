@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.0.0-rc.0+46.sha-fdaf573
+ * @license Angular v7.0.0-rc.0+63.sha-55d54c7
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -36,29 +36,28 @@ class NgswCommChannel {
         }
         else {
             /** @type {?} */
-            const controllerChangeEvents = /** @type {?} */ ((fromEvent(serviceWorker, 'controllerchange')));
+            const controllerChangeEvents = fromEvent(serviceWorker, 'controllerchange');
             /** @type {?} */
-            const controllerChanges = /** @type {?} */ ((controllerChangeEvents.pipe(map(() => serviceWorker.controller))));
+            const controllerChanges = controllerChangeEvents.pipe(map(() => serviceWorker.controller));
             /** @type {?} */
-            const currentController = /** @type {?} */ ((defer(() => of(serviceWorker.controller))));
+            const currentController = defer(() => of(serviceWorker.controller));
             /** @type {?} */
-            const controllerWithChanges = /** @type {?} */ ((concat(currentController, controllerChanges)));
-            this.worker = /** @type {?} */ ((controllerWithChanges.pipe(filter((c) => !!c))));
+            const controllerWithChanges = concat(currentController, controllerChanges);
+            this.worker = controllerWithChanges.pipe(filter(c => !!c));
             this.registration = /** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))));
             /** @type {?} */
             const rawEvents = fromEvent(serviceWorker, 'message');
             /** @type {?} */
-            const rawEventPayload = rawEvents.pipe(map((event) => event.data));
+            const rawEventPayload = rawEvents.pipe(map(event => event.data));
             /** @type {?} */
-            const eventsUnconnected = (rawEventPayload.pipe(filter((event) => !!event && !!(/** @type {?} */ (event))['type'])));
+            const eventsUnconnected = rawEventPayload.pipe(filter(event => event && event.type));
             /** @type {?} */
             const events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
-            this.events = events;
             events.connect();
+            this.events = events;
         }
     }
     /**
-     * \@internal
      * @param {?} action
      * @param {?} payload
      * @return {?}
@@ -72,7 +71,6 @@ class NgswCommChannel {
             .then(() => undefined);
     }
     /**
-     * \@internal
      * @param {?} type
      * @param {?} payload
      * @param {?} nonce
@@ -86,36 +84,34 @@ class NgswCommChannel {
         return Promise.all([waitForStatus, postMessage]).then(() => undefined);
     }
     /**
-     * \@internal
      * @return {?}
      */
     generateNonce() { return Math.round(Math.random() * 10000000); }
     /**
-     * \@internal
      * @template T
      * @param {?} type
      * @return {?}
      */
     eventsOfType(type) {
-        return /** @type {?} */ (this.events.pipe(filter((event) => { return event.type === type; })));
+        /** @type {?} */
+        const filterFn = (event) => event.type === type;
+        return this.events.pipe(filter(filterFn));
     }
     /**
-     * \@internal
      * @template T
      * @param {?} type
      * @return {?}
      */
     nextEventOfType(type) {
-        return /** @type {?} */ ((this.eventsOfType(type).pipe(take(1))));
+        return this.eventsOfType(type).pipe(take(1));
     }
     /**
-     * \@internal
      * @param {?} nonce
      * @return {?}
      */
     waitForStatus(nonce) {
         return this.eventsOfType('STATUS')
-            .pipe(filter((event) => event.nonce === nonce), take(1), map((event) => {
+            .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
             if (event.status) {
                 return undefined;
             }
@@ -150,15 +146,15 @@ class SwPush {
             this.subscription = NEVER;
             return;
         }
-        this.messages = this.sw.eventsOfType('PUSH').pipe(map((message) => message.data));
-        this.pushManager = this.sw.registration.pipe(map((registration) => { return registration.pushManager; }));
+        this.messages = this.sw.eventsOfType('PUSH').pipe(map(message => message.data));
+        this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
         /** @type {?} */
-        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription().then(sub => { return sub; })));
+        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap(pm => pm.getSubscription()));
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
-     * Returns true if the Service Worker is enabled (supported by the browser and enabled via
-     * ServiceWorkerModule).
+     * True if the Service Worker is enabled (supported by the browser and enabled via
+     * `ServiceWorkerModule`).
      * @return {?}
      */
     get isEnabled() { return this.sw.isEnabled; }
@@ -180,7 +176,7 @@ class SwPush {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
-        return this.pushManager.pipe(switchMap((pm) => pm.subscribe(pushOptions)), take(1))
+        return this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1))
             .toPromise()
             .then(sub => {
             this.subscriptionChanges.next(sub);
@@ -247,8 +243,8 @@ class SwUpdate {
         this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
     }
     /**
-     * Returns true if the Service Worker is enabled (supported by the browser and enabled via
-     * ServiceWorkerModule).
+     * True if the Service Worker is enabled (supported by the browser and enabled via
+     * `ServiceWorkerModule`).
      * @return {?}
      */
     get isEnabled() { return this.sw.isEnabled; }
@@ -395,5 +391,5 @@ ServiceWorkerModule.decorators = [
  * Generated bundle index. Do not edit.
  */
 
-export { NgswCommChannel as ɵangular_packages_service_worker_service_worker_e, RegistrationOptions as ɵangular_packages_service_worker_service_worker_a, SCRIPT as ɵangular_packages_service_worker_service_worker_b, ngswAppInitializer as ɵangular_packages_service_worker_service_worker_c, ngswCommChannelFactory as ɵangular_packages_service_worker_service_worker_d, ServiceWorkerModule, SwPush, SwUpdate };
+export { NgswCommChannel as ɵangular_packages_service_worker_service_worker_a, RegistrationOptions as ɵangular_packages_service_worker_service_worker_b, SCRIPT as ɵangular_packages_service_worker_service_worker_c, ngswAppInitializer as ɵangular_packages_service_worker_service_worker_d, ngswCommChannelFactory as ɵangular_packages_service_worker_service_worker_e, ServiceWorkerModule, SwPush, SwUpdate };
 //# sourceMappingURL=service-worker.js.map
