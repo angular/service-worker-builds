@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.0.0+32.sha-3f94759
+ * @license Angular v7.0.0+52.sha-778e1c2
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -148,7 +148,7 @@ const DEFAULT_NAVIGATION_URLS = [
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
- * \@experimental
+ * \@publicApi
  */
 class Generator {
     /**
