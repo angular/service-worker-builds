@@ -11,7 +11,7 @@ import { Config } from './in';
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
- * @experimental
+ * @publicApi
  */
 export declare class Generator {
     readonly fs: Filesystem;
