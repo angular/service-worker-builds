@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.0.0+32.sha-3f94759
+ * @license Angular v7.0.0+52.sha-778e1c2
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -22,7 +22,7 @@ function errorObservable(message) {
     return defer(() => throwError(new Error(message)));
 }
 /**
- * @experimental
+ * @publicApi
  */
 class NgswCommChannel {
     constructor(serviceWorker) {
@@ -89,7 +89,7 @@ class NgswCommChannel {
 /**
  * Subscribe and listen to push notifications from the Service Worker.
  *
- * @experimental
+ * @publicApi
  */
 let SwPush = class SwPush {
     constructor(sw) {
@@ -163,7 +163,7 @@ SwPush = __decorate([
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @experimental
+ * @publicApi
  */
 let SwUpdate = class SwUpdate {
     constructor(sw) {
@@ -239,7 +239,7 @@ function ngswCommChannelFactory(opts, platformId) {
         undefined);
 }
 /**
- * @experimental
+ * @publicApi
  */
 let ServiceWorkerModule = ServiceWorkerModule_1 = class ServiceWorkerModule {
     /**
