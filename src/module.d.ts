@@ -15,7 +15,7 @@ export declare const SCRIPT: InjectionToken<string>;
 export declare function ngswAppInitializer(injector: Injector, script: string, options: RegistrationOptions, platformId: string): Function;
 export declare function ngswCommChannelFactory(opts: RegistrationOptions, platformId: string): NgswCommChannel;
 /**
- * @experimental
+ * @publicApi
  */
 export declare class ServiceWorkerModule {
     /**

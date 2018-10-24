@@ -1,10 +1,10 @@
 /**
- * @license Angular v7.0.0-rc.1+111.sha-5b4cf38
+ * @license Angular v7.0.0-rc.1+178.sha-ee0b857.with-local-changes
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
-import { __assign, __decorate, __metadata } from 'tslib';
+import { __decorate, __assign, __metadata } from 'tslib';
 import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
 import { Injectable, APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
@@ -22,7 +22,7 @@ function errorObservable(message) {
     return defer(function () { return throwError(new Error(message)); });
 }
 /**
- * @experimental
+ * @publicApi
  */
 var NgswCommChannel = /** @class */ (function () {
     function NgswCommChannel(serviceWorker) {
@@ -94,7 +94,7 @@ var NgswCommChannel = /** @class */ (function () {
 /**
  * Subscribe and listen to push notifications from the Service Worker.
  *
- * @experimental
+ * @publicApi
  */
 var SwPush = /** @class */ (function () {
     function SwPush(sw) {
@@ -175,7 +175,7 @@ var SwPush = /** @class */ (function () {
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @experimental
+ * @publicApi
  */
 var SwUpdate = /** @class */ (function () {
     function SwUpdate(sw) {
@@ -258,7 +258,7 @@ function ngswCommChannelFactory(opts, platformId) {
         undefined);
 }
 /**
- * @experimental
+ * @publicApi
  */
 var ServiceWorkerModule = /** @class */ (function () {
     function ServiceWorkerModule() {

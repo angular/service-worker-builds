@@ -10,7 +10,7 @@ import { NgswCommChannel } from './low_level';
 /**
  * Subscribe and listen to push notifications from the Service Worker.
  *
- * @experimental
+ * @publicApi
  */
 export declare class SwPush {
     private sw;
