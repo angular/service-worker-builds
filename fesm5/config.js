@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.0.0-rc.1+51.sha-e814bfa
+ * @license Angular v7.1.0-beta.0+45.sha-064f0d0
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -115,7 +115,7 @@ var DEFAULT_NAVIGATION_URLS = [
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
- * @experimental
+ * @publicApi
  */
 var Generator = /** @class */ (function () {
     function Generator(fs, baseHref) {

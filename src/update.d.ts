@@ -11,7 +11,7 @@ import { NgswCommChannel, UpdateActivatedEvent, UpdateAvailableEvent } from './l
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @experimental
+ * @publicApi
  */
 export declare class SwUpdate {
     private sw;

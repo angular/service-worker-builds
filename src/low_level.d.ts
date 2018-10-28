@@ -10,7 +10,7 @@ export declare const ERR_SW_NOT_SUPPORTED = "Service workers are disabled or not
 /**
  * An event emitted when a new version of the app is available.
  *
- * @experimental
+ * @publicApi
  */
 export interface UpdateAvailableEvent {
     type: 'UPDATE_AVAILABLE';
@@ -26,7 +26,7 @@ export interface UpdateAvailableEvent {
 /**
  * An event emitted when a new version of the app has been downloaded and activated.
  *
- * @experimental
+ * @publicApi
  */
 export interface UpdateActivatedEvent {
     type: 'UPDATE_ACTIVATED';
@@ -51,7 +51,7 @@ export interface TypedEvent {
     type: string;
 }
 /**
- * @experimental
+ * @publicApi
  */
 export declare class NgswCommChannel {
     private serviceWorker;

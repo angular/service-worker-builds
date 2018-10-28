@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.0.0-rc.1+51.sha-e814bfa
+ * @license Angular v7.1.0-beta.0+45.sha-064f0d0
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -59,7 +59,7 @@
         return rxjs.defer(function () { return rxjs.throwError(new Error(message)); });
     }
     /**
-     * @experimental
+     * @publicApi
      */
     var NgswCommChannel = /** @class */ (function () {
         function NgswCommChannel(serviceWorker) {
@@ -131,7 +131,7 @@
     /**
      * Subscribe and listen to push notifications from the Service Worker.
      *
-     * @experimental
+     * @publicApi
      */
     var SwPush = /** @class */ (function () {
         function SwPush(sw) {
@@ -212,7 +212,7 @@
      * Subscribe to update notifications from the Service Worker, trigger update
      * checks, and forcibly activate updates.
      *
-     * @experimental
+     * @publicApi
      */
     var SwUpdate = /** @class */ (function () {
         function SwUpdate(sw) {
@@ -295,7 +295,7 @@
             undefined);
     }
     /**
-     * @experimental
+     * @publicApi
      */
     var ServiceWorkerModule = /** @class */ (function () {
         function ServiceWorkerModule() {
