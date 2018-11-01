@@ -19,6 +19,23 @@ export declare class SwPush {
      */
     readonly messages: Observable<object>;
     /**
+     * Emits the payloads of the received push notification messages as well as the action the user
+     * interacted with. If no action was used the action property will be an empty string `''`.
+     *
+     * Note that the `notification` property is **not** a [Notification][Mozilla Notification] object
+     * but rather a
+     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+     *
+     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+     */
+    readonly notificationClicks: Observable<{
+        action: string;
+        notification: NotificationOptions & {
+            title: string;
+        };
+    }>;
+    /**
      * Emits the currently active
      * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
      * associated to the Service Worker registration or `null` if there is no subscription.
