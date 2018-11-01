@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.1.0-beta.1+39.sha-ea0a996
+ * @license Angular v7.1.0-beta.1+50.sha-aed95fd
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -150,10 +150,13 @@ class SwPush {
         this.subscriptionChanges = new Subject();
         if (!sw.isEnabled) {
             this.messages = NEVER;
+            this.notificationClicks = NEVER;
             this.subscription = NEVER;
             return;
         }
         this.messages = this.sw.eventsOfType('PUSH').pipe(map(message => message.data));
+        this.notificationClicks =
+            this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message) => message.data));
         this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
         /** @type {?} */
         const workerDrivenSubscriptions = this.pushManager.pipe(switchMap(pm => pm.getSubscription()));

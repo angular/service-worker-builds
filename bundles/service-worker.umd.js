@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.1.0-beta.1+39.sha-ea0a996
+ * @license Angular v7.1.0-beta.1+50.sha-aed95fd
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -128,10 +128,13 @@
             this.subscriptionChanges = new rxjs.Subject();
             if (!sw.isEnabled) {
                 this.messages = rxjs.NEVER;
+                this.notificationClicks = rxjs.NEVER;
                 this.subscription = rxjs.NEVER;
                 return;
             }
             this.messages = this.sw.eventsOfType('PUSH').pipe(operators.map(function (message) { return message.data; }));
+            this.notificationClicks =
+                this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(operators.map(function (message) { return message.data; }));
             this.pushManager = this.sw.registration.pipe(operators.map(function (registration) { return registration.pushManager; }));
             var workerDrivenSubscriptions = this.pushManager.pipe(operators.switchMap(function (pm) { return pm.getSubscription(); }));
             this.subscription = rxjs.merge(workerDrivenSubscriptions, this.subscriptionChanges);

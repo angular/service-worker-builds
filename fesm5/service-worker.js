@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.1.0-beta.1+39.sha-ea0a996
+ * @license Angular v7.1.0-beta.1+50.sha-aed95fd
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -102,10 +102,13 @@ var SwPush = /** @class */ (function () {
         this.subscriptionChanges = new Subject();
         if (!sw.isEnabled) {
             this.messages = NEVER;
+            this.notificationClicks = NEVER;
             this.subscription = NEVER;
             return;
         }
         this.messages = this.sw.eventsOfType('PUSH').pipe(map(function (message) { return message.data; }));
+        this.notificationClicks =
+            this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map(function (message) { return message.data; }));
         this.pushManager = this.sw.registration.pipe(map(function (registration) { return registration.pushManager; }));
         var workerDrivenSubscriptions = this.pushManager.pipe(switchMap(function (pm) { return pm.getSubscription(); }));
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
