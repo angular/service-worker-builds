@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.1.0-beta.1+6.sha-4e9f2e5
+ * @license Angular v7.1.0-beta.1+14.sha-2e7b5c5
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -7,7 +7,7 @@
 import { __assign } from 'tslib';
 import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
-import { defineInjectable, inject, InjectionToken, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, ɵdefineNgModule, defineInjector } from '@angular/core';
+import { Injectable, defineInjectable, inject, ɵsetClassMetadata, InjectionToken, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, ɵdefineNgModule, defineInjector, NgModule } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 /**
@@ -160,6 +160,11 @@ var SwPush = /** @class */ (function () {
     SwPush.ngInjectableDef = defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(inject(NgswCommChannel)); }, providedIn: null });
     return SwPush;
 }());
+/*@__PURE__*/ ɵsetClassMetadata(SwPush, [{
+        type: Injectable
+    }], [{
+        type: NgswCommChannel
+    }], null);
 
 /**
  * @license
@@ -211,6 +216,11 @@ var SwUpdate = /** @class */ (function () {
     SwUpdate.ngInjectableDef = defineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(inject(NgswCommChannel)); }, providedIn: null });
     return SwUpdate;
 }());
+/*@__PURE__*/ ɵsetClassMetadata(SwUpdate, [{
+        type: Injectable
+    }], [{
+        type: NgswCommChannel
+    }], null);
 
 /**
  * @license
@@ -288,6 +298,12 @@ var ServiceWorkerModule = /** @class */ (function () {
     ServiceWorkerModule.ngInjectorDef = defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate], imports: [] });
     return ServiceWorkerModule;
 }());
+/*@__PURE__*/ ɵsetClassMetadata(ServiceWorkerModule, [{
+        type: NgModule,
+        args: [{
+                providers: [SwPush, SwUpdate],
+            }]
+    }], null, null);
 
 /**
  * @license

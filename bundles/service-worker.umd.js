@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.1.0-beta.1+6.sha-4e9f2e5
+ * @license Angular v7.1.0-beta.1+14.sha-2e7b5c5
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -186,6 +186,11 @@
         SwPush.ngInjectableDef = i0.defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(i0.inject(NgswCommChannel)); }, providedIn: null });
         return SwPush;
     }());
+    /*@__PURE__*/ i0.ɵsetClassMetadata(SwPush, [{
+            type: i0.Injectable
+        }], [{
+            type: NgswCommChannel
+        }], null);
 
     /**
      * @license
@@ -237,6 +242,11 @@
         SwUpdate.ngInjectableDef = i0.defineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.inject(NgswCommChannel)); }, providedIn: null });
         return SwUpdate;
     }());
+    /*@__PURE__*/ i0.ɵsetClassMetadata(SwUpdate, [{
+            type: i0.Injectable
+        }], [{
+            type: NgswCommChannel
+        }], null);
 
     /**
      * @license
@@ -314,6 +324,12 @@
         ServiceWorkerModule.ngInjectorDef = i0.defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate], imports: [] });
         return ServiceWorkerModule;
     }());
+    /*@__PURE__*/ i0.ɵsetClassMetadata(ServiceWorkerModule, [{
+            type: i0.NgModule,
+            args: [{
+                    providers: [SwPush, SwUpdate],
+                }]
+        }], null, null);
 
     /**
      * @license
