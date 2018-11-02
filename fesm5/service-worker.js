@@ -1,10 +1,10 @@
 /**
- * @license Angular v7.1.0-beta.0+58.sha-96770e5
+ * @license Angular v7.1.0-beta.1+52.sha-496372d
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
-import { __decorate, __assign, __metadata } from 'tslib';
+import { __assign, __decorate, __metadata } from 'tslib';
 import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
 import { Injectable, APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
@@ -102,10 +102,13 @@ var SwPush = /** @class */ (function () {
         this.subscriptionChanges = new Subject();
         if (!sw.isEnabled) {
             this.messages = NEVER;
+            this.notificationClicks = NEVER;
             this.subscription = NEVER;
             return;
         }
         this.messages = this.sw.eventsOfType('PUSH').pipe(map(function (message) { return message.data; }));
+        this.notificationClicks =
+            this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map(function (message) { return message.data; }));
         this.pushManager = this.sw.registration.pipe(map(function (registration) { return registration.pushManager; }));
         var workerDrivenSubscriptions = this.pushManager.pipe(switchMap(function (pm) { return pm.getSubscription(); }));
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
