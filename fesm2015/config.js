@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.2.0-beta.1+26.sha-3290fc3
+ * @license Angular v7.2.0-beta.2+10.sha-7fabe44
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -8,7 +8,7 @@ import { __awaiter } from 'tslib';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -68,7 +68,7 @@ function parseDurationToMs(duration) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -113,7 +113,7 @@ function globToRegex(glob, literalQuestionMark = false) {
     let regex = '';
     while (segments.length > 0) {
         /** @type {?} */
-        const segment = /** @type {?} */ ((segments.pop()));
+        const segment = (/** @type {?} */ (segments.pop()));
         if (segment === '**') {
             if (segments.length > 0) {
                 regex += WILD_OPEN;
@@ -136,7 +136,7 @@ function globToRegex(glob, literalQuestionMark = false) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /** @type {?} */
 const DEFAULT_NAVIGATION_URLS = [
@@ -206,6 +206,7 @@ class Generator {
                 /** @type {?} */
                 const versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
                 versionedFiles.forEach(file => seenMap.add(file));
+                // Add the hashes.
                 /** @type {?} */
                 const matchedFiles = [...plainFiles, ...versionedFiles].sort();
                 yield matchedFiles.reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
@@ -327,19 +328,19 @@ function joinUrls(a, b) {
  */
 function withOrderedKeys(unorderedObj) {
     /** @type {?} */
-    const orderedObj = /** @type {?} */ ({});
+    const orderedObj = (/** @type {?} */ ({}));
     Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
     return orderedObj;
 }
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 
 /**
