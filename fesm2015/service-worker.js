@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.1.3+6.sha-348c949
+ * @license Angular v7.1.3+9.sha-1059789
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -11,7 +11,7 @@ import { isPlatformBrowser } from '@angular/common';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /** @type {?} */
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
@@ -44,7 +44,7 @@ class NgswCommChannel {
             /** @type {?} */
             const controllerWithChanges = concat(currentController, controllerChanges);
             this.worker = controllerWithChanges.pipe(filter(c => !!c));
-            this.registration = /** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))));
+            this.registration = (/** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration())))));
             /** @type {?} */
             const rawEvents = fromEvent(serviceWorker, 'message');
             /** @type {?} */
@@ -52,7 +52,7 @@ class NgswCommChannel {
             /** @type {?} */
             const eventsUnconnected = rawEventPayload.pipe(filter(event => event && event.type));
             /** @type {?} */
-            const events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
+            const events = (/** @type {?} */ (eventsUnconnected.pipe(publish())));
             events.connect();
             this.events = events;
         }
@@ -115,7 +115,7 @@ class NgswCommChannel {
             if (event.status) {
                 return undefined;
             }
-            throw new Error(/** @type {?} */ ((event.error)));
+            throw new Error((/** @type {?} */ (event.error)));
         }))
             .toPromise();
     }
@@ -127,7 +127,7 @@ class NgswCommChannel {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * Subscribe and listen to push notifications from the Service Worker.
@@ -223,7 +223,7 @@ SwPush.ctorParameters = () => [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
@@ -284,7 +284,7 @@ SwUpdate.ctorParameters = () => [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * @abstract
@@ -376,18 +376,17 @@ ServiceWorkerModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
-// This file only reexports content of the `src` folder. Keep it that way.
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 
 /**
