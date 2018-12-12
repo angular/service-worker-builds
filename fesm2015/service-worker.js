@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.2.0-beta.2+4.sha-042463f
+ * @license Angular v7.2.0-beta.2+8.sha-9c7fb0d
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -11,7 +11,7 @@ import { isPlatformBrowser } from '@angular/common';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /** @type {?} */
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
@@ -44,7 +44,7 @@ class NgswCommChannel {
             /** @type {?} */
             const controllerWithChanges = concat(currentController, controllerChanges);
             this.worker = controllerWithChanges.pipe(filter(c => !!c));
-            this.registration = /** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))));
+            this.registration = (/** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration())))));
             /** @type {?} */
             const rawEvents = fromEvent(serviceWorker, 'message');
             /** @type {?} */
@@ -52,7 +52,7 @@ class NgswCommChannel {
             /** @type {?} */
             const eventsUnconnected = rawEventPayload.pipe(filter(event => event && event.type));
             /** @type {?} */
-            const events = /** @type {?} */ (eventsUnconnected.pipe(publish()));
+            const events = (/** @type {?} */ (eventsUnconnected.pipe(publish())));
             events.connect();
             this.events = events;
         }
@@ -115,7 +115,7 @@ class NgswCommChannel {
             if (event.status) {
                 return undefined;
             }
-            throw new Error(/** @type {?} */ ((event.error)));
+            throw new Error((/** @type {?} */ (event.error)));
         }))
             .toPromise();
     }
@@ -127,7 +127,7 @@ class NgswCommChannel {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -236,7 +236,7 @@ SwPush.ngInjectableDef = defineInjectable({ token: SwPush, factory: function SwP
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -310,7 +310,7 @@ SwUpdate.ngInjectableDef = defineInjectable({ token: SwUpdate, factory: function
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -417,18 +417,17 @@ ServiceWorkerModule.ngInjectorDef = defineInjector({ factory: function ServiceWo
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
-// This file only reexports content of the `src` folder. Keep it that way.
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 
 export { ServiceWorkerModule, SwPush, SwUpdate };
