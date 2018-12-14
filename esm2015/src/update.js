@@ -72,9 +72,9 @@ SwUpdate.ctorParameters = () => [
 SwUpdate.ngInjectableDef = i0.defineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ i0.ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
-    }], function () { return [{
+    }], [{
         type: NgswCommChannel
-    }]; }, null);
+    }], null);
 if (false) {
     /**
      * Emits an `UpdateAvailableEvent` event whenever a new app version is available.

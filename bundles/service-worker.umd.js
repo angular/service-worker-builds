@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.2.0-beta.2+38.sha-a954345
+ * @license Angular v7.2.0-beta.2+36.sha-7fae911
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -191,9 +191,9 @@
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(SwPush, [{
             type: i0.Injectable
-        }], function () { return [{
+        }], [{
             type: NgswCommChannel
-        }]; }, null);
+        }], null);
 
     /**
      * @license
@@ -247,9 +247,9 @@
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(SwUpdate, [{
             type: i0.Injectable
-        }], function () { return [{
+        }], [{
             type: NgswCommChannel
-        }]; }, null);
+        }], null);
 
     /**
      * @license
