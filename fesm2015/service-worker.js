@@ -1,12 +1,12 @@
 /**
- * @license Angular v7.2.0-beta.2+39.sha-d0d351c
+ * @license Angular v7.2.0-beta.2+37.sha-a8ebc83
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
 import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
-import { Injectable, defineInjectable, inject, ɵsetClassMetadata, InjectionToken, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule, ɵdefineNgModule, defineInjector } from '@angular/core';
+import { Injectable, InjectionToken, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule, ɵdefineNgModule, defineInjector, ɵsetClassMetadata, defineInjectable, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 /**
@@ -230,9 +230,9 @@ SwPush.ctorParameters = () => [
 SwPush.ngInjectableDef = defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwPush, [{
         type: Injectable
-    }], function () { return [{
+    }], [{
         type: NgswCommChannel
-    }]; }, null);
+    }], null);
 
 /**
  * @fileoverview added by tsickle
@@ -304,9 +304,9 @@ SwUpdate.ctorParameters = () => [
 SwUpdate.ngInjectableDef = defineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
-    }], function () { return [{
+    }], [{
         type: NgswCommChannel
-    }]; }, null);
+    }], null);
 
 /**
  * @fileoverview added by tsickle
