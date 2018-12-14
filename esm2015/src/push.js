@@ -108,9 +108,9 @@ SwPush.ctorParameters = () => [
 SwPush.ngInjectableDef = i0.defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(i0.inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ i0.ɵsetClassMetadata(SwPush, [{
         type: Injectable
-    }], [{
+    }], function () { return [{
         type: NgswCommChannel
-    }], null);
+    }]; }, null);
 if (false) {
     /**
      * Emits the payloads of the received push notification messages.
