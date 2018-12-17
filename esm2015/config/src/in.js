@@ -1,6 +1,6 @@
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingReturn,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -9,12 +9,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** @typedef {?} */
-var Glob;
-export { Glob };
-/** @typedef {?} */
-var Duration;
-export { Duration };
 /**
  * A top-level Angular Service Worker configuration object.
  *
@@ -22,16 +16,18 @@ export { Duration };
  * @record
  */
 export function Config() { }
-/** @type {?|undefined} */
-Config.prototype.appData;
-/** @type {?} */
-Config.prototype.index;
-/** @type {?|undefined} */
-Config.prototype.assetGroups;
-/** @type {?|undefined} */
-Config.prototype.dataGroups;
-/** @type {?|undefined} */
-Config.prototype.navigationUrls;
+if (false) {
+    /** @type {?|undefined} */
+    Config.prototype.appData;
+    /** @type {?} */
+    Config.prototype.index;
+    /** @type {?|undefined} */
+    Config.prototype.assetGroups;
+    /** @type {?|undefined} */
+    Config.prototype.dataGroups;
+    /** @type {?|undefined} */
+    Config.prototype.navigationUrls;
+}
 /**
  * Configuration for a particular group of assets.
  *
@@ -39,14 +35,16 @@ Config.prototype.navigationUrls;
  * @record
  */
 export function AssetGroup() { }
-/** @type {?} */
-AssetGroup.prototype.name;
-/** @type {?|undefined} */
-AssetGroup.prototype.installMode;
-/** @type {?|undefined} */
-AssetGroup.prototype.updateMode;
-/** @type {?} */
-AssetGroup.prototype.resources;
+if (false) {
+    /** @type {?} */
+    AssetGroup.prototype.name;
+    /** @type {?|undefined} */
+    AssetGroup.prototype.installMode;
+    /** @type {?|undefined} */
+    AssetGroup.prototype.updateMode;
+    /** @type {?} */
+    AssetGroup.prototype.resources;
+}
 /**
  * Configuration for a particular group of dynamic URLs.
  *
@@ -54,13 +52,14 @@ AssetGroup.prototype.resources;
  * @record
  */
 export function DataGroup() { }
-/** @type {?} */
-DataGroup.prototype.name;
-/** @type {?} */
-DataGroup.prototype.urls;
-/** @type {?|undefined} */
-DataGroup.prototype.version;
-/** @type {?} */
-DataGroup.prototype.cacheConfig;
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW4uanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9zZXJ2aWNlLXdvcmtlci9jb25maWcvc3JjL2luLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiIiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbi8qKlxuICogQHB1YmxpY0FwaVxuICovXG5leHBvcnQgdHlwZSBHbG9iID0gc3RyaW5nO1xuXG4vKipcbiAqIEBwdWJsaWNBcGlcbiAqL1xuZXhwb3J0IHR5cGUgRHVyYXRpb24gPSBzdHJpbmc7XG5cbi8qKlxuICogQSB0b3AtbGV2ZWwgQW5ndWxhciBTZXJ2aWNlIFdvcmtlciBjb25maWd1cmF0aW9uIG9iamVjdC5cbiAqXG4gKiBAcHVibGljQXBpXG4gKi9cbmV4cG9ydCBpbnRlcmZhY2UgQ29uZmlnIHtcbiAgYXBwRGF0YT86IHt9O1xuICBpbmRleDogc3RyaW5nO1xuICBhc3NldEdyb3Vwcz86IEFzc2V0R3JvdXBbXTtcbiAgZGF0YUdyb3Vwcz86IERhdGFHcm91cFtdO1xuICBuYXZpZ2F0aW9uVXJscz86IHN0cmluZ1tdO1xufVxuXG4vKipcbiAqIENvbmZpZ3VyYXRpb24gZm9yIGEgcGFydGljdWxhciBncm91cCBvZiBhc3NldHMuXG4gKlxuICogQHB1YmxpY0FwaVxuICovXG5leHBvcnQgaW50ZXJmYWNlIEFzc2V0R3JvdXAge1xuICBuYW1lOiBzdHJpbmc7XG4gIGluc3RhbGxNb2RlPzogJ3ByZWZldGNoJ3wnbGF6eSc7XG4gIHVwZGF0ZU1vZGU/OiAncHJlZmV0Y2gnfCdsYXp5JztcbiAgcmVzb3VyY2VzOiB7XG4gICAgZmlsZXM/OiBHbG9iW107XG4gICAgLyoqIEBkZXByZWNhdGVkIEFzIG9mIHY2IGB2ZXJzaW9uZWRGaWxlc2AgYW5kIGBmaWxlc2Agb3B0aW9ucyBoYXZlIHRoZSBzYW1lIGJlaGF2aW9yLiBVc2VcbiAgICAgICBgZmlsZXNgIGluc3RlYWQuICovXG4gICAgdmVyc2lvbmVkRmlsZXM/OiBHbG9iW107XG4gICAgdXJscz86IEdsb2JbXTtcbiAgfTtcbn1cblxuLyoqXG4gKiBDb25maWd1cmF0aW9uIGZvciBhIHBhcnRpY3VsYXIgZ3JvdXAgb2YgZHluYW1pYyBVUkxzLlxuICpcbiAqIEBwdWJsaWNBcGlcbiAqL1xuZXhwb3J0IGludGVyZmFjZSBEYXRhR3JvdXAge1xuICBuYW1lOiBzdHJpbmc7XG4gIHVybHM6IEdsb2JbXTtcbiAgdmVyc2lvbj86IG51bWJlcjtcbiAgY2FjaGVDb25maWc6IHtcbiAgICBtYXhTaXplOiBudW1iZXI7IG1heEFnZTogRHVyYXRpb247IHRpbWVvdXQ/OiBEdXJhdGlvbjsgc3RyYXRlZ3k/OiAnZnJlc2huZXNzJyB8ICdwZXJmb3JtYW5jZSc7XG4gIH07XG59XG4iXX0=
+if (false) {
+    /** @type {?} */
+    DataGroup.prototype.name;
+    /** @type {?} */
+    DataGroup.prototype.urls;
+    /** @type {?|undefined} */
+    DataGroup.prototype.version;
+    /** @type {?} */
+    DataGroup.prototype.cacheConfig;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW4uanMiLCJzb3VyY2VSb290IjoiLi4vLi4vLi4vIiwic291cmNlcyI6WyJwYWNrYWdlcy9zZXJ2aWNlLXdvcmtlci9jb25maWcvc3JjL2luLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBdUJBLDRCQU1DOzs7SUFMQyx5QkFBYTs7SUFDYix1QkFBYzs7SUFDZCw2QkFBMkI7O0lBQzNCLDRCQUF5Qjs7SUFDekIsZ0NBQTBCOzs7Ozs7OztBQVE1QixnQ0FXQzs7O0lBVkMsMEJBQWE7O0lBQ2IsaUNBQWdDOztJQUNoQyxnQ0FBK0I7O0lBQy9CLCtCQU1FOzs7Ozs7OztBQVFKLCtCQU9DOzs7SUFOQyx5QkFBYTs7SUFDYix5QkFBYTs7SUFDYiw0QkFBaUI7O0lBQ2pCLGdDQUVFIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG4vKipcbiAqIEBwdWJsaWNBcGlcbiAqL1xuZXhwb3J0IHR5cGUgR2xvYiA9IHN0cmluZztcblxuLyoqXG4gKiBAcHVibGljQXBpXG4gKi9cbmV4cG9ydCB0eXBlIER1cmF0aW9uID0gc3RyaW5nO1xuXG4vKipcbiAqIEEgdG9wLWxldmVsIEFuZ3VsYXIgU2VydmljZSBXb3JrZXIgY29uZmlndXJhdGlvbiBvYmplY3QuXG4gKlxuICogQHB1YmxpY0FwaVxuICovXG5leHBvcnQgaW50ZXJmYWNlIENvbmZpZyB7XG4gIGFwcERhdGE/OiB7fTtcbiAgaW5kZXg6IHN0cmluZztcbiAgYXNzZXRHcm91cHM/OiBBc3NldEdyb3VwW107XG4gIGRhdGFHcm91cHM/OiBEYXRhR3JvdXBbXTtcbiAgbmF2aWdhdGlvblVybHM/OiBzdHJpbmdbXTtcbn1cblxuLyoqXG4gKiBDb25maWd1cmF0aW9uIGZvciBhIHBhcnRpY3VsYXIgZ3JvdXAgb2YgYXNzZXRzLlxuICpcbiAqIEBwdWJsaWNBcGlcbiAqL1xuZXhwb3J0IGludGVyZmFjZSBBc3NldEdyb3VwIHtcbiAgbmFtZTogc3RyaW5nO1xuICBpbnN0YWxsTW9kZT86ICdwcmVmZXRjaCd8J2xhenknO1xuICB1cGRhdGVNb2RlPzogJ3ByZWZldGNoJ3wnbGF6eSc7XG4gIHJlc291cmNlczoge1xuICAgIGZpbGVzPzogR2xvYltdO1xuICAgIC8qKiBAZGVwcmVjYXRlZCBBcyBvZiB2NiBgdmVyc2lvbmVkRmlsZXNgIGFuZCBgZmlsZXNgIG9wdGlvbnMgaGF2ZSB0aGUgc2FtZSBiZWhhdmlvci4gVXNlXG4gICAgICAgYGZpbGVzYCBpbnN0ZWFkLiAqL1xuICAgIHZlcnNpb25lZEZpbGVzPzogR2xvYltdO1xuICAgIHVybHM/OiBHbG9iW107XG4gIH07XG59XG5cbi8qKlxuICogQ29uZmlndXJhdGlvbiBmb3IgYSBwYXJ0aWN1bGFyIGdyb3VwIG9mIGR5bmFtaWMgVVJMcy5cbiAqXG4gKiBAcHVibGljQXBpXG4gKi9cbmV4cG9ydCBpbnRlcmZhY2UgRGF0YUdyb3VwIHtcbiAgbmFtZTogc3RyaW5nO1xuICB1cmxzOiBHbG9iW107XG4gIHZlcnNpb24/OiBudW1iZXI7XG4gIGNhY2hlQ29uZmlnOiB7XG4gICAgbWF4U2l6ZTogbnVtYmVyOyBtYXhBZ2U6IER1cmF0aW9uOyB0aW1lb3V0PzogRHVyYXRpb247IHN0cmF0ZWd5PzogJ2ZyZXNobmVzcycgfCAncGVyZm9ybWFuY2UnO1xuICB9O1xufVxuIl19
