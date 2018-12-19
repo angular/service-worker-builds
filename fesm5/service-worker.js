@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.2.0-beta.2+92.sha-24fa0b7
+ * @license Angular v7.2.0-rc.0
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -7,7 +7,7 @@
 import { __assign } from 'tslib';
 import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
 import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
-import { Injectable, defineInjectable, inject, ɵsetClassMetadata, InjectionToken, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, ɵdefineNgModule, defineInjector, NgModule } from '@angular/core';
+import { Injectable, InjectionToken, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, ɵdefineNgModule, defineInjector, ɵsetClassMetadata, NgModule, defineInjectable, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 /**
