@@ -1,13 +1,13 @@
 /**
- * @license Angular v7.2.0+101.sha-ad6569c
- * (c) 2010-2018 Google, Inc. https://angular.io/
+ * @license Angular v7.2.0+128.sha-091a8a6
+ * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
 
-import { concat, defer, fromEvent, of, throwError, NEVER, Subject, merge } from 'rxjs';
-import { filter, map, publish, switchMap, take, tap } from 'rxjs/operators';
-import { Injectable, APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, NgModule, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Injectable, InjectionToken, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule, ApplicationRef } from '@angular/core';
+import { map, filter, switchMap, publish, take, tap } from 'rxjs/operators';
+import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
 
 /**
  * @fileoverview added by tsickle
