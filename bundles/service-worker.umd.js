@@ -1,14 +1,14 @@
 /**
- * @license Angular v7.2.0+103.sha-885f1af
+ * @license Angular v7.2.0+104.sha-b78351c
  * (c) 2010-2018 Google, Inc. https://angular.io/
  * License: MIT
  */
 
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs'), require('rxjs/operators'), require('@angular/core'), require('@angular/common')) :
-    typeof define === 'function' && define.amd ? define('@angular/service-worker', ['exports', 'rxjs', 'rxjs/operators', '@angular/core', '@angular/common'], factory) :
-    (factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}),global.rxjs,global.rxjs.operators,global.ng.core,global.ng.common));
-}(this, (function (exports,rxjs,operators,i0,common) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('rxjs/operators'), require('rxjs')) :
+    typeof define === 'function' && define.amd ? define('@angular/service-worker', ['exports', '@angular/common', '@angular/core', 'rxjs/operators', 'rxjs'], factory) :
+    (global = global || self, factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}), global.ng.common, global.ng.core, global.rxjs.operators, global.rxjs));
+}(this, function (exports, common, i0, operators, rxjs) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -365,5 +365,5 @@
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
 //# sourceMappingURL=service-worker.umd.js.map
