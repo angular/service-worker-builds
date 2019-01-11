@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.2.0+128.sha-091a8a6
+ * @license Angular v7.2.0+126.sha-df292c2
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -228,7 +228,7 @@ SwPush.decorators = [
 SwPush.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
-/** @nocollapse */ SwPush.ngInjectableDef = defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(inject(NgswCommChannel)); }, providedIn: null });
+SwPush.ngInjectableDef = defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwPush, [{
         type: Injectable
     }], function () { return [{
@@ -302,7 +302,7 @@ SwUpdate.decorators = [
 SwUpdate.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
-/** @nocollapse */ SwUpdate.ngInjectableDef = defineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(inject(NgswCommChannel)); }, providedIn: null });
+SwUpdate.ngInjectableDef = defineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
     }], function () { return [{
@@ -407,8 +407,8 @@ ServiceWorkerModule.decorators = [
                 providers: [SwPush, SwUpdate],
             },] },
 ];
-/** @nocollapse */ ServiceWorkerModule.ngModuleDef = ɵdefineNgModule({ type: ServiceWorkerModule, bootstrap: [], declarations: [], imports: [], exports: [] });
-/** @nocollapse */ ServiceWorkerModule.ngInjectorDef = defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate], imports: [] });
+ServiceWorkerModule.ngModuleDef = ɵdefineNgModule({ type: ServiceWorkerModule, bootstrap: [], declarations: [], imports: [], exports: [] });
+ServiceWorkerModule.ngInjectorDef = defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate], imports: [] });
 /*@__PURE__*/ ɵsetClassMetadata(ServiceWorkerModule, [{
         type: NgModule,
         args: [{

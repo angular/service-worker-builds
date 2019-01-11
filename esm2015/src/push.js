@@ -106,7 +106,7 @@ SwPush.decorators = [
 SwPush.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
-/** @nocollapse */ SwPush.ngInjectableDef = i0.defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(i0.inject(NgswCommChannel)); }, providedIn: null });
+SwPush.ngInjectableDef = i0.defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(i0.inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ i0.ɵsetClassMetadata(SwPush, [{
         type: Injectable
     }], function () { return [{
