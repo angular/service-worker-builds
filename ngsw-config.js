@@ -234,7 +234,7 @@
     };
     var fs = require('fs');
     var path = require('path');
-    var NodeFilesystem = /** @class */ /*@__PURE__*/ (function () {
+    var NodeFilesystem = /*@__PURE__*/ (function () {
         function NodeFilesystem(base) {
             this.base = base;
         }
