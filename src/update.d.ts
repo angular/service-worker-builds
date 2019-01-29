@@ -1,13 +1,6 @@
-import * as i0 from '@angular/core';
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 import { Observable } from 'rxjs';
 import { NgswCommChannel, UpdateActivatedEvent, UpdateAvailableEvent } from './low_level';
+import * as i0 from "@angular/core";
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
