@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.0.0-beta.1+68.sha-6e16338
+ * @license Angular v8.0.0-beta.1+83.sha-e18a52e
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -407,7 +407,7 @@ ServiceWorkerModule.decorators = [
                 providers: [SwPush, SwUpdate],
             },] },
 ];
-/** @nocollapse */ ServiceWorkerModule.ngModuleDef = ɵdefineNgModule({ type: ServiceWorkerModule, bootstrap: [], declarations: [], imports: [], exports: [] });
+/** @nocollapse */ ServiceWorkerModule.ngModuleDef = ɵdefineNgModule({ type: ServiceWorkerModule });
 /** @nocollapse */ ServiceWorkerModule.ngInjectorDef = defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate], imports: [] });
 /*@__PURE__*/ ɵsetClassMetadata(ServiceWorkerModule, [{
         type: NgModule,
