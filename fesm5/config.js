@@ -1,5 +1,5 @@
 /**
- * @license Angular v7.2.7+26.sha-c976b88.with-local-changes
+ * @license Angular v7.2.7+27.sha-5669333.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -134,6 +134,7 @@ var Generator = /** @class */ (function () {
                         assetGroups = _a.sent();
                         return [2 /*return*/, {
                                 configVersion: 1,
+                                timestamp: Date.now(),
                                 appData: config.appData,
                                 index: joinUrls(this.baseHref, config.index), assetGroups: assetGroups,
                                 dataGroups: this.processDataGroups(config),
