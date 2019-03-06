@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.0.0-beta.6+85.sha-20a9dbe.with-local-changes
+ * @license Angular v8.0.0-beta.6+86.sha-881807d.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -231,9 +231,7 @@ SwPush.ctorParameters = () => [
 /** @nocollapse */ SwPush.ngInjectableDef = defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwPush, [{
         type: Injectable
-    }], function () { return [{
-        type: NgswCommChannel
-    }]; }, null);
+    }], function () { return [{ type: NgswCommChannel }]; }, null);
 
 /**
  * @fileoverview added by tsickle
@@ -305,9 +303,7 @@ SwUpdate.ctorParameters = () => [
 /** @nocollapse */ SwUpdate.ngInjectableDef = defineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(inject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
-    }], function () { return [{
-        type: NgswCommChannel
-    }]; }, null);
+    }], function () { return [{ type: NgswCommChannel }]; }, null);
 
 /**
  * @fileoverview added by tsickle
