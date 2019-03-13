@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.0.0-beta.8+1.sha-940fbf7.with-local-changes
+ * @license Angular v8.0.0-beta.8+9.sha-75748d6.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -11,7 +11,7 @@ import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
@@ -20,7 +20,10 @@ const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by t
  * @return {?}
  */
 function errorObservable(message) {
-    return defer(() => throwError(new Error(message)));
+    return defer((/**
+     * @return {?}
+     */
+    () => throwError(new Error(message))));
 }
 /**
  * \@publicApi
@@ -38,19 +41,40 @@ class NgswCommChannel {
             /** @type {?} */
             const controllerChangeEvents = fromEvent(serviceWorker, 'controllerchange');
             /** @type {?} */
-            const controllerChanges = controllerChangeEvents.pipe(map(() => serviceWorker.controller));
+            const controllerChanges = controllerChangeEvents.pipe(map((/**
+             * @return {?}
+             */
+            () => serviceWorker.controller)));
             /** @type {?} */
-            const currentController = defer(() => of(serviceWorker.controller));
+            const currentController = defer((/**
+             * @return {?}
+             */
+            () => of(serviceWorker.controller)));
             /** @type {?} */
             const controllerWithChanges = concat(currentController, controllerChanges);
-            this.worker = controllerWithChanges.pipe(filter(c => !!c));
-            this.registration = (/** @type {?} */ ((this.worker.pipe(switchMap(() => serviceWorker.getRegistration())))));
+            this.worker = controllerWithChanges.pipe(filter((/**
+             * @param {?} c
+             * @return {?}
+             */
+            c => !!c)));
+            this.registration = (/** @type {?} */ ((this.worker.pipe(switchMap((/**
+             * @return {?}
+             */
+            () => serviceWorker.getRegistration()))))));
             /** @type {?} */
             const rawEvents = fromEvent(serviceWorker, 'message');
             /** @type {?} */
-            const rawEventPayload = rawEvents.pipe(map(event => event.data));
+            const rawEventPayload = rawEvents.pipe(map((/**
+             * @param {?} event
+             * @return {?}
+             */
+            event => event.data)));
             /** @type {?} */
-            const eventsUnconnected = rawEventPayload.pipe(filter(event => event && event.type));
+            const eventsUnconnected = rawEventPayload.pipe(filter((/**
+             * @param {?} event
+             * @return {?}
+             */
+            event => event && event.type)));
             /** @type {?} */
             const events = (/** @type {?} */ (eventsUnconnected.pipe(publish())));
             events.connect();
@@ -64,11 +88,18 @@ class NgswCommChannel {
      */
     postMessage(action, payload) {
         return this.worker
-            .pipe(take(1), tap((sw) => {
+            .pipe(take(1), tap((/**
+         * @param {?} sw
+         * @return {?}
+         */
+        (sw) => {
             sw.postMessage(Object.assign({ action }, payload));
-        }))
+        })))
             .toPromise()
-            .then(() => undefined);
+            .then((/**
+         * @return {?}
+         */
+        () => undefined));
     }
     /**
      * @param {?} type
@@ -81,7 +112,10 @@ class NgswCommChannel {
         const waitForStatus = this.waitForStatus(nonce);
         /** @type {?} */
         const postMessage = this.postMessage(type, payload);
-        return Promise.all([waitForStatus, postMessage]).then(() => undefined);
+        return Promise.all([waitForStatus, postMessage]).then((/**
+         * @return {?}
+         */
+        () => undefined));
     }
     /**
      * @return {?}
@@ -94,7 +128,11 @@ class NgswCommChannel {
      */
     eventsOfType(type) {
         /** @type {?} */
-        const filterFn = (event) => event.type === type;
+        const filterFn = (/**
+         * @param {?} event
+         * @return {?}
+         */
+        (event) => event.type === type);
         return this.events.pipe(filter(filterFn));
     }
     /**
@@ -111,12 +149,20 @@ class NgswCommChannel {
      */
     waitForStatus(nonce) {
         return this.eventsOfType('STATUS')
-            .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
+            .pipe(filter((/**
+         * @param {?} event
+         * @return {?}
+         */
+        event => event.nonce === nonce)), take(1), map((/**
+         * @param {?} event
+         * @return {?}
+         */
+        event => {
             if (event.status) {
                 return undefined;
             }
             throw new Error((/** @type {?} */ (event.error)));
-        }))
+        })))
             .toPromise();
     }
     /**
@@ -127,7 +173,7 @@ class NgswCommChannel {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * Subscribe and listen to push notifications from the Service Worker.
@@ -147,12 +193,28 @@ class SwPush {
             this.subscription = NEVER;
             return;
         }
-        this.messages = this.sw.eventsOfType('PUSH').pipe(map(message => message.data));
+        this.messages = this.sw.eventsOfType('PUSH').pipe(map((/**
+         * @param {?} message
+         * @return {?}
+         */
+        message => message.data)));
         this.notificationClicks =
-            this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message) => message.data));
-        this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
+            this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((/**
+             * @param {?} message
+             * @return {?}
+             */
+            (message) => message.data)));
+        this.pushManager = this.sw.registration.pipe(map((/**
+         * @param {?} registration
+         * @return {?}
+         */
+        registration => registration.pushManager)));
         /** @type {?} */
-        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap(pm => pm.getSubscription()));
+        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((/**
+         * @param {?} pm
+         * @return {?}
+         */
+        pm => pm.getSubscription())));
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
@@ -179,12 +241,20 @@ class SwPush {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
-        return this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1))
+        return this.pushManager.pipe(switchMap((/**
+         * @param {?} pm
+         * @return {?}
+         */
+        pm => pm.subscribe(pushOptions))), take(1))
             .toPromise()
-            .then(sub => {
+            .then((/**
+         * @param {?} sub
+         * @return {?}
+         */
+        sub => {
             this.subscriptionChanges.next(sub);
             return sub;
-        });
+        }));
     }
     /**
      * @return {?}
@@ -194,17 +264,25 @@ class SwPush {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
         /** @type {?} */
-        const doUnsubscribe = (sub) => {
+        const doUnsubscribe = (/**
+         * @param {?} sub
+         * @return {?}
+         */
+        (sub) => {
             if (sub === null) {
                 throw new Error('Not subscribed to push notifications.');
             }
-            return sub.unsubscribe().then(success => {
+            return sub.unsubscribe().then((/**
+             * @param {?} success
+             * @return {?}
+             */
+            success => {
                 if (!success) {
                     throw new Error('Unsubscribe failed!');
                 }
                 this.subscriptionChanges.next(null);
-            });
-        };
+            }));
+        });
         return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
     }
     /**
@@ -224,7 +302,7 @@ SwPush.ctorParameters = () => [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
@@ -285,7 +363,7 @@ SwUpdate.ctorParameters = () => [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * @abstract
@@ -303,7 +381,10 @@ const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
  */
 function ngswAppInitializer(injector, script, options, platformId) {
     /** @type {?} */
-    const initializer = () => {
+    const initializer = (/**
+     * @return {?}
+     */
+    () => {
         /** @type {?} */
         const app = injector.get(ApplicationRef);
         if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
@@ -311,19 +392,29 @@ function ngswAppInitializer(injector, script, options, platformId) {
             return;
         }
         /** @type {?} */
-        const whenStable = app.isStable.pipe(filter((stable) => !!stable), take(1)).toPromise();
+        const whenStable = app.isStable.pipe(filter((/**
+         * @param {?} stable
+         * @return {?}
+         */
+        (stable) => !!stable)), take(1)).toPromise();
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
         // becomes active. This allows the SW to initialize itself even if there is no application
         // traffic.
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
+        navigator.serviceWorker.addEventListener('controllerchange', (/**
+         * @return {?}
+         */
+        () => {
             if (navigator.serviceWorker.controller !== null) {
                 navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
             }
-        });
+        }));
         // Don't return the Promise, as that will block the application until the SW is registered, and
         // cause a crash if the SW registration fails.
-        whenStable.then(() => navigator.serviceWorker.register(script, { scope: options.scope }));
-    };
+        whenStable.then((/**
+         * @return {?}
+         */
+        () => navigator.serviceWorker.register(script, { scope: options.scope })));
+    });
     return initializer;
 }
 /**
@@ -377,17 +468,17 @@ ServiceWorkerModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
