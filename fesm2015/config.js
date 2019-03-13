@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.0.0-beta.8+8.sha-9a7f560.with-local-changes
+ * @license Angular v8.0.0-beta.8+11.sha-7b20cec.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -8,7 +8,7 @@ import { __awaiter } from 'tslib';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -34,7 +34,11 @@ function parseDurationToMs(duration) {
         matches.push(array[0]);
     }
     return matches
-        .map(match => {
+        .map((/**
+     * @param {?} match
+     * @return {?}
+     */
+    match => {
         /** @type {?} */
         const res = PAIR_SPLIT.exec(match);
         if (res === null) {
@@ -62,13 +66,18 @@ function parseDurationToMs(duration) {
                 throw new Error(`Not a valid duration unit: ${res[2]}`);
         }
         return parseInt(res[1]) * factor;
-    })
-        .reduce((total, value) => total + value, 0);
+    }))
+        .reduce((/**
+     * @param {?} total
+     * @param {?} value
+     * @return {?}
+     */
+    (total, value) => total + value), 0);
 }
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
  * @license
@@ -124,7 +133,12 @@ function globToRegex(glob, literalQuestionMark = false) {
         }
         else {
             /** @type {?} */
-            const processed = toEscape.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
+            const processed = toEscape.reduce((/**
+             * @param {?} segment
+             * @param {?} escape
+             * @return {?}
+             */
+            (segment, escape) => segment.replace(escape.replace, escape.with)), segment);
             regex += processed;
             if (segments.length > 0) {
                 regex += '\\/';
@@ -136,7 +150,7 @@ function globToRegex(glob, literalQuestionMark = false) {
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
 const DEFAULT_NAVIGATION_URLS = [
@@ -190,7 +204,11 @@ class Generator {
         return __awaiter(this, void 0, void 0, function* () {
             /** @type {?} */
             const seenMap = new Set();
-            return Promise.all((config.assetGroups || []).map((group) => __awaiter(this, void 0, void 0, function* () {
+            return Promise.all((config.assetGroups || []).map((/**
+             * @param {?} group
+             * @return {?}
+             */
+            (group) => __awaiter(this, void 0, void 0, function* () {
                 if (group.resources.versionedFiles) {
                     console.warn(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option.\n` +
                         'As of v6 \'versionedFiles\' and \'files\' options have the same behavior. ' +
@@ -203,28 +221,57 @@ class Generator {
                 /** @type {?} */
                 const allFiles = yield this.fs.list('/');
                 /** @type {?} */
-                const plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
-                plainFiles.forEach(file => seenMap.add(file));
+                const plainFiles = allFiles.filter(fileMatcher).filter((/**
+                 * @param {?} file
+                 * @return {?}
+                 */
+                file => !seenMap.has(file)));
+                plainFiles.forEach((/**
+                 * @param {?} file
+                 * @return {?}
+                 */
+                file => seenMap.add(file)));
                 /** @type {?} */
-                const versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
-                versionedFiles.forEach(file => seenMap.add(file));
+                const versionedFiles = allFiles.filter(versionedMatcher).filter((/**
+                 * @param {?} file
+                 * @return {?}
+                 */
+                file => !seenMap.has(file)));
+                versionedFiles.forEach((/**
+                 * @param {?} file
+                 * @return {?}
+                 */
+                file => seenMap.add(file)));
                 // Add the hashes.
                 /** @type {?} */
                 const matchedFiles = [...plainFiles, ...versionedFiles].sort();
-                yield matchedFiles.reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
+                yield matchedFiles.reduce((/**
+                 * @param {?} previous
+                 * @param {?} file
+                 * @return {?}
+                 */
+                (previous, file) => __awaiter(this, void 0, void 0, function* () {
                     yield previous;
                     /** @type {?} */
                     const hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
-                }), Promise.resolve());
+                })), Promise.resolve());
                 return {
                     name: group.name,
                     installMode: group.installMode || 'prefetch',
                     updateMode: group.updateMode || group.installMode || 'prefetch',
-                    urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
-                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
+                    urls: matchedFiles.map((/**
+                     * @param {?} url
+                     * @return {?}
+                     */
+                    url => joinUrls(this.baseHref, url))),
+                    patterns: (group.resources.urls || []).map((/**
+                     * @param {?} url
+                     * @return {?}
+                     */
+                    url => urlToRegex(url, this.baseHref, true))),
                 };
-            })));
+            }))));
         });
     }
     /**
@@ -233,17 +280,25 @@ class Generator {
      * @return {?}
      */
     processDataGroups(config) {
-        return (config.dataGroups || []).map(group => {
+        return (config.dataGroups || []).map((/**
+         * @param {?} group
+         * @return {?}
+         */
+        group => {
             return {
                 name: group.name,
-                patterns: group.urls.map(url => urlToRegex(url, this.baseHref, true)),
+                patterns: group.urls.map((/**
+                 * @param {?} url
+                 * @return {?}
+                 */
+                url => urlToRegex(url, this.baseHref, true))),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
                 timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
                 version: group.version !== undefined ? group.version : 1,
             };
-        });
+        }));
     }
 }
 /**
@@ -252,12 +307,16 @@ class Generator {
  * @return {?}
  */
 function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
-    return urls.map(url => {
+    return urls.map((/**
+     * @param {?} url
+     * @return {?}
+     */
+    url => {
         /** @type {?} */
         const positive = !url.startsWith('!');
         url = positive ? url : url.substr(1);
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
-    });
+    }));
 }
 /**
  * @param {?} globs
@@ -265,7 +324,11 @@ function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
  */
 function globListToMatcher(globs) {
     /** @type {?} */
-    const patterns = globs.map(pattern => {
+    const patterns = globs.map((/**
+     * @param {?} pattern
+     * @return {?}
+     */
+    pattern => {
         if (pattern.startsWith('!')) {
             return {
                 positive: false,
@@ -278,8 +341,12 @@ function globListToMatcher(globs) {
                 regex: new RegExp('^' + globToRegex(pattern) + '$'),
             };
         }
-    });
-    return (file) => matches(file, patterns);
+    }));
+    return (/**
+     * @param {?} file
+     * @return {?}
+     */
+    (file) => matches(file, patterns));
 }
 /**
  * @param {?} file
@@ -288,14 +355,19 @@ function globListToMatcher(globs) {
  */
 function matches(file, patterns) {
     /** @type {?} */
-    const res = patterns.reduce((isMatch, pattern) => {
+    const res = patterns.reduce((/**
+     * @param {?} isMatch
+     * @param {?} pattern
+     * @return {?}
+     */
+    (isMatch, pattern) => {
         if (pattern.positive) {
             return isMatch || pattern.regex.test(file);
         }
         else {
             return isMatch && !pattern.regex.test(file);
         }
-    }, false);
+    }), false);
     return res;
 }
 /**
@@ -332,18 +404,22 @@ function joinUrls(a, b) {
 function withOrderedKeys(unorderedObj) {
     /** @type {?} */
     const orderedObj = (/** @type {?} */ ({}));
-    Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
+    Object.keys(unorderedObj).sort().forEach((/**
+     * @param {?} key
+     * @return {?}
+     */
+    key => orderedObj[key] = unorderedObj[key]));
     return orderedObj;
 }
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
