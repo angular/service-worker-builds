@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.0.0-beta.10+117.sha-6b39c9c.with-local-changes
+ * @license Angular v8.0.0-beta.10+120.sha-60afe88.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -320,7 +320,7 @@
             };
         };
         ServiceWorkerModule.ngModuleDef = i0.ɵdefineNgModule({ type: ServiceWorkerModule });
-        ServiceWorkerModule.ngInjectorDef = i0.defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate], imports: [] });
+        ServiceWorkerModule.ngInjectorDef = i0.defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
         return ServiceWorkerModule;
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(ServiceWorkerModule, [{

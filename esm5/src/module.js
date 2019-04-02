@@ -79,7 +79,7 @@ var ServiceWorkerModule = /** @class */ (function () {
         };
     };
     ServiceWorkerModule.ngModuleDef = i0.ɵdefineNgModule({ type: ServiceWorkerModule });
-    ServiceWorkerModule.ngInjectorDef = i0.defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate], imports: [] });
+    ServiceWorkerModule.ngInjectorDef = i0.defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
     return ServiceWorkerModule;
 }());
 export { ServiceWorkerModule };

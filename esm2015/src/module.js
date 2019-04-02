@@ -123,7 +123,7 @@ ServiceWorkerModule.decorators = [
             },] },
 ];
 /** @nocollapse */ ServiceWorkerModule.ngModuleDef = i0.ɵdefineNgModule({ type: ServiceWorkerModule });
-/** @nocollapse */ ServiceWorkerModule.ngInjectorDef = i0.defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate], imports: [] });
+/** @nocollapse */ ServiceWorkerModule.ngInjectorDef = i0.defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
 /*@__PURE__*/ i0.ɵsetClassMetadata(ServiceWorkerModule, [{
         type: NgModule,
         args: [{
