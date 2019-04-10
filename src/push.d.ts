@@ -48,5 +48,5 @@ export declare class SwPush {
     }): Promise<PushSubscription>;
     unsubscribe(): Promise<void>;
     private decodeBase64;
-    static ngInjectableDef: i0.ɵInjectableDef<SwPush>;
+    static ngInjectableDef: i0.ΔInjectableDef<SwPush>;
 }

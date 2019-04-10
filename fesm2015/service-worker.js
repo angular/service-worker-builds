@@ -1,11 +1,11 @@
 /**
- * @license Angular v8.0.0-beta.11+55.sha-db62ccf.with-local-changes
+ * @license Angular v8.0.0-beta.11+57.sha-ef85336.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import { isPlatformBrowser } from '@angular/common';
-import { Injectable, defineInjectable, inject, ɵsetClassMetadata, InjectionToken, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule, ɵdefineNgModule, defineInjector, ApplicationRef } from '@angular/core';
+import { Injectable, ΔdefineInjectable, Δinject, ɵsetClassMetadata, InjectionToken, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule, ΔdefineNgModule, ΔdefineInjector, ApplicationRef } from '@angular/core';
 import { map, filter, switchMap, publish, take, tap } from 'rxjs/operators';
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
 
@@ -306,7 +306,7 @@ SwPush.decorators = [
 SwPush.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
-/** @nocollapse */ SwPush.ngInjectableDef = defineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(inject(NgswCommChannel)); }, providedIn: null });
+/** @nocollapse */ SwPush.ngInjectableDef = ΔdefineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(Δinject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwPush, [{
         type: Injectable
     }], function () { return [{ type: NgswCommChannel }]; }, null);
@@ -378,7 +378,7 @@ SwUpdate.decorators = [
 SwUpdate.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
-/** @nocollapse */ SwUpdate.ngInjectableDef = defineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(inject(NgswCommChannel)); }, providedIn: null });
+/** @nocollapse */ SwUpdate.ngInjectableDef = ΔdefineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(Δinject(NgswCommChannel)); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
     }], function () { return [{ type: NgswCommChannel }]; }, null);
@@ -494,8 +494,8 @@ ServiceWorkerModule.decorators = [
                 providers: [SwPush, SwUpdate],
             },] },
 ];
-/** @nocollapse */ ServiceWorkerModule.ngModuleDef = ɵdefineNgModule({ type: ServiceWorkerModule });
-/** @nocollapse */ ServiceWorkerModule.ngInjectorDef = defineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
+/** @nocollapse */ ServiceWorkerModule.ngModuleDef = ΔdefineNgModule({ type: ServiceWorkerModule });
+/** @nocollapse */ ServiceWorkerModule.ngInjectorDef = ΔdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
 /*@__PURE__*/ ɵsetClassMetadata(ServiceWorkerModule, [{
         type: NgModule,
         args: [{
