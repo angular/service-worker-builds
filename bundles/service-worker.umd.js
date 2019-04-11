@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.0.0-beta.11+84.sha-54058ba.with-local-changes
+ * @license Angular v8.0.0-beta.11+85.sha-b057806.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -186,7 +186,7 @@
             return this.subscription.pipe(operators.take(1), operators.switchMap(doUnsubscribe)).toPromise();
         };
         SwPush.prototype.decodeBase64 = function (input) { return atob(input); };
-        SwPush.ngInjectableDef = i0.ΔdefineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(i0.Δinject(NgswCommChannel)); }, providedIn: null });
+        SwPush.ngInjectableDef = i0.ɵɵdefineInjectable({ token: SwPush, factory: function SwPush_Factory(t) { return new (t || SwPush)(i0.ɵɵinject(NgswCommChannel)); }, providedIn: null });
         return SwPush;
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(SwPush, [{
@@ -240,7 +240,7 @@
             var statusNonce = this.sw.generateNonce();
             return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
         };
-        SwUpdate.ngInjectableDef = i0.ΔdefineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.Δinject(NgswCommChannel)); }, providedIn: null });
+        SwUpdate.ngInjectableDef = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.ɵɵinject(NgswCommChannel)); }, providedIn: null });
         return SwUpdate;
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(SwUpdate, [{
@@ -319,8 +319,8 @@
                 ],
             };
         };
-        ServiceWorkerModule.ngModuleDef = i0.ΔdefineNgModule({ type: ServiceWorkerModule });
-        ServiceWorkerModule.ngInjectorDef = i0.ΔdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
+        ServiceWorkerModule.ngModuleDef = i0.ɵɵdefineNgModule({ type: ServiceWorkerModule });
+        ServiceWorkerModule.ngInjectorDef = i0.ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
         return ServiceWorkerModule;
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(ServiceWorkerModule, [{

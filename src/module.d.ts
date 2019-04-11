@@ -22,6 +22,6 @@ export declare class ServiceWorkerModule {
         scope?: string;
         enabled?: boolean;
     }): ModuleWithProviders<ServiceWorkerModule>;
-    static ngModuleDef: i0.ΔNgModuleDefWithMeta<ServiceWorkerModule, never, never, never>;
-    static ngInjectorDef: i0.ΔInjectorDef<ServiceWorkerModule>;
+    static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<ServiceWorkerModule, never, never, never>;
+    static ngInjectorDef: i0.ɵɵInjectorDef<ServiceWorkerModule>;
 }
