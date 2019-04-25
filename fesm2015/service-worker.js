@@ -1,13 +1,13 @@
 /**
- * @license Angular v8.0.0-beta.14+54.sha-2236ea4.with-local-changes
+ * @license Angular v8.0.0-beta.14+62.sha-909557d.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import { isPlatformBrowser } from '@angular/common';
 import { Injectable, InjectionToken, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule, ApplicationRef } from '@angular/core';
-import { map, filter, switchMap, publish, take, tap } from 'rxjs/operators';
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
+import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operators';
 
 /**
  * @fileoverview added by tsickle
@@ -366,9 +366,19 @@ SwUpdate.ctorParameters = () => [
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
+ * Token that can be used to provide options for `ServiceWorkerModule` outside of
+ * `ServiceWorkerModule.register()`.
+ *
+ * You can use this token to define a provider that generates the registration options at runtime,
+ * for example via a function call:
+ *
+ * {\@example service-worker/registration-options/module.ts region="registration-options"
+ *     header="app.module.ts" linenums="false"}
+ *
+ * \@publicApi
  * @abstract
  */
-class RegistrationOptions {
+class SwRegistrationOptions {
 }
 /** @type {?} */
 const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
@@ -385,18 +395,10 @@ function ngswAppInitializer(injector, script, options, platformId) {
      * @return {?}
      */
     () => {
-        /** @type {?} */
-        const app = injector.get(ApplicationRef);
         if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
             options.enabled !== false)) {
             return;
         }
-        /** @type {?} */
-        const whenStable = app.isStable.pipe(filter((/**
-         * @param {?} stable
-         * @return {?}
-         */
-        (stable) => !!stable)), take(1)).toPromise();
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
         // becomes active. This allows the SW to initialize itself even if there is no application
         // traffic.
@@ -408,9 +410,37 @@ function ngswAppInitializer(injector, script, options, platformId) {
                 navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
             }
         }));
-        // Don't return the Promise, as that will block the application until the SW is registered, and
-        // cause a crash if the SW registration fails.
-        whenStable.then((/**
+        /** @type {?} */
+        let readyToRegister$;
+        if (typeof options.registrationStrategy === 'function') {
+            readyToRegister$ = options.registrationStrategy();
+        }
+        else {
+            const [strategy, ...args] = (options.registrationStrategy || 'registerWhenStable').split(':');
+            switch (strategy) {
+                case 'registerImmediately':
+                    readyToRegister$ = of(null);
+                    break;
+                case 'registerWithDelay':
+                    readyToRegister$ = of(null).pipe(delay(+args[0] || 0));
+                    break;
+                case 'registerWhenStable':
+                    /** @type {?} */
+                    const appRef = injector.get(ApplicationRef);
+                    readyToRegister$ = appRef.isStable.pipe(filter((/**
+                     * @param {?} stable
+                     * @return {?}
+                     */
+                    stable => stable)));
+                    break;
+                default:
+                    // Unknown strategy.
+                    throw new Error(`Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`);
+            }
+        }
+        // Don't return anything to avoid blocking the application until the SW is registered or
+        // causing a crash if the SW registration fails.
+        readyToRegister$.pipe(take(1)).subscribe((/**
          * @return {?}
          */
         () => navigator.serviceWorker.register(script, { scope: options.scope })));
@@ -444,16 +474,16 @@ class ServiceWorkerModule {
             ngModule: ServiceWorkerModule,
             providers: [
                 { provide: SCRIPT, useValue: script },
-                { provide: RegistrationOptions, useValue: opts },
+                { provide: SwRegistrationOptions, useValue: opts },
                 {
                     provide: NgswCommChannel,
                     useFactory: ngswCommChannelFactory,
-                    deps: [RegistrationOptions, PLATFORM_ID]
+                    deps: [SwRegistrationOptions, PLATFORM_ID]
                 },
                 {
                     provide: APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [Injector, SCRIPT, RegistrationOptions, PLATFORM_ID],
+                    deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
                     multi: true,
                 },
             ],
@@ -485,5 +515,5 @@ ServiceWorkerModule.decorators = [
  * Generated bundle index. Do not edit.
  */
 
-export { NgswCommChannel as ɵangular_packages_service_worker_service_worker_a, RegistrationOptions as ɵangular_packages_service_worker_service_worker_b, SCRIPT as ɵangular_packages_service_worker_service_worker_c, ngswAppInitializer as ɵangular_packages_service_worker_service_worker_d, ngswCommChannelFactory as ɵangular_packages_service_worker_service_worker_e, ServiceWorkerModule, SwPush, SwUpdate };
+export { NgswCommChannel as ɵangular_packages_service_worker_service_worker_a, SCRIPT as ɵangular_packages_service_worker_service_worker_b, ngswAppInitializer as ɵangular_packages_service_worker_service_worker_c, ngswCommChannelFactory as ɵangular_packages_service_worker_service_worker_d, ServiceWorkerModule, SwRegistrationOptions, SwPush, SwUpdate };
 //# sourceMappingURL=service-worker.js.map

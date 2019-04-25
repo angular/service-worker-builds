@@ -1,14 +1,14 @@
 /**
- * @license Angular v8.0.0-beta.14+54.sha-2236ea4.with-local-changes
+ * @license Angular v8.0.0-beta.14+62.sha-909557d.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
 
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('rxjs/operators'), require('rxjs')) :
-    typeof define === 'function' && define.amd ? define('@angular/service-worker', ['exports', '@angular/common', '@angular/core', 'rxjs/operators', 'rxjs'], factory) :
-    (global = global || self, factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}), global.ng.common, global.ng.core, global.rxjs.operators, global.rxjs));
-}(this, function (exports, common, core, operators, rxjs) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('rxjs'), require('rxjs/operators')) :
+    typeof define === 'function' && define.amd ? define('@angular/service-worker', ['exports', '@angular/common', '@angular/core', 'rxjs', 'rxjs/operators'], factory) :
+    (global = global || self, factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}), global.ng.common, global.ng.core, global.rxjs, global.rxjs.operators));
+}(this, function (exports, common, core, rxjs, operators) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -45,6 +45,23 @@
 
     function __metadata(metadataKey, metadataValue) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+    }
+
+    function __read(o, n) {
+        var m = typeof Symbol === "function" && o[Symbol.iterator];
+        if (!m) return o;
+        var i = m.call(o), r, ar = [], e;
+        try {
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+        }
+        catch (error) { e = { error: error }; }
+        finally {
+            try {
+                if (r && !r.done && (m = i["return"])) m.call(i);
+            }
+            finally { if (e) throw e.error; }
+        }
+        return ar;
     }
 
     /**
@@ -265,20 +282,30 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    var RegistrationOptions = /** @class */ (function () {
-        function RegistrationOptions() {
+    /**
+     * Token that can be used to provide options for `ServiceWorkerModule` outside of
+     * `ServiceWorkerModule.register()`.
+     *
+     * You can use this token to define a provider that generates the registration options at runtime,
+     * for example via a function call:
+     *
+     * {@example service-worker/registration-options/module.ts region="registration-options"
+     *     header="app.module.ts" linenums="false"}
+     *
+     * @publicApi
+     */
+    var SwRegistrationOptions = /** @class */ (function () {
+        function SwRegistrationOptions() {
         }
-        return RegistrationOptions;
+        return SwRegistrationOptions;
     }());
     var SCRIPT = new core.InjectionToken('NGSW_REGISTER_SCRIPT');
     function ngswAppInitializer(injector, script, options, platformId) {
         var initializer = function () {
-            var app = injector.get(core.ApplicationRef);
             if (!(common.isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
                 options.enabled !== false)) {
                 return;
             }
-            var whenStable = app.isStable.pipe(operators.filter(function (stable) { return !!stable; }), operators.take(1)).toPromise();
             // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
             // becomes active. This allows the SW to initialize itself even if there is no application
             // traffic.
@@ -287,9 +314,31 @@
                     navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
                 }
             });
-            // Don't return the Promise, as that will block the application until the SW is registered, and
-            // cause a crash if the SW registration fails.
-            whenStable.then(function () { return navigator.serviceWorker.register(script, { scope: options.scope }); });
+            var readyToRegister$;
+            if (typeof options.registrationStrategy === 'function') {
+                readyToRegister$ = options.registrationStrategy();
+            }
+            else {
+                var _a = __read((options.registrationStrategy || 'registerWhenStable').split(':')), strategy = _a[0], args = _a.slice(1);
+                switch (strategy) {
+                    case 'registerImmediately':
+                        readyToRegister$ = rxjs.of(null);
+                        break;
+                    case 'registerWithDelay':
+                        readyToRegister$ = rxjs.of(null).pipe(operators.delay(+args[0] || 0));
+                        break;
+                    case 'registerWhenStable':
+                        var appRef = injector.get(core.ApplicationRef);
+                        readyToRegister$ = appRef.isStable.pipe(operators.filter(function (stable) { return stable; }));
+                        break;
+                    default:
+                        // Unknown strategy.
+                        throw new Error("Unknown ServiceWorker registration strategy: " + options.registrationStrategy);
+                }
+            }
+            // Don't return anything to avoid blocking the application until the SW is registered or
+            // causing a crash if the SW registration fails.
+            readyToRegister$.pipe(operators.take(1)).subscribe(function () { return navigator.serviceWorker.register(script, { scope: options.scope }); });
         };
         return initializer;
     }
@@ -316,16 +365,16 @@
                 ngModule: ServiceWorkerModule_1,
                 providers: [
                     { provide: SCRIPT, useValue: script },
-                    { provide: RegistrationOptions, useValue: opts },
+                    { provide: SwRegistrationOptions, useValue: opts },
                     {
                         provide: NgswCommChannel,
                         useFactory: ngswCommChannelFactory,
-                        deps: [RegistrationOptions, core.PLATFORM_ID]
+                        deps: [SwRegistrationOptions, core.PLATFORM_ID]
                     },
                     {
                         provide: core.APP_INITIALIZER,
                         useFactory: ngswAppInitializer,
-                        deps: [core.Injector, SCRIPT, RegistrationOptions, core.PLATFORM_ID],
+                        deps: [core.Injector, SCRIPT, SwRegistrationOptions, core.PLATFORM_ID],
                         multi: true,
                     },
                 ],
@@ -370,11 +419,11 @@
      */
 
     exports.ɵangular_packages_service_worker_service_worker_a = NgswCommChannel;
-    exports.ɵangular_packages_service_worker_service_worker_b = RegistrationOptions;
-    exports.ɵangular_packages_service_worker_service_worker_c = SCRIPT;
-    exports.ɵangular_packages_service_worker_service_worker_d = ngswAppInitializer;
-    exports.ɵangular_packages_service_worker_service_worker_e = ngswCommChannelFactory;
+    exports.ɵangular_packages_service_worker_service_worker_b = SCRIPT;
+    exports.ɵangular_packages_service_worker_service_worker_c = ngswAppInitializer;
+    exports.ɵangular_packages_service_worker_service_worker_d = ngswCommChannelFactory;
     exports.ServiceWorkerModule = ServiceWorkerModule;
+    exports.SwRegistrationOptions = SwRegistrationOptions;
     exports.SwPush = SwPush;
     exports.SwUpdate = SwUpdate;
 
