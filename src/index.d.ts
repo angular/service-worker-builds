@@ -13,6 +13,6 @@
 * found in the LICENSE file at https://angular.io/license
 */
 export { UpdateActivatedEvent, UpdateAvailableEvent } from './low_level';
-export { ServiceWorkerModule } from './module';
+export { ServiceWorkerModule, SwRegistrationOptions } from './module';
 export { SwPush } from './push';
 export { SwUpdate } from './update';

@@ -1,14 +1,14 @@
 /**
- * @license Angular v8.0.0-beta.14+54.sha-2236ea4.with-local-changes
+ * @license Angular v8.0.0-beta.14+62.sha-909557d.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
 
+import { __assign, __read } from 'tslib';
 import { isPlatformBrowser } from '@angular/common';
 import { ɵɵdefineInjectable, ɵɵinject, ɵsetClassMetadata, Injectable, InjectionToken, ɵɵdefineNgModule, ɵɵdefineInjector, NgModule, PLATFORM_ID, APP_INITIALIZER, Injector, ApplicationRef } from '@angular/core';
-import { take, tap, filter, map, switchMap, publish } from 'rxjs/operators';
-import { __assign } from 'tslib';
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
+import { take, tap, filter, map, switchMap, publish, delay } from 'rxjs/operators';
 
 /**
  * @license
@@ -222,26 +222,29 @@ var SwUpdate = /** @class */ (function () {
     }], function () { return [{ type: NgswCommChannel }]; }, null);
 
 /**
- * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Token that can be used to provide options for `ServiceWorkerModule` outside of
+ * `ServiceWorkerModule.register()`.
  *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * You can use this token to define a provider that generates the registration options at runtime,
+ * for example via a function call:
+ *
+ * {@example service-worker/registration-options/module.ts region="registration-options"
+ *     header="app.module.ts" linenums="false"}
+ *
+ * @publicApi
  */
-var RegistrationOptions = /** @class */ (function () {
-    function RegistrationOptions() {
+var SwRegistrationOptions = /** @class */ (function () {
+    function SwRegistrationOptions() {
     }
-    return RegistrationOptions;
+    return SwRegistrationOptions;
 }());
 var SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
 function ngswAppInitializer(injector, script, options, platformId) {
     var initializer = function () {
-        var app = injector.get(ApplicationRef);
         if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
             options.enabled !== false)) {
             return;
         }
-        var whenStable = app.isStable.pipe(filter(function (stable) { return !!stable; }), take(1)).toPromise();
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
         // becomes active. This allows the SW to initialize itself even if there is no application
         // traffic.
@@ -250,9 +253,31 @@ function ngswAppInitializer(injector, script, options, platformId) {
                 navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
             }
         });
-        // Don't return the Promise, as that will block the application until the SW is registered, and
-        // cause a crash if the SW registration fails.
-        whenStable.then(function () { return navigator.serviceWorker.register(script, { scope: options.scope }); });
+        var readyToRegister$;
+        if (typeof options.registrationStrategy === 'function') {
+            readyToRegister$ = options.registrationStrategy();
+        }
+        else {
+            var _a = __read((options.registrationStrategy || 'registerWhenStable').split(':')), strategy = _a[0], args = _a.slice(1);
+            switch (strategy) {
+                case 'registerImmediately':
+                    readyToRegister$ = of(null);
+                    break;
+                case 'registerWithDelay':
+                    readyToRegister$ = of(null).pipe(delay(+args[0] || 0));
+                    break;
+                case 'registerWhenStable':
+                    var appRef = injector.get(ApplicationRef);
+                    readyToRegister$ = appRef.isStable.pipe(filter(function (stable) { return stable; }));
+                    break;
+                default:
+                    // Unknown strategy.
+                    throw new Error("Unknown ServiceWorker registration strategy: " + options.registrationStrategy);
+            }
+        }
+        // Don't return anything to avoid blocking the application until the SW is registered or
+        // causing a crash if the SW registration fails.
+        readyToRegister$.pipe(take(1)).subscribe(function () { return navigator.serviceWorker.register(script, { scope: options.scope }); });
     };
     return initializer;
 }
@@ -278,16 +303,16 @@ var ServiceWorkerModule = /** @class */ (function () {
             ngModule: ServiceWorkerModule,
             providers: [
                 { provide: SCRIPT, useValue: script },
-                { provide: RegistrationOptions, useValue: opts },
+                { provide: SwRegistrationOptions, useValue: opts },
                 {
                     provide: NgswCommChannel,
                     useFactory: ngswCommChannelFactory,
-                    deps: [RegistrationOptions, PLATFORM_ID]
+                    deps: [SwRegistrationOptions, PLATFORM_ID]
                 },
                 {
                     provide: APP_INITIALIZER,
                     useFactory: ngswAppInitializer,
-                    deps: [Injector, SCRIPT, RegistrationOptions, PLATFORM_ID],
+                    deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
                     multi: true,
                 },
             ],
@@ -329,5 +354,5 @@ var ServiceWorkerModule = /** @class */ (function () {
  * found in the LICENSE file at https://angular.io/license
  */
 
-export { ServiceWorkerModule, SwPush, SwUpdate };
+export { ServiceWorkerModule, SwRegistrationOptions, SwPush, SwUpdate };
 //# sourceMappingURL=service-worker.js.map
