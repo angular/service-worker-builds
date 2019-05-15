@@ -69,6 +69,6 @@ export declare class ServiceWorkerModule {
      * workers are not supported by the browser, and the service worker will not be registered.
      */
     static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
-    static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<ServiceWorkerModule, never, never, never>;
-    static ngInjectorDef: i0.ɵɵInjectorDef<ServiceWorkerModule>;
+    static ngModuleDef: i0.ΔNgModuleDefWithMeta<ServiceWorkerModule, never, never, never>;
+    static ngInjectorDef: i0.ΔInjectorDef<ServiceWorkerModule>;
 }
