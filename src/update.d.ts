@@ -25,5 +25,5 @@ export declare class SwUpdate {
     constructor(sw: NgswCommChannel);
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
-    static ngInjectableDef: i0.ΔInjectableDef<SwUpdate>;
+    static ngInjectableDef: i0.ɵɵInjectableDef<SwUpdate>;
 }
