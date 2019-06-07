@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.1.0-next.1+18.sha-c038675.with-local-changes
+ * @license Angular v8.1.0-next.1+14.sha-297222f.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -467,17 +467,12 @@ function ngswAppInitializer(injector, script, options, platformId) {
                     throw new Error(`Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`);
             }
         }
-        // Don't return anything to avoid blocking the application until the SW is registered.
-        // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
+        // Don't return anything to avoid blocking the application until the SW is registered or
+        // causing a crash if the SW registration fails.
         readyToRegister$.pipe(take(1)).subscribe((/**
          * @return {?}
          */
-        () => navigator.serviceWorker.register(script, { scope: options.scope })
-            .catch((/**
-         * @param {?} err
-         * @return {?}
-         */
-        err => console.error('Service worker registration failed with:', err)))));
+        () => navigator.serviceWorker.register(script, { scope: options.scope })));
     });
     return initializer;
 }
