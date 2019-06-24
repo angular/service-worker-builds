@@ -47,9 +47,7 @@
          * Extract the pathname of a URL.
          */
         parseUrl(url, relativeTo) {
-            // Workaround a Safari bug, see
-            // https://github.com/angular/angular/issues/31061#issuecomment-503637978
-            const parsed = !relativeTo ? new URL(url) : new URL(url, relativeTo);
+            const parsed = new URL(url, relativeTo);
             return { origin: parsed.origin, path: parsed.pathname, search: parsed.search };
         }
         /**
