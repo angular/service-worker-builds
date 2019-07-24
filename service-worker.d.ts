@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.2.0-next.2+84.sha-2172368.with-local-changes
+ * @license Angular v8.2.0-next.2+78.sha-3d7303e.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -79,7 +79,7 @@ export declare class SwPush {
  * for example via a function call:
  *
  * {@example service-worker/registration-options/module.ts region="registration-options"
- *     header="app.module.ts"}
+ *     header="app.module.ts" linenums="false"}
  *
  * @publicApi
  */
