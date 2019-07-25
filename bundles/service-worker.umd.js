@@ -1,5 +1,5 @@
 /**
- * @license Angular v8.2.0-next.2+78.sha-3d7303e.with-local-changes
+ * @license Angular v8.2.0-next.2+86.sha-85d051f.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -272,7 +272,7 @@
      * for example via a function call:
      *
      * {@example service-worker/registration-options/module.ts region="registration-options"
-     *     header="app.module.ts" linenums="false"}
+     *     header="app.module.ts"}
      *
      * @publicApi
      */

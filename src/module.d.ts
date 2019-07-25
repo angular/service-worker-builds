@@ -10,7 +10,7 @@ import * as i0 from "@angular/core";
  * for example via a function call:
  *
  * {@example service-worker/registration-options/module.ts region="registration-options"
- *     header="app.module.ts" linenums="false"}
+ *     header="app.module.ts"}
  *
  * @publicApi
  */
