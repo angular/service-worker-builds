@@ -1,11 +1,11 @@
 /**
- * @license Angular v8.2.1+4.sha-6ec91dd.with-local-changes
+ * @license Angular v8.2.1+6.sha-eccb60c.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import { isPlatformBrowser } from '@angular/common';
-import { Injectable, InjectionToken, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule, ApplicationRef } from '@angular/core';
+import { Injectable, InjectionToken, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
 import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operators';
 
@@ -15,6 +15,69 @@ import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operator
  */
 /** @type {?} */
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
+/**
+ * An event emitted when a new version of the app is available.
+ *
+ * \@publicApi
+ * @record
+ */
+function UpdateAvailableEvent() { }
+if (false) {
+    /** @type {?} */
+    UpdateAvailableEvent.prototype.type;
+    /** @type {?} */
+    UpdateAvailableEvent.prototype.current;
+    /** @type {?} */
+    UpdateAvailableEvent.prototype.available;
+}
+/**
+ * An event emitted when a new version of the app has been downloaded and activated.
+ *
+ * \@publicApi
+ * @record
+ */
+function UpdateActivatedEvent() { }
+if (false) {
+    /** @type {?} */
+    UpdateActivatedEvent.prototype.type;
+    /** @type {?|undefined} */
+    UpdateActivatedEvent.prototype.previous;
+    /** @type {?} */
+    UpdateActivatedEvent.prototype.current;
+}
+/**
+ * An event emitted when a `PushEvent` is received by the service worker.
+ * @record
+ */
+function PushEvent() { }
+if (false) {
+    /** @type {?} */
+    PushEvent.prototype.type;
+    /** @type {?} */
+    PushEvent.prototype.data;
+}
+/**
+ * @record
+ */
+function TypedEvent() { }
+if (false) {
+    /** @type {?} */
+    TypedEvent.prototype.type;
+}
+/**
+ * @record
+ */
+function StatusEvent() { }
+if (false) {
+    /** @type {?} */
+    StatusEvent.prototype.type;
+    /** @type {?} */
+    StatusEvent.prototype.nonce;
+    /** @type {?} */
+    StatusEvent.prototype.status;
+    /** @type {?|undefined} */
+    StatusEvent.prototype.error;
+}
 /**
  * @param {?} message
  * @return {?}
@@ -170,6 +233,19 @@ class NgswCommChannel {
      */
     get isEnabled() { return !!this.serviceWorker; }
 }
+if (false) {
+    /** @type {?} */
+    NgswCommChannel.prototype.worker;
+    /** @type {?} */
+    NgswCommChannel.prototype.registration;
+    /** @type {?} */
+    NgswCommChannel.prototype.events;
+    /**
+     * @type {?}
+     * @private
+     */
+    NgswCommChannel.prototype.serviceWorker;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -299,6 +375,48 @@ SwPush.decorators = [
 SwPush.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
+if (false) {
+    /**
+     * Emits the payloads of the received push notification messages.
+     * @type {?}
+     */
+    SwPush.prototype.messages;
+    /**
+     * Emits the payloads of the received push notification messages as well as the action the user
+     * interacted with. If no action was used the action property will be an empty string `''`.
+     *
+     * Note that the `notification` property is **not** a [Notification][Mozilla Notification] object
+     * but rather a
+     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+     *
+     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+     * @type {?}
+     */
+    SwPush.prototype.notificationClicks;
+    /**
+     * Emits the currently active
+     * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
+     * associated to the Service Worker registration or `null` if there is no subscription.
+     * @type {?}
+     */
+    SwPush.prototype.subscription;
+    /**
+     * @type {?}
+     * @private
+     */
+    SwPush.prototype.pushManager;
+    /**
+     * @type {?}
+     * @private
+     */
+    SwPush.prototype.subscriptionChanges;
+    /**
+     * @type {?}
+     * @private
+     */
+    SwPush.prototype.sw;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -360,6 +478,23 @@ SwUpdate.decorators = [
 SwUpdate.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
+if (false) {
+    /**
+     * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
+     * @type {?}
+     */
+    SwUpdate.prototype.available;
+    /**
+     * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
+     * @type {?}
+     */
+    SwUpdate.prototype.activated;
+    /**
+     * @type {?}
+     * @private
+     */
+    SwUpdate.prototype.sw;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -379,6 +514,50 @@ SwUpdate.ctorParameters = () => [
  * @abstract
  */
 class SwRegistrationOptions {
+}
+if (false) {
+    /**
+     * Whether the ServiceWorker will be registered and the related services (such as `SwPush` and
+     * `SwUpdate`) will attempt to communicate and interact with it.
+     *
+     * Default: true
+     * @type {?}
+     */
+    SwRegistrationOptions.prototype.enabled;
+    /**
+     * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can
+     * control. It will be used when calling
+     * [ServiceWorkerContainer#register()](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
+     * @type {?}
+     */
+    SwRegistrationOptions.prototype.scope;
+    /**
+     * Defines the ServiceWorker registration strategy, which determines when it will be registered
+     * with the browser.
+     *
+     * The default behavior of registering once the application stabilizes (i.e. as soon as there are
+     * no pending micro- and macro-tasks), is designed register the ServiceWorker as soon as possible
+     * but without affecting the application's first time load.
+     *
+     * Still, there might be cases where you want more control over when the ServiceWorker is
+     * registered (e.g. there might be a long-running timeout or polling interval, preventing the app
+     * to stabilize). The available option are:
+     *
+     * - `registerWhenStable`: Register as soon as the application stabilizes (no pending
+     *      micro-/macro-tasks).
+     * - `registerImmediately`: Register immediately.
+     * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
+     *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
+     *     `<timeout>` is omitted, is defaults to `0`, which will register the ServiceWorker as soon
+     *     as possible but still asynchronously, once all pending micro-tasks are completed.
+     * - An [Observable](guide/observables) factory function: A function that returns an `Observable`.
+     *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
+     *     ServiceWorker will be registered as soon as the first value is emitted.
+     *
+     * Default: 'registerWhenStable'
+     * @type {?}
+     */
+    SwRegistrationOptions.prototype.registrationStrategy;
 }
 /** @type {?} */
 const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
