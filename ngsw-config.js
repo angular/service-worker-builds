@@ -39,7 +39,7 @@
     }
     function _sha1(words32, len) {
         var _a, _b;
-        var w = new Array(80);
+        var w = [];
         var _c = __read([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0], 5), a = _c[0], b = _c[1], c = _c[2], d = _c[3], e = _c[4];
         words32[len >> 5] |= 0x80 << (24 - len % 32);
         words32[((len + 64 >> 9) << 4) + 15] = len;
@@ -90,9 +90,10 @@
         return [b ^ c ^ d, 0xca62c1d6];
     }
     function arrayBufferToWords32(buffer, endian) {
-        var words32 = Array((buffer.byteLength + 3) >>> 2);
+        var size = (buffer.byteLength + 3) >>> 2;
+        var words32 = [];
         var view = new Uint8Array(buffer);
-        for (var i = 0; i < words32.length; i++) {
+        for (var i = 0; i < size; i++) {
             words32[i] = wordAt(view, i * 4, endian);
         }
         return words32;
