@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-next.8+43.sha-090732f.with-local-changes
+ * @license Angular v9.0.0-next.8+50.sha-0f3a48e.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -209,42 +209,22 @@ class Generator {
              * @return {?}
              */
             (group) => __awaiter(this, void 0, void 0, function* () {
-                if (group.resources.versionedFiles) {
-                    console.warn(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option.\n` +
-                        'As of v6 \'versionedFiles\' and \'files\' options have the same behavior. ' +
-                        'Use \'files\' instead.');
-                }
                 /** @type {?} */
                 const fileMatcher = globListToMatcher(group.resources.files || []);
                 /** @type {?} */
-                const versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
-                /** @type {?} */
                 const allFiles = yield this.fs.list('/');
                 /** @type {?} */
-                const plainFiles = allFiles.filter(fileMatcher).filter((/**
+                const matchedFiles = allFiles.filter(fileMatcher).filter((/**
                  * @param {?} file
                  * @return {?}
                  */
-                file => !seenMap.has(file)));
-                plainFiles.forEach((/**
-                 * @param {?} file
-                 * @return {?}
-                 */
-                file => seenMap.add(file)));
-                /** @type {?} */
-                const versionedFiles = allFiles.filter(versionedMatcher).filter((/**
-                 * @param {?} file
-                 * @return {?}
-                 */
-                file => !seenMap.has(file)));
-                versionedFiles.forEach((/**
+                file => !seenMap.has(file))).sort();
+                matchedFiles.forEach((/**
                  * @param {?} file
                  * @return {?}
                  */
                 file => seenMap.add(file)));
                 // Add the hashes.
-                /** @type {?} */
-                const matchedFiles = [...plainFiles, ...versionedFiles].sort();
                 yield matchedFiles.reduce((/**
                  * @param {?} previous
                  * @param {?} file
