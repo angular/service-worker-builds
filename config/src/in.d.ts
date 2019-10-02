@@ -37,9 +37,6 @@ export interface AssetGroup {
     updateMode?: 'prefetch' | 'lazy';
     resources: {
         files?: Glob[];
-        /** @deprecated As of v6 `versionedFiles` and `files` options have the same behavior. Use
-           `files` instead. */
-        versionedFiles?: Glob[];
         urls?: Glob[];
     };
 }
