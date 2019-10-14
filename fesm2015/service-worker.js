@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-next.10+66.sha-cd7b199.with-local-changes
+ * @license Angular v9.0.0-next.10+73.sha-f433d66.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -454,8 +454,8 @@ SwPush.decorators = [
 SwPush.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
-/** @nocollapse */ SwPush.ngFactoryDef = function SwPush_Factory(t) { return new (t || SwPush)(ɵɵinject(NgswCommChannel)); };
-/** @nocollapse */ SwPush.ngInjectableDef = ɵɵdefineInjectable({ token: SwPush, factory: function (t) { return SwPush.ngFactoryDef(t); }, providedIn: null });
+/** @nocollapse */ SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(ɵɵinject(NgswCommChannel)); };
+/** @nocollapse */ SwPush.ngInjectableDef = ɵɵdefineInjectable({ token: SwPush, factory: function (t) { return SwPush.ɵfac(t); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwPush, [{
         type: Injectable
     }], function () { return [{ type: NgswCommChannel }]; }, null);
@@ -569,8 +569,8 @@ SwUpdate.decorators = [
 SwUpdate.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
-/** @nocollapse */ SwUpdate.ngFactoryDef = function SwUpdate_Factory(t) { return new (t || SwUpdate)(ɵɵinject(NgswCommChannel)); };
-/** @nocollapse */ SwUpdate.ngInjectableDef = ɵɵdefineInjectable({ token: SwUpdate, factory: function (t) { return SwUpdate.ngFactoryDef(t); }, providedIn: null });
+/** @nocollapse */ SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(ɵɵinject(NgswCommChannel)); };
+/** @nocollapse */ SwUpdate.ngInjectableDef = ɵɵdefineInjectable({ token: SwUpdate, factory: function (t) { return SwUpdate.ɵfac(t); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
     }], function () { return [{ type: NgswCommChannel }]; }, null);
