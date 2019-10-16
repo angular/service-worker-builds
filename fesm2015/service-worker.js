@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-next.11+8.sha-3e14c2d.with-local-changes
+ * @license Angular v9.0.0-next.11+10.sha-86104b8.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -455,7 +455,7 @@ SwPush.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
 /** @nocollapse */ SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(ɵɵinject(NgswCommChannel)); };
-/** @nocollapse */ SwPush.ngInjectableDef = ɵɵdefineInjectable({ token: SwPush, factory: function (t) { return SwPush.ɵfac(t); }, providedIn: null });
+/** @nocollapse */ SwPush.ɵprov = ɵɵdefineInjectable({ token: SwPush, factory: function (t) { return SwPush.ɵfac(t); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwPush, [{
         type: Injectable
     }], function () { return [{ type: NgswCommChannel }]; }, null);
@@ -570,7 +570,7 @@ SwUpdate.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
 /** @nocollapse */ SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(ɵɵinject(NgswCommChannel)); };
-/** @nocollapse */ SwUpdate.ngInjectableDef = ɵɵdefineInjectable({ token: SwUpdate, factory: function (t) { return SwUpdate.ɵfac(t); }, providedIn: null });
+/** @nocollapse */ SwUpdate.ɵprov = ɵɵdefineInjectable({ token: SwUpdate, factory: function (t) { return SwUpdate.ɵfac(t); }, providedIn: null });
 /*@__PURE__*/ ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
     }], function () { return [{ type: NgswCommChannel }]; }, null);
@@ -783,7 +783,7 @@ ServiceWorkerModule.decorators = [
             },] },
 ];
 /** @nocollapse */ ServiceWorkerModule.ɵmod = ɵɵdefineNgModule({ type: ServiceWorkerModule });
-/** @nocollapse */ ServiceWorkerModule.ngInjectorDef = ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
+/** @nocollapse */ ServiceWorkerModule.ɵinj = ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
 /*@__PURE__*/ ɵsetClassMetadata(ServiceWorkerModule, [{
         type: NgModule,
         args: [{

@@ -26,5 +26,5 @@ export declare class SwUpdate {
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
     static ɵfac: i0.ɵɵFactoryDef<SwUpdate>;
-    static ngInjectableDef: i0.ɵɵInjectableDef<SwUpdate>;
+    static ɵprov: i0.ɵɵInjectableDef<SwUpdate>;
 }

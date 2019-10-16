@@ -70,5 +70,5 @@ export declare class ServiceWorkerModule {
      */
     static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<ServiceWorkerModule, never, never, never>;
-    static ngInjectorDef: i0.ɵɵInjectorDef<ServiceWorkerModule>;
+    static ɵinj: i0.ɵɵInjectorDef<ServiceWorkerModule>;
 }

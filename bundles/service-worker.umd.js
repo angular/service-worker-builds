@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-next.11+8.sha-3e14c2d.with-local-changes
+ * @license Angular v9.0.0-next.11+10.sha-86104b8.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -427,7 +427,7 @@
         };
         SwPush.prototype.decodeBase64 = function (input) { return atob(input); };
         SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(i0.ɵɵinject(NgswCommChannel)); };
-        SwPush.ngInjectableDef = i0.ɵɵdefineInjectable({ token: SwPush, factory: function (t) { return SwPush.ɵfac(t); }, providedIn: null });
+        SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: function (t) { return SwPush.ɵfac(t); }, providedIn: null });
         return SwPush;
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(SwPush, [{
@@ -482,7 +482,7 @@
             return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
         };
         SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.ɵɵinject(NgswCommChannel)); };
-        SwUpdate.ngInjectableDef = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: function (t) { return SwUpdate.ɵfac(t); }, providedIn: null });
+        SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: function (t) { return SwUpdate.ɵfac(t); }, providedIn: null });
         return SwUpdate;
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(SwUpdate, [{
@@ -588,7 +588,7 @@
             };
         };
         ServiceWorkerModule.ɵmod = i0.ɵɵdefineNgModule({ type: ServiceWorkerModule });
-        ServiceWorkerModule.ngInjectorDef = i0.ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
+        ServiceWorkerModule.ɵinj = i0.ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
         return ServiceWorkerModule;
     }());
     /*@__PURE__*/ i0.ɵsetClassMetadata(ServiceWorkerModule, [{
