@@ -2,7 +2,7 @@
  * @fileoverview added by tsickle
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-import * as tslib_1 from "tslib";
+import { __awaiter } from "tslib";
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -38,7 +38,7 @@ export class Generator {
      * @return {?}
      */
     process(config) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
             /** @type {?} */
             const unorderedHashTable = {};
             /** @type {?} */
@@ -61,14 +61,14 @@ export class Generator {
      * @return {?}
      */
     processAssetGroups(config, hashTable) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
             /** @type {?} */
             const seenMap = new Set();
             return Promise.all((config.assetGroups || []).map((/**
              * @param {?} group
              * @return {?}
              */
-            (group) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            (group) => __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
                 /** @type {?} */
                 const fileMatcher = globListToMatcher(group.resources.files || []);
                 /** @type {?} */
@@ -90,7 +90,7 @@ export class Generator {
                  * @param {?} file
                  * @return {?}
                  */
-                (previous, file) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                (previous, file) => __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
                     yield previous;
                     /** @type {?} */
                     const hash = yield this.fs.hash(file);
