@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as tslib_1 from "tslib";
+import { __awaiter, __generator } from "tslib";
 import { parseDurationToMs } from './duration';
 import { globToRegex } from './glob';
 var DEFAULT_NAVIGATION_URLS = [
@@ -25,9 +25,9 @@ var Generator = /** @class */ (function () {
         this.baseHref = baseHref;
     }
     Generator.prototype.process = function (config) {
-        return tslib_1.__awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var unorderedHashTable, assetGroups;
-            return tslib_1.__generator(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         unorderedHashTable = {};
@@ -48,15 +48,15 @@ var Generator = /** @class */ (function () {
         });
     };
     Generator.prototype.processAssetGroups = function (config, hashTable) {
-        return tslib_1.__awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var seenMap;
             var _this = this;
-            return tslib_1.__generator(this, function (_a) {
+            return __generator(this, function (_a) {
                 seenMap = new Set();
-                return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+                return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
                         var fileMatcher, allFiles, matchedFiles;
                         var _this = this;
-                        return tslib_1.__generator(this, function (_a) {
+                        return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
                                     fileMatcher = globListToMatcher(group.resources.files || []);
@@ -66,9 +66,9 @@ var Generator = /** @class */ (function () {
                                     matchedFiles = allFiles.filter(fileMatcher).filter(function (file) { return !seenMap.has(file); }).sort();
                                     matchedFiles.forEach(function (file) { return seenMap.add(file); });
                                     // Add the hashes.
-                                    return [4 /*yield*/, matchedFiles.reduce(function (previous, file) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+                                    return [4 /*yield*/, matchedFiles.reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
                                             var hash;
-                                            return tslib_1.__generator(this, function (_a) {
+                                            return __generator(this, function (_a) {
                                                 switch (_a.label) {
                                                     case 0: return [4 /*yield*/, previous];
                                                     case 1:

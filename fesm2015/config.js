@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-next.11+24.sha-20be755.with-local-changes
+ * @license Angular v9.0.0-next.12+50.sha-dfff5fe.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -178,7 +178,7 @@ class Generator {
      * @return {?}
      */
     process(config) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
             /** @type {?} */
             const unorderedHashTable = {};
             /** @type {?} */
@@ -201,14 +201,14 @@ class Generator {
      * @return {?}
      */
     processAssetGroups(config, hashTable) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
             /** @type {?} */
             const seenMap = new Set();
             return Promise.all((config.assetGroups || []).map((/**
              * @param {?} group
              * @return {?}
              */
-            (group) => __awaiter(this, void 0, void 0, function* () {
+            (group) => __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
                 /** @type {?} */
                 const fileMatcher = globListToMatcher(group.resources.files || []);
                 /** @type {?} */
@@ -230,7 +230,7 @@ class Generator {
                  * @param {?} file
                  * @return {?}
                  */
-                (previous, file) => __awaiter(this, void 0, void 0, function* () {
+                (previous, file) => __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
                     yield previous;
                     /** @type {?} */
                     const hash = yield this.fs.hash(file);

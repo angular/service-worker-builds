@@ -147,6 +147,7 @@
      * found in the LICENSE file at https://angular.io/license
      */
     var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try {
                 step(generator.next(value));
@@ -160,7 +161,7 @@
             catch (e) {
                 reject(e);
             } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
@@ -308,6 +309,7 @@
      * found in the LICENSE file at https://angular.io/license
      */
     var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try {
                 step(generator.next(value));
@@ -321,7 +323,7 @@
             catch (e) {
                 reject(e);
             } }
-            function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
@@ -394,7 +396,6 @@
             return { value: op[0] ? op[1] : void 0, done: true };
         }
     };
-    var _this = undefined;
     var _a = require('@angular/service-worker/config'), Generator = _a.Generator, NgswConfig = _a.NgswConfig;
     var fs$1 = require('fs');
     var path$1 = require('path');
@@ -406,7 +407,7 @@
     var filesystem = new NodeFilesystem(distDir);
     var gen = new Generator(filesystem, baseHref);
     (function () {
-        return __awaiter$1(_this, void 0, void 0, function () {
+        return __awaiter$1(void 0, void 0, void 0, function () {
             var control;
             return __generator$1(this, function (_a) {
                 switch (_a.label) {
