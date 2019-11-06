@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-rc.0+69.sha-41560b4.with-local-changes
+ * @license Angular v9.0.0-rc.0+78.sha-a20979d.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -8,7 +8,7 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('rxjs'), require('rxjs/operators')) :
     typeof define === 'function' && define.amd ? define('@angular/service-worker', ['exports', '@angular/common', '@angular/core', 'rxjs', 'rxjs/operators'], factory) :
     (global = global || self, factory((global.ng = global.ng || {}, global.ng.serviceWorker = {}), global.ng.common, global.ng.core, global.rxjs, global.rxjs.operators));
-}(this, function (exports, common, i0, rxjs, operators) { 'use strict';
+}(this, (function (exports, common, i0, rxjs, operators) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -634,11 +634,11 @@
      */
 
     exports.ServiceWorkerModule = ServiceWorkerModule;
-    exports.SwRegistrationOptions = SwRegistrationOptions;
     exports.SwPush = SwPush;
+    exports.SwRegistrationOptions = SwRegistrationOptions;
     exports.SwUpdate = SwUpdate;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=service-worker.umd.js.map
