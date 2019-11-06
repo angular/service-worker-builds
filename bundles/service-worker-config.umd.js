@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-rc.0+69.sha-41560b4.with-local-changes
+ * @license Angular v9.0.0-rc.0+78.sha-a20979d.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -8,7 +8,7 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define('@angular/service-worker/config', ['exports'], factory) :
     (global = global || self, factory((global.ng = global.ng || {}, global.ng.serviceWorker = global.ng.serviceWorker || {}, global.ng.serviceWorker.config = {})));
-}(this, function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -493,5 +493,5 @@
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 //# sourceMappingURL=service-worker-config.umd.js.map
