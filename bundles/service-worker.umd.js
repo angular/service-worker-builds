@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-rc.1+188.sha-b54ed98.with-local-changes
+ * @license Angular v9.0.0-rc.1+197.sha-55748db.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -440,9 +440,9 @@
         SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: function (t) { return SwPush.ɵfac(t); }, providedIn: null });
         return SwPush;
     }());
-    /*@__PURE__*/ i0.ɵsetClassMetadata(SwPush, [{
+    /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SwPush, [{
             type: i0.Injectable
-        }], function () { return [{ type: NgswCommChannel }]; }, null);
+        }], function () { return [{ type: NgswCommChannel }]; }, null); })();
 
     /**
      * @license
@@ -495,9 +495,9 @@
         SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: function (t) { return SwUpdate.ɵfac(t); }, providedIn: null });
         return SwUpdate;
     }());
-    /*@__PURE__*/ i0.ɵsetClassMetadata(SwUpdate, [{
+    /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SwUpdate, [{
             type: i0.Injectable
-        }], function () { return [{ type: NgswCommChannel }]; }, null);
+        }], function () { return [{ type: NgswCommChannel }]; }, null); })();
 
     /**
      * Token that can be used to provide options for `ServiceWorkerModule` outside of
@@ -601,12 +601,12 @@
         ServiceWorkerModule.ɵinj = i0.ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
         return ServiceWorkerModule;
     }());
-    /*@__PURE__*/ i0.ɵsetClassMetadata(ServiceWorkerModule, [{
+    /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(ServiceWorkerModule, [{
             type: i0.NgModule,
             args: [{
                     providers: [SwPush, SwUpdate],
                 }]
-        }], null, null);
+        }], null, null); })();
 
     /**
      * @license

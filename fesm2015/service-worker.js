@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-rc.1+188.sha-b54ed98.with-local-changes
+ * @license Angular v9.0.0-rc.1+197.sha-55748db.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -456,9 +456,9 @@ SwPush.ctorParameters = () => [
 ];
 /** @nocollapse */ SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(ɵɵinject(NgswCommChannel)); };
 /** @nocollapse */ SwPush.ɵprov = ɵɵdefineInjectable({ token: SwPush, factory: function (t) { return SwPush.ɵfac(t); }, providedIn: null });
-/*@__PURE__*/ ɵsetClassMetadata(SwPush, [{
+/*@__PURE__*/ (function () { ɵsetClassMetadata(SwPush, [{
         type: Injectable
-    }], function () { return [{ type: NgswCommChannel }]; }, null);
+    }], function () { return [{ type: NgswCommChannel }]; }, null); })();
 if (false) {
     /**
      * Emits the payloads of the received push notification messages.
@@ -571,9 +571,9 @@ SwUpdate.ctorParameters = () => [
 ];
 /** @nocollapse */ SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(ɵɵinject(NgswCommChannel)); };
 /** @nocollapse */ SwUpdate.ɵprov = ɵɵdefineInjectable({ token: SwUpdate, factory: function (t) { return SwUpdate.ɵfac(t); }, providedIn: null });
-/*@__PURE__*/ ɵsetClassMetadata(SwUpdate, [{
+/*@__PURE__*/ (function () { ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
-    }], function () { return [{ type: NgswCommChannel }]; }, null);
+    }], function () { return [{ type: NgswCommChannel }]; }, null); })();
 if (false) {
     /**
      * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
@@ -784,12 +784,12 @@ ServiceWorkerModule.decorators = [
 ];
 /** @nocollapse */ ServiceWorkerModule.ɵmod = ɵɵdefineNgModule({ type: ServiceWorkerModule });
 /** @nocollapse */ ServiceWorkerModule.ɵinj = ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
-/*@__PURE__*/ ɵsetClassMetadata(ServiceWorkerModule, [{
+/*@__PURE__*/ (function () { ɵsetClassMetadata(ServiceWorkerModule, [{
         type: NgModule,
         args: [{
                 providers: [SwPush, SwUpdate],
             }]
-    }], null, null);
+    }], null, null); })();
 
 /**
  * @fileoverview added by tsickle
