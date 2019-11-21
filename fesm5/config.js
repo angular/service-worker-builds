@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-rc.3+20.sha-c6695fa.with-local-changes
+ * @license Angular v9.0.0-rc.3+22.sha-250e6fd.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -157,6 +157,10 @@ var Generator = /** @class */ (function () {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
+                                    if (group.resources.versionedFiles) {
+                                        throw new Error("Asset-group '" + group.name + "' in 'ngsw-config.json' uses the 'versionedFiles' option, " +
+                                            'which is no longer supported. Use \'files\' instead.');
+                                    }
                                     fileMatcher = globListToMatcher(group.resources.files || []);
                                     return [4 /*yield*/, this.fs.list('/')];
                                 case 1:
