@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-rc.3+35.sha-ad9b9a3.with-local-changes
+ * @license Angular v9.0.0-rc.3+42.sha-99e68d0.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -8,6 +8,7 @@ import { __awaiter } from 'tslib';
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/config/src/duration.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
@@ -77,6 +78,7 @@ function parseDurationToMs(duration) {
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/config/src/glob.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
@@ -150,6 +152,7 @@ function globToRegex(glob, literalQuestionMark = false) {
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/config/src/generator.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
@@ -178,7 +181,7 @@ class Generator {
      * @return {?}
      */
     process(config) {
-        return __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             /** @type {?} */
             const unorderedHashTable = {};
             /** @type {?} */
@@ -201,14 +204,14 @@ class Generator {
      * @return {?}
      */
     processAssetGroups(config, hashTable) {
-        return __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
+        return __awaiter(this, void 0, void 0, function* () {
             /** @type {?} */
             const seenMap = new Set();
             return Promise.all((config.assetGroups || []).map((/**
              * @param {?} group
              * @return {?}
              */
-            (group) => __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
+            (group) => __awaiter(this, void 0, void 0, function* () {
                 if (((/** @type {?} */ (group.resources))).versionedFiles) {
                     throw new Error(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
                         'which is no longer supported. Use \'files\' instead.');
@@ -234,7 +237,7 @@ class Generator {
                  * @param {?} file
                  * @return {?}
                  */
-                (previous, file) => __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
+                (previous, file) => __awaiter(this, void 0, void 0, function* () {
                     yield previous;
                     /** @type {?} */
                     const hash = yield this.fs.hash(file);
@@ -407,11 +410,13 @@ function withOrderedKeys(unorderedObj) {
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/config/public_api.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/config/index.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
