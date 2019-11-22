@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-rc.1+226.sha-a37bf9a.with-local-changes
+ * @license Angular v9.0.0-rc.1+227.sha-3c335c3.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -11,6 +11,7 @@ import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operator
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/src/low_level.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
@@ -249,6 +250,7 @@ if (false) {
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/src/push.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
@@ -492,6 +494,7 @@ if (false) {
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/src/update.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
@@ -570,6 +573,7 @@ if (false) {
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/src/module.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
@@ -754,16 +758,19 @@ ServiceWorkerModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/src/index.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/public_api.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
+ * Generated from: packages/service-worker/index.ts
  * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
