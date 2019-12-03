@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.0.0-rc.1+335.sha-56f4e56.with-local-changes
+ * @license Angular v9.0.0-rc.1+336.sha-67eac73.with-local-changes
  * (c) 2010-2019 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -437,7 +437,7 @@
         };
         SwPush.prototype.decodeBase64 = function (input) { return atob(input); };
         SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(i0.ɵɵinject(NgswCommChannel)); };
-        SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac, providedIn: null });
+        SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
         return SwPush;
     }());
     /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SwPush, [{
@@ -492,7 +492,7 @@
             return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
         };
         SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.ɵɵinject(NgswCommChannel)); };
-        SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac, providedIn: null });
+        SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac });
         return SwUpdate;
     }());
     /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SwUpdate, [{

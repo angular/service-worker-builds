@@ -51,7 +51,7 @@ var SwUpdate = /** @class */ (function () {
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
     };
     SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.ɵɵinject(i1.NgswCommChannel)); };
-    SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac, providedIn: null });
+    SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac });
     return SwUpdate;
 }());
 export { SwUpdate };

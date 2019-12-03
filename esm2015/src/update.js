@@ -72,7 +72,7 @@ SwUpdate.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
 /** @nocollapse */ SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.ɵɵinject(i1.NgswCommChannel)); };
-/** @nocollapse */ SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac, providedIn: null });
+/** @nocollapse */ SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
     }], function () { return [{ type: i1.NgswCommChannel }]; }, null); })();

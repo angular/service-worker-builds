@@ -160,7 +160,7 @@ var SwPush = /** @class */ (function () {
     };
     SwPush.prototype.decodeBase64 = function (input) { return atob(input); };
     SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(i0.ɵɵinject(i1.NgswCommChannel)); };
-    SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac, providedIn: null });
+    SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
     return SwPush;
 }());
 export { SwPush };

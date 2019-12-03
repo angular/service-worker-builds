@@ -213,7 +213,7 @@ SwPush.ctorParameters = () => [
     { type: NgswCommChannel }
 ];
 /** @nocollapse */ SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(i0.ɵɵinject(i1.NgswCommChannel)); };
-/** @nocollapse */ SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac, providedIn: null });
+/** @nocollapse */ SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
 /*@__PURE__*/ (function () { i0.ɵsetClassMetadata(SwPush, [{
         type: Injectable
     }], function () { return [{ type: i1.NgswCommChannel }]; }, null); })();
