@@ -1,0 +1,1 @@
+{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./config/config"}],"flatModuleIndexRedirect":true,"importAs":"@angular/service-worker/config"}
