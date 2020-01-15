@@ -105,7 +105,7 @@ export declare class SwPush {
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
      */
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
     private pushManager;
     private subscriptionChanges;
     constructor(sw: NgswCommChannel);

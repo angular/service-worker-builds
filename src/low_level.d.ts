@@ -65,5 +65,5 @@ export declare class NgswCommChannel {
     eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
     nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
     waitForStatus(nonce: number): Promise<void>;
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
 }

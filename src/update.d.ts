@@ -21,7 +21,7 @@ export declare class SwUpdate {
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
      */
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
     constructor(sw: NgswCommChannel);
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
