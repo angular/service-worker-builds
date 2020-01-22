@@ -1,6 +1,6 @@
 /**
- * @license Angular v9.0.0-rc.1+636.sha-142363a
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * @license Angular v0.0.0
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -126,7 +126,7 @@ export declare class SwPush {
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
      */
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
     private pushManager;
     private subscriptionChanges;
     constructor(sw: ɵangular_packages_service_worker_service_worker_a);
@@ -224,7 +224,7 @@ export declare class SwUpdate {
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
      */
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
     constructor(sw: ɵangular_packages_service_worker_service_worker_a);
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
@@ -283,7 +283,7 @@ export declare class ɵangular_packages_service_worker_service_worker_a {
     eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
     nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
     waitForStatus(nonce: number): Promise<void>;
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
 }
 
 export declare const ɵangular_packages_service_worker_service_worker_b: InjectionToken<string>;
