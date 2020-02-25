@@ -1,6 +1,6 @@
 {
   "name": "@angular/service-worker",
-  "version": "9.1.0-next.1+58.sha-0a1a989",
+  "version": "9.1.0-next.1+61.sha-1e20b2c",
   "description": "Angular - service worker tooling!",
   "main": "./bundles/service-worker.umd.js",
   "module": "./fesm5/service-worker.js",
@@ -13,13 +13,14 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "9.1.0-next.1+58.sha-0a1a989",
-    "@angular/common": "9.1.0-next.1+58.sha-0a1a989",
+    "@angular/core": "9.1.0-next.1+61.sha-1e20b2c",
+    "@angular/common": "9.1.0-next.1+61.sha-1e20b2c",
     "tslib": "^1.10.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/angular.git"
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/service-worker"
   },
   "bin": {
     "ngsw-config": "./ngsw-config.js"
