@@ -25,6 +25,6 @@ export declare class SwUpdate {
     constructor(sw: NgswCommChannel);
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
-    static ɵfac: i0.ɵɵFactoryDef<SwUpdate>;
+    static ɵfac: i0.ɵɵFactoryDef<SwUpdate, never>;
     static ɵprov: i0.ɵɵInjectableDef<SwUpdate>;
 }
