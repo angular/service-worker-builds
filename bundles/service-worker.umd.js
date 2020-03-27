@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.1.0-rc.0+38.sha-fc3e5cb
+ * @license Angular v9.1.0-rc.0+46.sha-bfa7b1a
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -536,17 +536,17 @@
                 readyToRegister$ = options.registrationStrategy();
             }
             else {
-                var _a = __read((options.registrationStrategy || 'registerWhenStable').split(':')), strategy = _a[0], args = _a.slice(1);
+                var _a = __read((options.registrationStrategy || 'registerWhenStable:30000').split(':')), strategy = _a[0], args = _a.slice(1);
                 switch (strategy) {
                     case 'registerImmediately':
                         readyToRegister$ = rxjs.of(null);
                         break;
                     case 'registerWithDelay':
-                        readyToRegister$ = rxjs.of(null).pipe(operators.delay(+args[0] || 0));
+                        readyToRegister$ = delayWithTimeout(+args[0] || 0);
                         break;
                     case 'registerWhenStable':
-                        var appRef = injector.get(i0.ApplicationRef);
-                        readyToRegister$ = appRef.isStable.pipe(operators.filter(function (stable) { return stable; }));
+                        readyToRegister$ = !args[0] ? whenStable(injector) :
+                            rxjs.merge(whenStable(injector), delayWithTimeout(+args[0]));
                         break;
                     default:
                         // Unknown strategy.
@@ -554,11 +554,23 @@
                 }
             }
             // Don't return anything to avoid blocking the application until the SW is registered.
+            // Also, run outside the Angular zone to avoid preventing the app from stabilizing (especially
+            // given that some registration strategies wait for the app to stabilize).
             // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
-            readyToRegister$.pipe(operators.take(1)).subscribe(function () { return navigator.serviceWorker.register(script, { scope: options.scope })
-                .catch(function (err) { return console.error('Service worker registration failed with:', err); }); });
+            var ngZone = injector.get(i0.NgZone);
+            ngZone.runOutsideAngular(function () { return readyToRegister$.pipe(operators.take(1)).subscribe(function () {
+                return navigator.serviceWorker.register(script, { scope: options.scope })
+                    .catch(function (err) { return console.error('Service worker registration failed with:', err); });
+            }); });
         };
         return initializer;
+    }
+    function delayWithTimeout(timeout) {
+        return rxjs.of(null).pipe(operators.delay(timeout));
+    }
+    function whenStable(injector) {
+        var appRef = injector.get(i0.ApplicationRef);
+        return appRef.isStable.pipe(operators.filter(function (stable) { return stable; }));
     }
     function ngswCommChannelFactory(opts, platformId) {
         return new NgswCommChannel(common.isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
