@@ -1,6 +1,6 @@
 {
   "name": "@angular/service-worker",
-  "version": "9.1.0-rc.0+109.sha-568e9df",
+  "version": "9.1.0-rc.0+110.sha-c8bef12",
   "description": "Angular - service worker tooling!",
   "main": "./bundles/service-worker.umd.js",
   "module": "./fesm5/service-worker.js",
@@ -13,8 +13,8 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "9.1.0-rc.0+109.sha-568e9df",
-    "@angular/common": "9.1.0-rc.0+109.sha-568e9df",
+    "@angular/core": "9.1.0-rc.0+110.sha-c8bef12",
+    "@angular/common": "9.1.0-rc.0+110.sha-c8bef12",
     "tslib": "^1.10.0"
   },
   "repository": {
