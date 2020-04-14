@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.0.0-next.1+32.sha-5e80e7e
+ * @license Angular v10.0.0-next.1+33.sha-698b028
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -24,22 +24,25 @@ export declare class ServiceWorkerModule {
 
 /**
  * Subscribe and listen to
- * [Web Push Notifications](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
- * through Angular Service Worker.
+ * [Web Push
+ * Notifications](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices) through
+ * Angular Service Worker.
  *
  * @usageNotes
  *
  * You can inject a `SwPush` instance into any component or service
  * as a dependency.
  *
- * <code-example path="service-worker/push/module.ts" region="inject-sw-push" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="inject-sw-push"
+ * header="app.component.ts"></code-example>
  *
  * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
  * The call returns a `Promise` with a new
  * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
  * instance.
  *
- * <code-example path="service-worker/push/module.ts" region="subscribe-to-push" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-push"
+ * header="app.component.ts"></code-example>
  *
  * A request is rejected if the user denies permission, or if the browser
  * blocks or does not support the Push API or ServiceWorkers.
@@ -70,7 +73,8 @@ export declare class ServiceWorkerModule {
  * ```
  *
  * Only `title` is required. See `Notification`
- * [instance properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
+ * [instance
+ * properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
  *
  * While the subscription is active, Service Worker listens for
  * [PushEvent](https://developer.mozilla.org/en-US/docs/Web/API/PushEvent)
@@ -83,7 +87,8 @@ export declare class ServiceWorkerModule {
  * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
  * clicks on a notification. For example:
  *
- * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks"
+ * header="app.component.ts"></code-example>
  *
  * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
  * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
