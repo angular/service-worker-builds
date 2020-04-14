@@ -1,5 +1,5 @@
 /**
- * @license Angular v9.1.1+36.sha-c8f2ca2
+ * @license Angular v9.1.1+40.sha-26f4915
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -354,7 +354,8 @@
                                     configVersion: 1,
                                     timestamp: Date.now(),
                                     appData: config.appData,
-                                    index: joinUrls(this.baseHref, config.index), assetGroups: assetGroups,
+                                    index: joinUrls(this.baseHref, config.index),
+                                    assetGroups: assetGroups,
                                     dataGroups: this.processDataGroups(config),
                                     hashTable: withOrderedKeys(unorderedHashTable),
                                     navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
