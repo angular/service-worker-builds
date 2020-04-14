@@ -297,7 +297,9 @@
                 });
             });
         };
-        NodeFilesystem.prototype.canonical = function (_path) { return path.posix.join(this.base, _path); };
+        NodeFilesystem.prototype.canonical = function (_path) {
+            return path.posix.join(this.base, _path);
+        };
         return NodeFilesystem;
     }());
 
