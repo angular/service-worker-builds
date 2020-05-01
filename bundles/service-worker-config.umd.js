@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.0.0-next.4+15.sha-49be32c
+ * @license Angular v10.0.0-next.4+31.sha-12fcc7c
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -409,6 +409,7 @@
                                                 name: group.name,
                                                 installMode: group.installMode || 'prefetch',
                                                 updateMode: group.updateMode || group.installMode || 'prefetch',
+                                                cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
                                                 urls: matchedFiles.map(function (url) { return joinUrls(_this.baseHref, url); }),
                                                 patterns: (group.resources.urls || []).map(function (url) { return urlToRegex(url, _this.baseHref, true); }),
                                             }];
@@ -428,6 +429,7 @@
                     maxSize: group.cacheConfig.maxSize,
                     maxAge: parseDurationToMs(group.cacheConfig.maxAge),
                     timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
+                    cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
                     version: group.version !== undefined ? group.version : 1,
                 };
             });
@@ -489,6 +491,9 @@
         var orderedObj = {};
         Object.keys(unorderedObj).sort().forEach(function (key) { return orderedObj[key] = unorderedObj[key]; });
         return orderedObj;
+    }
+    function buildCacheQueryOptions(inOptions) {
+        return __assign({ ignoreVary: true }, inOptions);
     }
 
     /**
