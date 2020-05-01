@@ -39,6 +39,7 @@ export interface AssetGroup {
         files?: Glob[];
         urls?: Glob[];
     };
+    cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }
 /**
  * Configuration for a particular group of dynamic URLs.
@@ -55,4 +56,5 @@ export interface DataGroup {
         timeout?: Duration;
         strategy?: 'freshness' | 'performance';
     };
+    cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }

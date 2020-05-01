@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.0.0-next.4+15.sha-49be32c
+ * @license Angular v10.0.0-next.4+31.sha-12fcc7c
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -248,6 +248,7 @@ class Generator {
                     name: group.name,
                     installMode: group.installMode || 'prefetch',
                     updateMode: group.updateMode || group.installMode || 'prefetch',
+                    cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
                     urls: matchedFiles.map((/**
                      * @param {?} url
                      * @return {?}
@@ -284,6 +285,7 @@ class Generator {
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
                 timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
+                cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
                 version: group.version !== undefined ? group.version : 1,
             };
         }));
@@ -407,6 +409,13 @@ function withOrderedKeys(unorderedObj) {
      */
     key => orderedObj[key] = unorderedObj[key]));
     return (/** @type {?} */ (orderedObj));
+}
+/**
+ * @param {?=} inOptions
+ * @return {?}
+ */
+function buildCacheQueryOptions(inOptions) {
+    return Object.assign({ ignoreVary: true }, inOptions);
 }
 
 /**

@@ -113,10 +113,10 @@
         list() {
             return this.scope.caches.keys().then(keys => keys.filter(key => key.startsWith(`${this.adapter.cacheNamePrefix}:db:`)));
         }
-        open(name) {
+        open(name, cacheQueryOptions) {
             if (!this.tables.has(name)) {
                 const table = this.scope.caches.open(`${this.adapter.cacheNamePrefix}:db:${name}`)
-                    .then(cache => new CacheTable(name, cache, this.adapter));
+                    .then(cache => new CacheTable(name, cache, this.adapter, cacheQueryOptions));
                 this.tables.set(name, table);
             }
             return this.tables.get(name);
@@ -126,22 +126,23 @@
      * A `Table` backed by a `Cache`.
      */
     class CacheTable {
-        constructor(table, cache, adapter) {
+        constructor(table, cache, adapter, cacheQueryOptions) {
             this.table = table;
             this.cache = cache;
             this.adapter = adapter;
+            this.cacheQueryOptions = cacheQueryOptions;
         }
         request(key) {
             return this.adapter.newRequest('/' + key);
         }
         'delete'(key) {
-            return this.cache.delete(this.request(key));
+            return this.cache.delete(this.request(key), this.cacheQueryOptions);
         }
         keys() {
             return this.cache.keys().then(requests => requests.map(req => req.url.substr(1)));
         }
         read(key) {
-            return this.cache.match(this.request(key)).then(res => {
+            return this.cache.match(this.request(key), this.cacheQueryOptions).then(res => {
                 if (res === undefined) {
                     return Promise.reject(new NotFound(this.table, key));
                 }
@@ -388,7 +389,8 @@
             this.cache = this.scope.caches.open(`${this.prefix}:${this.config.name}:cache`);
             // This is the metadata table, which holds specific information for each cached URL, such as
             // the timestamp of when it was added to the cache.
-            this.metadata = this.db.open(`${this.prefix}:${this.config.name}:meta`);
+            this.metadata =
+                this.db.open(`${this.prefix}:${this.config.name}:meta`, this.config.cacheQueryOptions);
             // Determine the origin from the registration scope. This is used to differentiate between
             // relative and absolute URLs.
             this.origin = this.adapter.parseUrl(this.scope.registration.scope).origin;
@@ -397,7 +399,7 @@
             return __awaiter(this, void 0, void 0, function* () {
                 const cache = yield this.cache;
                 const meta = yield this.metadata;
-                const res = yield cache.match(this.adapter.newRequest(url));
+                const res = yield cache.match(this.adapter.newRequest(url), this.config.cacheQueryOptions);
                 if (res === undefined) {
                     return UpdateCacheStatus.NOT_CACHED;
                 }
@@ -438,7 +440,7 @@
                     const cache = yield this.cache;
                     // Look for a cached response. If one exists, it can be used to resolve the fetch
                     // operation.
-                    const cachedResponse = yield cache.match(req);
+                    const cachedResponse = yield cache.match(req, this.config.cacheQueryOptions);
                     if (cachedResponse !== undefined) {
                         // A response has already been cached (which presumably matches the hash for this
                         // resource). Check whether it's safe to serve this resource from cache.
@@ -571,7 +573,7 @@
                 const cache = yield this.cache;
                 const metaTable = yield this.metadata;
                 // Lookup the response in the cache.
-                const response = yield cache.match(this.adapter.newRequest(url));
+                const response = yield cache.match(this.adapter.newRequest(url), this.config.cacheQueryOptions);
                 if (response === undefined) {
                     // It's not found, return null.
                     return null;
@@ -809,7 +811,7 @@
                     // Construct the Request for this url.
                     const req = this.adapter.newRequest(url);
                     // First, check the cache to see if there is already a copy of this resource.
-                    const alreadyCached = (yield cache.match(req)) !== undefined;
+                    const alreadyCached = (yield cache.match(req, this.config.cacheQueryOptions)) !== undefined;
                     // If the resource is in the cache already, it can be skipped.
                     if (alreadyCached) {
                         return;
@@ -838,7 +840,7 @@
                         const req = this.adapter.newRequest(url);
                         // It's possible that the resource in question is already cached. If so,
                         // continue to the next one.
-                        const alreadyCached = ((yield cache.match(req)) !== undefined);
+                        const alreadyCached = ((yield cache.match(req, this.config.cacheQueryOptions)) !== undefined);
                         if (alreadyCached) {
                             return;
                         }
@@ -874,7 +876,7 @@
                     // Construct the Request for this url.
                     const req = this.adapter.newRequest(url);
                     // First, check the cache to see if there is already a copy of this resource.
-                    const alreadyCached = (yield cache.match(req)) !== undefined;
+                    const alreadyCached = (yield cache.match(req, this.config.cacheQueryOptions)) !== undefined;
                     // If the resource is in the cache already, it can be skipped.
                     if (alreadyCached) {
                         return;
@@ -1049,8 +1051,8 @@
             this._lru = null;
             this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
             this.cache = this.scope.caches.open(`${this.prefix}:dynamic:${this.config.name}:cache`);
-            this.lruTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:lru`);
-            this.ageTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:age`);
+            this.lruTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:lru`, this.config.cacheQueryOptions);
+            this.ageTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:age`, this.config.cacheQueryOptions);
         }
         /**
          * Lazily initialize/load the LRU chain.
@@ -1260,7 +1262,7 @@
             return __awaiter(this, void 0, void 0, function* () {
                 // Look for a response in the cache. If one exists, return it.
                 const cache = yield this.cache;
-                let res = yield cache.match(req);
+                let res = yield cache.match(req, this.config.cacheQueryOptions);
                 if (res !== undefined) {
                     // A response was found in the cache, but its age is not yet known. Look it up.
                     try {
@@ -1346,8 +1348,8 @@
             return __awaiter(this, void 0, void 0, function* () {
                 const [cache, ageTable] = yield Promise.all([this.cache, this.ageTable]);
                 yield Promise.all([
-                    cache.delete(this.adapter.newRequest(url, { method: 'GET' })),
-                    cache.delete(this.adapter.newRequest(url, { method: 'HEAD' })),
+                    cache.delete(this.adapter.newRequest(url, { method: 'GET' }), this.config.cacheQueryOptions),
+                    cache.delete(this.adapter.newRequest(url, { method: 'HEAD' }), this.config.cacheQueryOptions),
                     ageTable.delete(url),
                 ]);
             });
