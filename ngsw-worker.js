@@ -433,7 +433,7 @@
                 // Either the request matches one of the known resource URLs, one of the patterns for
                 // dynamically matched URLs, or neither. Determine which is the case for this request in
                 // order to decide how to handle it.
-                if (this.config.urls.indexOf(url) !== -1 || this.patterns.some(pattern => pattern.test(url))) {
+                if ((url !== undefined && this.config.urls.indexOf(url) !== -1) || this.patterns.some(pattern => pattern.test(url))) {
                     // This URL matches a known resource. Either it's been cached already or it's missing, in
                     // which case it needs to be loaded from the network.
                     // Open the cache to check whether this resource is present.
