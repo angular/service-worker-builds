@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.0.0-rc.0+22.sha-82761ec
+ * @license Angular v10.0.0-rc.0+23.sha-d16a7f3
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -480,10 +480,13 @@
         SwPush.prototype.decodeBase64 = function (input) {
             return atob(input);
         };
-        SwPush = __decorate([
-            core.Injectable(),
-            __metadata("design:paramtypes", [NgswCommChannel])
-        ], SwPush);
+        SwPush.decorators = [
+            { type: core.Injectable }
+        ];
+        /** @nocollapse */
+        SwPush.ctorParameters = function () { return [
+            { type: NgswCommChannel }
+        ]; };
         return SwPush;
     }());
 
@@ -536,10 +539,13 @@
             var statusNonce = this.sw.generateNonce();
             return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce: statusNonce }, statusNonce);
         };
-        SwUpdate = __decorate([
-            core.Injectable(),
-            __metadata("design:paramtypes", [NgswCommChannel])
-        ], SwUpdate);
+        SwUpdate.decorators = [
+            { type: core.Injectable }
+        ];
+        /** @nocollapse */
+        SwUpdate.ctorParameters = function () { return [
+            { type: NgswCommChannel }
+        ]; };
         return SwUpdate;
     }());
 
@@ -633,7 +639,6 @@
     var ServiceWorkerModule = /** @class */ (function () {
         function ServiceWorkerModule() {
         }
-        ServiceWorkerModule_1 = ServiceWorkerModule;
         /**
          * Register the given Angular Service Worker script.
          *
@@ -643,7 +648,7 @@
         ServiceWorkerModule.register = function (script, opts) {
             if (opts === void 0) { opts = {}; }
             return {
-                ngModule: ServiceWorkerModule_1,
+                ngModule: ServiceWorkerModule,
                 providers: [
                     { provide: SCRIPT, useValue: script },
                     { provide: SwRegistrationOptions, useValue: opts },
@@ -661,12 +666,11 @@
                 ],
             };
         };
-        var ServiceWorkerModule_1;
-        ServiceWorkerModule = ServiceWorkerModule_1 = __decorate([
-            core.NgModule({
-                providers: [SwPush, SwUpdate],
-            })
-        ], ServiceWorkerModule);
+        ServiceWorkerModule.decorators = [
+            { type: core.NgModule, args: [{
+                        providers: [SwPush, SwUpdate],
+                    },] }
+        ];
         return ServiceWorkerModule;
     }());
 
