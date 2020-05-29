@@ -1,10 +1,9 @@
 /**
- * @license Angular v10.0.0-rc.0+34.sha-bd7393f
+ * @license Angular v10.0.0-rc.0+35.sha-4d0e175
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
-import { __decorate, __metadata } from 'tslib';
 import { isPlatformBrowser } from '@angular/common';
 import { Injectable, InjectionToken, NgZone, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
@@ -167,7 +166,7 @@ class NgswCommChannel {
  * @publicApi
  */
 let SwPush = /** @class */ (() => {
-    let SwPush = class SwPush {
+    class SwPush {
         constructor(sw) {
             this.sw = sw;
             this.subscriptionChanges = new Subject();
@@ -242,11 +241,14 @@ let SwPush = /** @class */ (() => {
         decodeBase64(input) {
             return atob(input);
         }
-    };
-    SwPush = __decorate([
-        Injectable(),
-        __metadata("design:paramtypes", [NgswCommChannel])
-    ], SwPush);
+    }
+    SwPush.decorators = [
+        { type: Injectable }
+    ];
+    /** @nocollapse */
+    SwPush.ctorParameters = () => [
+        { type: NgswCommChannel }
+    ];
     return SwPush;
 })();
 
@@ -264,7 +266,7 @@ let SwPush = /** @class */ (() => {
  * @publicApi
  */
 let SwUpdate = /** @class */ (() => {
-    let SwUpdate = class SwUpdate {
+    class SwUpdate {
         constructor(sw) {
             this.sw = sw;
             if (!sw.isEnabled) {
@@ -296,11 +298,14 @@ let SwUpdate = /** @class */ (() => {
             const statusNonce = this.sw.generateNonce();
             return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce }, statusNonce);
         }
-    };
-    SwUpdate = __decorate([
-        Injectable(),
-        __metadata("design:paramtypes", [NgswCommChannel])
-    ], SwUpdate);
+    }
+    SwUpdate.decorators = [
+        { type: Injectable }
+    ];
+    /** @nocollapse */
+    SwUpdate.ctorParameters = () => [
+        { type: NgswCommChannel }
+    ];
     return SwUpdate;
 })();
 
@@ -387,8 +392,7 @@ function ngswCommChannelFactory(opts, platformId) {
  * @publicApi
  */
 let ServiceWorkerModule = /** @class */ (() => {
-    var ServiceWorkerModule_1;
-    let ServiceWorkerModule = ServiceWorkerModule_1 = class ServiceWorkerModule {
+    class ServiceWorkerModule {
         /**
          * Register the given Angular Service Worker script.
          *
@@ -397,7 +401,7 @@ let ServiceWorkerModule = /** @class */ (() => {
          */
         static register(script, opts = {}) {
             return {
-                ngModule: ServiceWorkerModule_1,
+                ngModule: ServiceWorkerModule,
                 providers: [
                     { provide: SCRIPT, useValue: script },
                     { provide: SwRegistrationOptions, useValue: opts },
@@ -415,12 +419,12 @@ let ServiceWorkerModule = /** @class */ (() => {
                 ],
             };
         }
-    };
-    ServiceWorkerModule = ServiceWorkerModule_1 = __decorate([
-        NgModule({
-            providers: [SwPush, SwUpdate],
-        })
-    ], ServiceWorkerModule);
+    }
+    ServiceWorkerModule.decorators = [
+        { type: NgModule, args: [{
+                    providers: [SwPush, SwUpdate],
+                },] }
+    ];
     return ServiceWorkerModule;
 })();
 
