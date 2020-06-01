@@ -1,6 +1,6 @@
 {
   "name": "@angular/service-worker",
-  "version": "10.0.0-rc.0+35.sha-4d0e175",
+  "version": "10.0.0-rc.0+37.sha-8bb7411",
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
@@ -8,8 +8,8 @@
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/core": "10.0.0-rc.0+35.sha-4d0e175",
-    "@angular/common": "10.0.0-rc.0+35.sha-4d0e175"
+    "@angular/core": "10.0.0-rc.0+37.sha-8bb7411",
+    "@angular/common": "10.0.0-rc.0+37.sha-8bb7411"
   },
   "repository": {
     "type": "git",
@@ -42,9 +42,6 @@
     ]
   },
   "sideEffects": false,
-  "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com"
-  },
   "main": "./bundles/service-worker.umd.js",
   "fesm2015": "./fesm2015/service-worker.js",
   "esm2015": "./esm2015/service-worker.js",
