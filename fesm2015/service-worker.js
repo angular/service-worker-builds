@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.0.0-rc.0+113.sha-0a1d078
+ * @license Angular v10.0.0-rc.0+114.sha-401ef71
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -245,7 +245,6 @@ let SwPush = /** @class */ (() => {
     SwPush.decorators = [
         { type: Injectable }
     ];
-    /** @nocollapse */
     SwPush.ctorParameters = () => [
         { type: NgswCommChannel }
     ];
@@ -302,7 +301,6 @@ let SwUpdate = /** @class */ (() => {
     SwUpdate.decorators = [
         { type: Injectable }
     ];
-    /** @nocollapse */
     SwUpdate.ctorParameters = () => [
         { type: NgswCommChannel }
     ];
