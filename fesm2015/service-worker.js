@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.0.0-rc.0+130.sha-8c682c5
+ * @license Angular v10.0.0-rc.0+134.sha-a937889
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -165,91 +165,88 @@ class NgswCommChannel {
  *
  * @publicApi
  */
-let SwPush = /** @class */ (() => {
-    class SwPush {
-        constructor(sw) {
-            this.sw = sw;
-            this.subscriptionChanges = new Subject();
-            if (!sw.isEnabled) {
-                this.messages = NEVER;
-                this.notificationClicks = NEVER;
-                this.subscription = NEVER;
-                return;
-            }
-            this.messages = this.sw.eventsOfType('PUSH').pipe(map(message => message.data));
-            this.notificationClicks =
-                this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message) => message.data));
-            this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
-            const workerDrivenSubscriptions = this.pushManager.pipe(switchMap(pm => pm.getSubscription()));
-            this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
+class SwPush {
+    constructor(sw) {
+        this.sw = sw;
+        this.subscriptionChanges = new Subject();
+        if (!sw.isEnabled) {
+            this.messages = NEVER;
+            this.notificationClicks = NEVER;
+            this.subscription = NEVER;
+            return;
         }
-        /**
-         * True if the Service Worker is enabled (supported by the browser and enabled via
-         * `ServiceWorkerModule`).
-         */
-        get isEnabled() {
-            return this.sw.isEnabled;
-        }
-        /**
-         * Subscribes to Web Push Notifications,
-         * after requesting and receiving user permission.
-         *
-         * @param options An object containing the `serverPublicKey` string.
-         * @returns A Promise that resolves to the new subscription object.
-         */
-        requestSubscription(options) {
-            if (!this.sw.isEnabled) {
-                return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
-            }
-            const pushOptions = { userVisibleOnly: true };
-            let key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
-            let applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
-            for (let i = 0; i < key.length; i++) {
-                applicationServerKey[i] = key.charCodeAt(i);
-            }
-            pushOptions.applicationServerKey = applicationServerKey;
-            return this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1))
-                .toPromise()
-                .then(sub => {
-                this.subscriptionChanges.next(sub);
-                return sub;
-            });
-        }
-        /**
-         * Unsubscribes from Service Worker push notifications.
-         *
-         * @returns A Promise that is resolved when the operation succeeds, or is rejected if there is no
-         *          active subscription or the unsubscribe operation fails.
-         */
-        unsubscribe() {
-            if (!this.sw.isEnabled) {
-                return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
-            }
-            const doUnsubscribe = (sub) => {
-                if (sub === null) {
-                    throw new Error('Not subscribed to push notifications.');
-                }
-                return sub.unsubscribe().then(success => {
-                    if (!success) {
-                        throw new Error('Unsubscribe failed!');
-                    }
-                    this.subscriptionChanges.next(null);
-                });
-            };
-            return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
-        }
-        decodeBase64(input) {
-            return atob(input);
-        }
+        this.messages = this.sw.eventsOfType('PUSH').pipe(map(message => message.data));
+        this.notificationClicks =
+            this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message) => message.data));
+        this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
+        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap(pm => pm.getSubscription()));
+        this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
-    SwPush.decorators = [
-        { type: Injectable }
-    ];
-    SwPush.ctorParameters = () => [
-        { type: NgswCommChannel }
-    ];
-    return SwPush;
-})();
+    /**
+     * True if the Service Worker is enabled (supported by the browser and enabled via
+     * `ServiceWorkerModule`).
+     */
+    get isEnabled() {
+        return this.sw.isEnabled;
+    }
+    /**
+     * Subscribes to Web Push Notifications,
+     * after requesting and receiving user permission.
+     *
+     * @param options An object containing the `serverPublicKey` string.
+     * @returns A Promise that resolves to the new subscription object.
+     */
+    requestSubscription(options) {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
+        const pushOptions = { userVisibleOnly: true };
+        let key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
+        let applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
+        for (let i = 0; i < key.length; i++) {
+            applicationServerKey[i] = key.charCodeAt(i);
+        }
+        pushOptions.applicationServerKey = applicationServerKey;
+        return this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1))
+            .toPromise()
+            .then(sub => {
+            this.subscriptionChanges.next(sub);
+            return sub;
+        });
+    }
+    /**
+     * Unsubscribes from Service Worker push notifications.
+     *
+     * @returns A Promise that is resolved when the operation succeeds, or is rejected if there is no
+     *          active subscription or the unsubscribe operation fails.
+     */
+    unsubscribe() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
+        const doUnsubscribe = (sub) => {
+            if (sub === null) {
+                throw new Error('Not subscribed to push notifications.');
+            }
+            return sub.unsubscribe().then(success => {
+                if (!success) {
+                    throw new Error('Unsubscribe failed!');
+                }
+                this.subscriptionChanges.next(null);
+            });
+        };
+        return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
+    }
+    decodeBase64(input) {
+        return atob(input);
+    }
+}
+SwPush.decorators = [
+    { type: Injectable }
+];
+SwPush.ctorParameters = () => [
+    { type: NgswCommChannel }
+];
 
 /**
  * @license
@@ -264,48 +261,45 @@ let SwPush = /** @class */ (() => {
  *
  * @publicApi
  */
-let SwUpdate = /** @class */ (() => {
-    class SwUpdate {
-        constructor(sw) {
-            this.sw = sw;
-            if (!sw.isEnabled) {
-                this.available = NEVER;
-                this.activated = NEVER;
-                return;
-            }
-            this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
-            this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
+class SwUpdate {
+    constructor(sw) {
+        this.sw = sw;
+        if (!sw.isEnabled) {
+            this.available = NEVER;
+            this.activated = NEVER;
+            return;
         }
-        /**
-         * True if the Service Worker is enabled (supported by the browser and enabled via
-         * `ServiceWorkerModule`).
-         */
-        get isEnabled() {
-            return this.sw.isEnabled;
-        }
-        checkForUpdate() {
-            if (!this.sw.isEnabled) {
-                return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
-            }
-            const statusNonce = this.sw.generateNonce();
-            return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', { statusNonce }, statusNonce);
-        }
-        activateUpdate() {
-            if (!this.sw.isEnabled) {
-                return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
-            }
-            const statusNonce = this.sw.generateNonce();
-            return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce }, statusNonce);
-        }
+        this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
+        this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
     }
-    SwUpdate.decorators = [
-        { type: Injectable }
-    ];
-    SwUpdate.ctorParameters = () => [
-        { type: NgswCommChannel }
-    ];
-    return SwUpdate;
-})();
+    /**
+     * True if the Service Worker is enabled (supported by the browser and enabled via
+     * `ServiceWorkerModule`).
+     */
+    get isEnabled() {
+        return this.sw.isEnabled;
+    }
+    checkForUpdate() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
+        const statusNonce = this.sw.generateNonce();
+        return this.sw.postMessageWithStatus('CHECK_FOR_UPDATES', { statusNonce }, statusNonce);
+    }
+    activateUpdate() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
+        const statusNonce = this.sw.generateNonce();
+        return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce }, statusNonce);
+    }
+}
+SwUpdate.decorators = [
+    { type: Injectable }
+];
+SwUpdate.ctorParameters = () => [
+    { type: NgswCommChannel }
+];
 
 /**
  * @license
@@ -389,42 +383,39 @@ function ngswCommChannelFactory(opts, platformId) {
 /**
  * @publicApi
  */
-let ServiceWorkerModule = /** @class */ (() => {
-    class ServiceWorkerModule {
-        /**
-         * Register the given Angular Service Worker script.
-         *
-         * If `enabled` is set to `false` in the given options, the module will behave as if service
-         * workers are not supported by the browser, and the service worker will not be registered.
-         */
-        static register(script, opts = {}) {
-            return {
-                ngModule: ServiceWorkerModule,
-                providers: [
-                    { provide: SCRIPT, useValue: script },
-                    { provide: SwRegistrationOptions, useValue: opts },
-                    {
-                        provide: NgswCommChannel,
-                        useFactory: ngswCommChannelFactory,
-                        deps: [SwRegistrationOptions, PLATFORM_ID]
-                    },
-                    {
-                        provide: APP_INITIALIZER,
-                        useFactory: ngswAppInitializer,
-                        deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
-                        multi: true,
-                    },
-                ],
-            };
-        }
+class ServiceWorkerModule {
+    /**
+     * Register the given Angular Service Worker script.
+     *
+     * If `enabled` is set to `false` in the given options, the module will behave as if service
+     * workers are not supported by the browser, and the service worker will not be registered.
+     */
+    static register(script, opts = {}) {
+        return {
+            ngModule: ServiceWorkerModule,
+            providers: [
+                { provide: SCRIPT, useValue: script },
+                { provide: SwRegistrationOptions, useValue: opts },
+                {
+                    provide: NgswCommChannel,
+                    useFactory: ngswCommChannelFactory,
+                    deps: [SwRegistrationOptions, PLATFORM_ID]
+                },
+                {
+                    provide: APP_INITIALIZER,
+                    useFactory: ngswAppInitializer,
+                    deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
+                    multi: true,
+                },
+            ],
+        };
     }
-    ServiceWorkerModule.decorators = [
-        { type: NgModule, args: [{
-                    providers: [SwPush, SwUpdate],
-                },] }
-    ];
-    return ServiceWorkerModule;
-})();
+}
+ServiceWorkerModule.decorators = [
+    { type: NgModule, args: [{
+                providers: [SwPush, SwUpdate],
+            },] }
+];
 
 /**
  * @license
