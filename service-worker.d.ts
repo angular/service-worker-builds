@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.0.0-rc.5
+ * @license Angular v10.0.0-rc.6+3.sha-6c7467a
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -208,7 +208,7 @@ export declare abstract class SwRegistrationOptions {
      *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
      *     ServiceWorker will be registered as soon as the first value is emitted.
      *
-     * Default: 'registerWhenStable'
+     * Default: 'registerWhenStable:30000'
      */
     registrationStrategy?: string | (() => Observable<unknown>);
 }
