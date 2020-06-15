@@ -55,7 +55,7 @@ export declare abstract class SwRegistrationOptions {
      *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
      *     ServiceWorker will be registered as soon as the first value is emitted.
      *
-     * Default: 'registerWhenStable'
+     * Default: 'registerWhenStable:30000'
      */
     registrationStrategy?: string | (() => Observable<unknown>);
 }
