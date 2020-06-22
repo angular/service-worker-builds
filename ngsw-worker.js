@@ -168,12 +168,21 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-
     function __awaiter(thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function fulfilled(value) { try {
+                step(generator.next(value));
+            }
+            catch (e) {
+                reject(e);
+            } }
+            function rejected(value) { try {
+                step(generator["throw"](value));
+            }
+            catch (e) {
+                reject(e);
+            } }
             function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
@@ -186,12 +195,12 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    var UpdateCacheStatus;
-    (function (UpdateCacheStatus) {
+    var UpdateCacheStatus = /*@__PURE__*/ (function (UpdateCacheStatus) {
         UpdateCacheStatus[UpdateCacheStatus["NOT_CACHED"] = 0] = "NOT_CACHED";
         UpdateCacheStatus[UpdateCacheStatus["CACHED_BUT_UNUSED"] = 1] = "CACHED_BUT_UNUSED";
         UpdateCacheStatus[UpdateCacheStatus["CACHED"] = 2] = "CACHED";
-    })(UpdateCacheStatus || (UpdateCacheStatus = {}));
+        return UpdateCacheStatus;
+    })({});
 
     /**
      * @license
@@ -275,11 +284,11 @@
     function rol32(a, count) {
         return (a << count) | (a >>> (32 - count));
     }
-    var Endian;
-    (function (Endian) {
+    var Endian = /*@__PURE__*/ (function (Endian) {
         Endian[Endian["Little"] = 0] = "Little";
         Endian[Endian["Big"] = 1] = "Big";
-    })(Endian || (Endian = {}));
+        return Endian;
+    })({});
     function fk(index, b, c, d) {
         if (index < 20) {
             return [(b & c) | (~b & d), 0x5a827999];
@@ -1830,8 +1839,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
         'actions', 'badge', 'body', 'data', 'dir', 'icon', 'image', 'lang', 'renotify',
         'requireInteraction', 'silent', 'tag', 'timestamp', 'title', 'vibrate'
     ];
-    var DriverReadyState;
-    (function (DriverReadyState) {
+    var DriverReadyState = /*@__PURE__*/ (function (DriverReadyState) {
         // The SW is operating in a normal mode, responding to all traffic.
         DriverReadyState[DriverReadyState["NORMAL"] = 0] = "NORMAL";
         // The SW does not have a clean installation of the latest version of the app, but older
@@ -1841,7 +1849,8 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
         // The SW has decided that caching is completely unreliable, and is forgoing request
         // handling until the next restart.
         DriverReadyState[DriverReadyState["SAFE_MODE"] = 2] = "SAFE_MODE";
-    })(DriverReadyState || (DriverReadyState = {}));
+        return DriverReadyState;
+    })({});
     class Driver {
         constructor(scope, adapter, db) {
             // Set up all the event handlers that the SW needs.
