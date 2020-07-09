@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.0.3+4.sha-9f2393f
+ * @license Angular v10.0.3+18.sha-8ee23ba
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -488,7 +488,10 @@
     }
     function urlToRegex(url, baseHref, literalQuestionMark) {
         if (!url.startsWith('/') && url.indexOf('://') === -1) {
-            url = joinUrls(baseHref, url);
+            // Prefix relative URLs with `baseHref`.
+            // Strip a leading `.` from a relative `baseHref` (e.g. `./foo/`), since it would result in an
+            // incorrect regex (matching a literal `.`).
+            url = joinUrls(baseHref.replace(/^\.(?=\/)/, ''), url);
         }
         return globToRegex(url, literalQuestionMark);
     }
