@@ -10,6 +10,8 @@ export declare const ERR_SW_NOT_SUPPORTED = "Service workers are disabled or not
 /**
  * An event emitted when a new version of the app is available.
  *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
  * @publicApi
  */
 export interface UpdateAvailableEvent {
@@ -26,6 +28,8 @@ export interface UpdateAvailableEvent {
 /**
  * An event emitted when a new version of the app has been downloaded and activated.
  *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
  * @publicApi
  */
 export interface UpdateActivatedEvent {
@@ -40,13 +44,30 @@ export interface UpdateActivatedEvent {
     };
 }
 /**
+ * An event emitted when the version of the app used by the service worker to serve this client is
+ * in a broken state that cannot be recovered from and a full page reload is required.
+ *
+ * For example, the service worker may not be able to retrieve a required resource, neither from the
+ * cache nor from the server. This could happen if a new version is deployed to the server and the
+ * service worker cache has been partially cleaned by the browser, removing some files of a previous
+ * app version but not all.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export interface UnrecoverableStateEvent {
+    type: 'UNRECOVERABLE_STATE';
+    reason: string;
+}
+/**
  * An event emitted when a `PushEvent` is received by the service worker.
  */
 export interface PushEvent {
     type: 'PUSH';
     data: any;
 }
-export declare type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent;
+export declare type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent | UnrecoverableStateEvent;
 export interface TypedEvent {
     type: string;
 }

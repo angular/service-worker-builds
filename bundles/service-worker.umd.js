@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.1.0-rc.0+24.sha-0a7a5e3
+ * @license Angular v10.1.0-rc.0+29.sha-0fc2bef
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -574,6 +574,8 @@
      * Subscribe to update notifications from the Service Worker, trigger update
      * checks, and forcibly activate updates.
      *
+     * @see {@link guide/service-worker-communications Service worker communication guide}
+     *
      * @publicApi
      */
     var SwUpdate = /** @class */ (function () {
@@ -582,10 +584,12 @@
             if (!sw.isEnabled) {
                 this.available = rxjs.NEVER;
                 this.activated = rxjs.NEVER;
+                this.unrecoverable = rxjs.NEVER;
                 return;
             }
             this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
             this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
+            this.unrecoverable = this.sw.eventsOfType('UNRECOVERABLE_STATE');
         }
         Object.defineProperty(SwUpdate.prototype, "isEnabled", {
             /**

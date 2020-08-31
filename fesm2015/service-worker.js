@@ -1,5 +1,5 @@
 /**
- * @license Angular v10.1.0-rc.0+24.sha-0a7a5e3
+ * @license Angular v10.1.0-rc.0+29.sha-0fc2bef
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -258,6 +258,8 @@ SwPush.ɵprov = ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
  * @publicApi
  */
 class SwUpdate {
@@ -266,10 +268,12 @@ class SwUpdate {
         if (!sw.isEnabled) {
             this.available = NEVER;
             this.activated = NEVER;
+            this.unrecoverable = NEVER;
             return;
         }
         this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
         this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
+        this.unrecoverable = this.sw.eventsOfType('UNRECOVERABLE_STATE');
     }
     /**
      * True if the Service Worker is enabled (supported by the browser and enabled via
