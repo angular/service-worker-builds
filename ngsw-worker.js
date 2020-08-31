@@ -244,6 +244,12 @@
             return `${error}`;
         }
     }
+    class SwUnrecoverableStateError extends SwCriticalError {
+        constructor() {
+            super(...arguments);
+            this.isUnrecoverableState = true;
+        }
+    }
 
     /**
      * @license
@@ -730,8 +736,8 @@
                     // reasons: either the non-cache-busted request failed (hopefully transiently) or if the
                     // hash of the content retrieved does not match the canonical hash from the manifest. It's
                     // only valid to access the content of the first response if the request was successful.
-                    let makeCacheBustedRequest = networkResult.ok;
-                    if (makeCacheBustedRequest) {
+                    let makeCacheBustedRequest = !networkResult.ok;
+                    if (networkResult.ok) {
                         // The request was successful. A cache-busted request is only necessary if the hashes
                         // don't match. Compare them, making sure to clone the response so it can be used later
                         // if it proves to be valid.
@@ -749,7 +755,12 @@
                         const cacheBustedResult = yield this.safeFetch(cacheBustReq);
                         // If the response was unsuccessful, there's nothing more that can be done.
                         if (!cacheBustedResult.ok) {
-                            throw new SwCriticalError(`Response not Ok (cacheBustedFetchFromNetwork): cache busted request for ${req.url} returned response ${cacheBustedResult.status} ${cacheBustedResult.statusText}`);
+                            if (cacheBustedResult.status === 404) {
+                                throw new SwUnrecoverableStateError(`Failed to retrieve hashed resource from the server. (AssetGroup: ${this.config.name} | URL: ${url})`);
+                            }
+                            else {
+                                throw new SwCriticalError(`Response not Ok (cacheBustedFetchFromNetwork): cache busted request for ${req.url} returned response ${cacheBustedResult.status} ${cacheBustedResult.statusText}`);
+                            }
                         }
                         // Hash the contents.
                         const cacheBustedHash = sha1Binary(yield cacheBustedResult.clone().arrayBuffer());
@@ -2207,6 +2218,9 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                     res = yield appVersion.handleFetch(event.request, event);
                 }
                 catch (err) {
+                    if (err.isUnrecoverableState) {
+                        yield this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
+                    }
                     if (err.isCritical) {
                         // Something went wrong with the activation of this version.
                         yield this.versionFailed(appVersion, err);
@@ -2717,6 +2731,23 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 hash,
                 appData: manifest.appData,
             };
+        }
+        notifyClientsAboutUnrecoverableState(appVersion, reason) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const broken = Array.from(this.versions.entries()).find(([hash, version]) => version === appVersion);
+                if (broken === undefined) {
+                    // This version is no longer in use anyway, so nobody cares.
+                    return;
+                }
+                const brokenHash = broken[0];
+                const affectedClients = Array.from(this.clientVersionMap.entries())
+                    .filter(([clientId, hash]) => hash === brokenHash)
+                    .map(([clientId]) => clientId);
+                affectedClients.forEach((clientId) => __awaiter(this, void 0, void 0, function* () {
+                    const client = yield this.scope.clients.get(clientId);
+                    client.postMessage({ type: 'UNRECOVERABLE_STATE', reason });
+                }));
+            });
         }
         notifyClientsAboutUpdate(next) {
             return __awaiter(this, void 0, void 0, function* () {
