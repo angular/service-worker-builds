@@ -1,5 +1,5 @@
 /**
- * @license Angular v11.0.0-next.2+49.sha-145ab3d
+ * @license Angular v11.0.0-next.2+50.sha-a206852
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -421,15 +421,16 @@
             this.baseHref = baseHref;
         }
         Generator.prototype.process = function (config) {
+            var _a;
             return __awaiter(this, void 0, void 0, function () {
                 var unorderedHashTable, assetGroups;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0:
                             unorderedHashTable = {};
                             return [4 /*yield*/, this.processAssetGroups(config, unorderedHashTable)];
                         case 1:
-                            assetGroups = _a.sent();
+                            assetGroups = _b.sent();
                             return [2 /*return*/, {
                                     configVersion: 1,
                                     timestamp: Date.now(),
@@ -439,6 +440,7 @@
                                     dataGroups: this.processDataGroups(config),
                                     hashTable: withOrderedKeys(unorderedHashTable),
                                     navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
+                                    navigationRequestStrategy: (_a = config.navigationRequestStrategy) !== null && _a !== void 0 ? _a : 'performance',
                                 }];
                     }
                 });
@@ -448,13 +450,13 @@
             return __awaiter(this, void 0, void 0, function () {
                 var seenMap;
                 var _this = this;
-                return __generator(this, function (_a) {
+                return __generator(this, function (_b) {
                     seenMap = new Set();
                     return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
                             var fileMatcher, allFiles, matchedFiles;
                             var _this = this;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
+                            return __generator(this, function (_b) {
+                                switch (_b.label) {
                                     case 0:
                                         if (group.resources.versionedFiles) {
                                             throw new Error("Asset-group '" + group.name + "' in 'ngsw-config.json' uses the 'versionedFiles' option, " +
@@ -463,20 +465,20 @@
                                         fileMatcher = globListToMatcher(group.resources.files || []);
                                         return [4 /*yield*/, this.fs.list('/')];
                                     case 1:
-                                        allFiles = _a.sent();
+                                        allFiles = _b.sent();
                                         matchedFiles = allFiles.filter(fileMatcher).filter(function (file) { return !seenMap.has(file); }).sort();
                                         matchedFiles.forEach(function (file) { return seenMap.add(file); });
                                         // Add the hashes.
                                         return [4 /*yield*/, matchedFiles.reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
                                                 var hash;
-                                                return __generator(this, function (_a) {
-                                                    switch (_a.label) {
+                                                return __generator(this, function (_b) {
+                                                    switch (_b.label) {
                                                         case 0: return [4 /*yield*/, previous];
                                                         case 1:
-                                                            _a.sent();
+                                                            _b.sent();
                                                             return [4 /*yield*/, this.fs.hash(file)];
                                                         case 2:
-                                                            hash = _a.sent();
+                                                            hash = _b.sent();
                                                             hashTable[joinUrls(this.baseHref, file)] = hash;
                                                             return [2 /*return*/];
                                                     }
@@ -484,7 +486,7 @@
                                             }); }, Promise.resolve())];
                                     case 2:
                                         // Add the hashes.
-                                        _a.sent();
+                                        _b.sent();
                                         return [2 /*return*/, {
                                                 name: group.name,
                                                 installMode: group.installMode || 'prefetch',
