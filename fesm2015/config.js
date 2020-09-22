@@ -1,5 +1,5 @@
 /**
- * @license Angular v11.0.0-next.2+49.sha-145ab3d
+ * @license Angular v11.0.0-next.2+50.sha-a206852
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -124,6 +124,7 @@ class Generator {
         this.baseHref = baseHref;
     }
     process(config) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const unorderedHashTable = {};
             const assetGroups = yield this.processAssetGroups(config, unorderedHashTable);
@@ -136,6 +137,7 @@ class Generator {
                 dataGroups: this.processDataGroups(config),
                 hashTable: withOrderedKeys(unorderedHashTable),
                 navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
+                navigationRequestStrategy: (_a = config.navigationRequestStrategy) !== null && _a !== void 0 ? _a : 'performance',
             };
         });
     }
