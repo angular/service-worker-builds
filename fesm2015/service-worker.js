@@ -1,11 +1,11 @@
 /**
- * @license Angular v11.0.3+56.sha-19309b5
+ * @license Angular v11.0.3+63.sha-65e93ea
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import { isPlatformBrowser } from '@angular/common';
-import { Injectable, InjectionToken, NgZone, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule } from '@angular/core';
+import { Injectable, InjectionToken, NgZone, ErrorHandler, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
 import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operators';
 
@@ -368,8 +368,10 @@ function ngswAppInitializer(injector, script, options, platformId) {
         // given that some registration strategies wait for the app to stabilize).
         // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
         const ngZone = injector.get(NgZone);
-        ngZone.runOutsideAngular(() => readyToRegister$.pipe(take(1)).subscribe(() => navigator.serviceWorker.register(script, { scope: options.scope })
-            .catch(err => console.error('Service worker registration failed with:', err))));
+        ngZone.runOutsideAngular(() => readyToRegister$.pipe(take(1)).subscribe(() => navigator.serviceWorker.register(script, { scope: options.scope }).catch(err => {
+            const errorHandler = injector.get(ErrorHandler);
+            errorHandler.handleError(err);
+        })));
     };
     return initializer;
 }
