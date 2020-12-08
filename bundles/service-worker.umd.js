@@ -1,5 +1,5 @@
 /**
- * @license Angular v11.1.0-next.1+85.sha-6dc43a4
+ * @license Angular v11.1.0-next.1+86.sha-74e42cf
  * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -685,8 +685,10 @@
             // given that some registration strategies wait for the app to stabilize).
             // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
             var ngZone = injector.get(i0.NgZone);
-            ngZone.runOutsideAngular(function () { return readyToRegister$.pipe(operators.take(1)).subscribe(function () { return navigator.serviceWorker.register(script, { scope: options.scope })
-                .catch(function (err) { return console.error('Service worker registration failed with:', err); }); }); });
+            ngZone.runOutsideAngular(function () { return readyToRegister$.pipe(operators.take(1)).subscribe(function () { return navigator.serviceWorker.register(script, { scope: options.scope }).catch(function (err) {
+                var errorHandler = injector.get(i0.ErrorHandler);
+                errorHandler.handleError(err);
+            }); }); });
         };
         return initializer;
     }
