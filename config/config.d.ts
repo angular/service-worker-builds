@@ -1,6 +1,6 @@
 /**
- * @license Angular v8.0.0-rc.0+81.sha-b46eb3c.with-local-changes
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * @license Angular v11.1.0-next.4+175.sha-02ff4ed
+ * (c) 2010-2020 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -16,11 +16,9 @@ export declare interface AssetGroup {
     updateMode?: 'prefetch' | 'lazy';
     resources: {
         files?: Glob[];
-        /** @deprecated As of v6 `versionedFiles` and `files` options have the same behavior. Use
-           `files` instead. */
-        versionedFiles?: Glob[];
         urls?: Glob[];
     };
+    cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }
 
 /**
@@ -34,6 +32,7 @@ export declare interface Config {
     assetGroups?: AssetGroup[];
     dataGroups?: DataGroup[];
     navigationUrls?: string[];
+    navigationRequestStrategy?: 'freshness' | 'performance';
 }
 
 /**
@@ -51,6 +50,7 @@ export declare interface DataGroup {
         timeout?: Duration;
         strategy?: 'freshness' | 'performance';
     };
+    cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }
 
 /**
