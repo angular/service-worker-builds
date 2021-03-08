@@ -1,5 +1,5 @@
 /**
- * @license Angular v12.0.0-next.3+33.sha-1735430
+ * @license Angular v12.0.0-next.3+36.sha-03d47d5
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -556,7 +556,7 @@
         return SwPush;
     }());
     SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(i0.ɵɵinject(NgswCommChannel)); };
-    SwPush.ɵprov = i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
+    SwPush.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
     (function () {
         (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SwPush, [{
                 type: i0.Injectable
@@ -619,7 +619,7 @@
         return SwUpdate;
     }());
     SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(i0.ɵɵinject(NgswCommChannel)); };
-    SwUpdate.ɵprov = i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac });
+    SwUpdate.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac });
     (function () {
         (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SwUpdate, [{
                 type: i0.Injectable
@@ -736,8 +736,8 @@
         };
         return ServiceWorkerModule;
     }());
-    ServiceWorkerModule.ɵmod = i0.ɵɵdefineNgModule({ type: ServiceWorkerModule });
-    ServiceWorkerModule.ɵinj = i0.ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
+    ServiceWorkerModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ServiceWorkerModule });
+    ServiceWorkerModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
     (function () {
         (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ServiceWorkerModule, [{
                 type: i0.NgModule,

@@ -1,5 +1,5 @@
 /**
- * @license Angular v12.0.0-next.3+33.sha-1735430
+ * @license Angular v12.0.0-next.3+36.sha-03d47d5
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -242,7 +242,7 @@ class SwPush {
     }
 }
 SwPush.ɵfac = function SwPush_Factory(t) { return new (t || SwPush)(ɵɵinject(NgswCommChannel)); };
-SwPush.ɵprov = ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
+SwPush.ɵprov = /*@__PURE__*/ ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵsetClassMetadata(SwPush, [{
         type: Injectable
     }], function () { return [{ type: NgswCommChannel }]; }, null); })();
@@ -298,7 +298,7 @@ class SwUpdate {
     }
 }
 SwUpdate.ɵfac = function SwUpdate_Factory(t) { return new (t || SwUpdate)(ɵɵinject(NgswCommChannel)); };
-SwUpdate.ɵprov = ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac });
+SwUpdate.ɵprov = /*@__PURE__*/ ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵsetClassMetadata(SwUpdate, [{
         type: Injectable
     }], function () { return [{ type: NgswCommChannel }]; }, null); })();
@@ -413,8 +413,8 @@ class ServiceWorkerModule {
         };
     }
 }
-ServiceWorkerModule.ɵmod = ɵɵdefineNgModule({ type: ServiceWorkerModule });
-ServiceWorkerModule.ɵinj = ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
+ServiceWorkerModule.ɵmod = /*@__PURE__*/ ɵɵdefineNgModule({ type: ServiceWorkerModule });
+ServiceWorkerModule.ɵinj = /*@__PURE__*/ ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵsetClassMetadata(ServiceWorkerModule, [{
         type: NgModule,
         args: [{
