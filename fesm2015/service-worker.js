@@ -1,5 +1,5 @@
 /**
- * @license Angular v12.0.0-next.3+40.sha-bdf13fe
+ * @license Angular v12.0.0-next.3+42.sha-2ebe2bc
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -413,8 +413,9 @@ class ServiceWorkerModule {
         };
     }
 }
+ServiceWorkerModule.ɵfac = function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); };
 ServiceWorkerModule.ɵmod = /*@__PURE__*/ ɵɵdefineNgModule({ type: ServiceWorkerModule });
-ServiceWorkerModule.ɵinj = /*@__PURE__*/ ɵɵdefineInjector({ factory: function ServiceWorkerModule_Factory(t) { return new (t || ServiceWorkerModule)(); }, providers: [SwPush, SwUpdate] });
+ServiceWorkerModule.ɵinj = /*@__PURE__*/ ɵɵdefineInjector({ providers: [SwPush, SwUpdate] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵsetClassMetadata(ServiceWorkerModule, [{
         type: NgModule,
         args: [{
