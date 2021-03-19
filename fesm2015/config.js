@@ -1,6 +1,6 @@
 /**
- * @license Angular v10.1.0-next.4+26.sha-6248d6c
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * @license Angular v12.0.0-next.5+9.sha-bff0d8f
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -111,7 +111,7 @@ const DEFAULT_NAVIGATION_URLS = [
     '/**',
     '!/**/*.*',
     '!/**/*__*',
-    '!/**/*__*/**',
+    '!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
 ];
 /**
  * Consumes service worker configuration files and processes them into control files.
@@ -124,6 +124,7 @@ class Generator {
         this.baseHref = baseHref;
     }
     process(config) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const unorderedHashTable = {};
             const assetGroups = yield this.processAssetGroups(config, unorderedHashTable);
@@ -136,6 +137,7 @@ class Generator {
                 dataGroups: this.processDataGroups(config),
                 hashTable: withOrderedKeys(unorderedHashTable),
                 navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
+                navigationRequestStrategy: (_a = config.navigationRequestStrategy) !== null && _a !== void 0 ? _a : 'performance',
             };
         });
     }

@@ -1,6 +1,6 @@
 /**
- * @license Angular v10.1.0-next.4+26.sha-6248d6c
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * @license Angular v12.0.0-next.5+9.sha-bff0d8f
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -217,6 +217,8 @@ export declare abstract class SwRegistrationOptions {
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
  * @publicApi
  */
 export declare class SwUpdate {
@@ -229,6 +231,12 @@ export declare class SwUpdate {
      * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
      */
     readonly activated: Observable<UpdateActivatedEvent>;
+    /**
+     * Emits an `UnrecoverableStateEvent` event whenever the version of the app used by the service
+     * worker to serve this client is in a broken state that cannot be recovered from without a full
+     * page reload.
+     */
+    readonly unrecoverable: Observable<UnrecoverableStateEvent>;
     /**
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
@@ -244,7 +252,27 @@ declare interface TypedEvent {
 }
 
 /**
+ * An event emitted when the version of the app used by the service worker to serve this client is
+ * in a broken state that cannot be recovered from and a full page reload is required.
+ *
+ * For example, the service worker may not be able to retrieve a required resource, neither from the
+ * cache nor from the server. This could happen if a new version is deployed to the server and the
+ * service worker cache has been partially cleaned by the browser, removing some files of a previous
+ * app version but not all.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export declare interface UnrecoverableStateEvent {
+    type: 'UNRECOVERABLE_STATE';
+    reason: string;
+}
+
+/**
  * An event emitted when a new version of the app has been downloaded and activated.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -262,6 +290,8 @@ export declare interface UpdateActivatedEvent {
 
 /**
  * An event emitted when a new version of the app is available.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @publicApi
  */

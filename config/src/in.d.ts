@@ -25,6 +25,7 @@ export interface Config {
     assetGroups?: AssetGroup[];
     dataGroups?: DataGroup[];
     navigationUrls?: string[];
+    navigationRequestStrategy?: 'freshness' | 'performance';
 }
 /**
  * Configuration for a particular group of assets.

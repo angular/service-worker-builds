@@ -1,6 +1,6 @@
 /**
- * @license Angular v10.1.0-next.4+26.sha-6248d6c
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * @license Angular v12.0.0-next.5+9.sha-bff0d8f
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -29,11 +29,13 @@
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b)
-                if (b.hasOwnProperty(p))
+                if (Object.prototype.hasOwnProperty.call(b, p))
                     d[p] = b[p]; };
         return extendStatics(d, b);
     };
     function __extends(d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -176,10 +178,10 @@
             k2 = k;
         o[k2] = m[k];
     });
-    function __exportStar(m, exports) {
+    function __exportStar(m, o) {
         for (var p in m)
-            if (p !== "default" && !exports.hasOwnProperty(p))
-                __createBinding(exports, m, p);
+            if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p))
+                __createBinding(o, m, p);
     }
     function __values(o) {
         var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
@@ -219,11 +221,13 @@
         }
         return ar;
     }
+    /** @deprecated */
     function __spread() {
         for (var ar = [], i = 0; i < arguments.length; i++)
             ar = ar.concat(__read(arguments[i]));
         return ar;
     }
+    /** @deprecated */
     function __spreadArrays() {
         for (var s = 0, i = 0, il = arguments.length; i < il; i++)
             s += arguments[i].length;
@@ -232,7 +236,11 @@
                 r[k] = a[j];
         return r;
     }
-    ;
+    function __spreadArray(to, from) {
+        for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+            to[j] = from[i];
+        return to;
+    }
     function __await(v) {
         return this instanceof __await ? (this.v = v, this) : new __await(v);
     }
@@ -289,7 +297,7 @@
         var result = {};
         if (mod != null)
             for (var k in mod)
-                if (Object.hasOwnProperty.call(mod, k))
+                if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
                     __createBinding(result, mod, k);
         __setModuleDefault(result, mod);
         return result;
@@ -372,10 +380,10 @@
         { replace: /\+/g, with: '\\+' },
         { replace: /\*/g, with: WILD_SINGLE },
     ];
-    var TO_ESCAPE_WILDCARD_QM = __spread(TO_ESCAPE_BASE, [
+    var TO_ESCAPE_WILDCARD_QM = __spreadArray(__spreadArray([], __read(TO_ESCAPE_BASE)), [
         { replace: /\?/g, with: QUESTION_MARK },
     ]);
-    var TO_ESCAPE_LITERAL_QM = __spread(TO_ESCAPE_BASE, [
+    var TO_ESCAPE_LITERAL_QM = __spreadArray(__spreadArray([], __read(TO_ESCAPE_BASE)), [
         { replace: /\?/g, with: '\\?' },
     ]);
     function globToRegex(glob, literalQuestionMark) {
@@ -408,7 +416,7 @@
         '/**',
         '!/**/*.*',
         '!/**/*__*',
-        '!/**/*__*/**',
+        '!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
     ];
     /**
      * Consumes service worker configuration files and processes them into control files.
@@ -421,15 +429,16 @@
             this.baseHref = baseHref;
         }
         Generator.prototype.process = function (config) {
+            var _a;
             return __awaiter(this, void 0, void 0, function () {
                 var unorderedHashTable, assetGroups;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0:
                             unorderedHashTable = {};
                             return [4 /*yield*/, this.processAssetGroups(config, unorderedHashTable)];
                         case 1:
-                            assetGroups = _a.sent();
+                            assetGroups = _b.sent();
                             return [2 /*return*/, {
                                     configVersion: 1,
                                     timestamp: Date.now(),
@@ -439,6 +448,7 @@
                                     dataGroups: this.processDataGroups(config),
                                     hashTable: withOrderedKeys(unorderedHashTable),
                                     navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
+                                    navigationRequestStrategy: (_a = config.navigationRequestStrategy) !== null && _a !== void 0 ? _a : 'performance',
                                 }];
                     }
                 });
@@ -448,13 +458,13 @@
             return __awaiter(this, void 0, void 0, function () {
                 var seenMap;
                 var _this = this;
-                return __generator(this, function (_a) {
+                return __generator(this, function (_b) {
                     seenMap = new Set();
                     return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
                             var fileMatcher, allFiles, matchedFiles;
                             var _this = this;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
+                            return __generator(this, function (_b) {
+                                switch (_b.label) {
                                     case 0:
                                         if (group.resources.versionedFiles) {
                                             throw new Error("Asset-group '" + group.name + "' in 'ngsw-config.json' uses the 'versionedFiles' option, " +
@@ -463,20 +473,20 @@
                                         fileMatcher = globListToMatcher(group.resources.files || []);
                                         return [4 /*yield*/, this.fs.list('/')];
                                     case 1:
-                                        allFiles = _a.sent();
+                                        allFiles = _b.sent();
                                         matchedFiles = allFiles.filter(fileMatcher).filter(function (file) { return !seenMap.has(file); }).sort();
                                         matchedFiles.forEach(function (file) { return seenMap.add(file); });
                                         // Add the hashes.
                                         return [4 /*yield*/, matchedFiles.reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
                                                 var hash;
-                                                return __generator(this, function (_a) {
-                                                    switch (_a.label) {
+                                                return __generator(this, function (_b) {
+                                                    switch (_b.label) {
                                                         case 0: return [4 /*yield*/, previous];
                                                         case 1:
-                                                            _a.sent();
+                                                            _b.sent();
                                                             return [4 /*yield*/, this.fs.hash(file)];
                                                         case 2:
-                                                            hash = _a.sent();
+                                                            hash = _b.sent();
                                                             hashTable[joinUrls(this.baseHref, file)] = hash;
                                                             return [2 /*return*/];
                                                     }
@@ -484,7 +494,7 @@
                                             }); }, Promise.resolve())];
                                     case 2:
                                         // Add the hashes.
-                                        _a.sent();
+                                        _b.sent();
                                         return [2 /*return*/, {
                                                 name: group.name,
                                                 installMode: group.installMode || 'prefetch',

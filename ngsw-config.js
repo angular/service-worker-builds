@@ -207,7 +207,7 @@
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
-    const { Generator, NgswConfig } = require('@angular/service-worker/config');
+    const { Generator } = require('@angular/service-worker/config');
     const fs$1 = require('fs');
     const path$1 = require('path');
     const cwd = process.cwd();
