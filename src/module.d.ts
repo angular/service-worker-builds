@@ -73,7 +73,7 @@ export declare class ServiceWorkerModule {
      * workers are not supported by the browser, and the service worker will not be registered.
      */
     static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
-    static ɵfac: i0.ɵɵFactoryDef<ServiceWorkerModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<ServiceWorkerModule, never, never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<ServiceWorkerModule>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ServiceWorkerModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ServiceWorkerModule, never, never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<ServiceWorkerModule>;
 }
