@@ -133,5 +133,5 @@ export declare class SwPush {
     unsubscribe(): Promise<void>;
     private decodeBase64;
     static ɵfac: i0.ɵɵFactoryDeclaration<SwPush, never>;
-    static ɵprov: i0.ɵɵInjectableDef<SwPush>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<SwPush>;
 }
