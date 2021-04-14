@@ -1,5 +1,5 @@
 /**
- * @license Angular v12.0.0-next.4+10.sha-69afeb3
+ * @license Angular v12.0.0-next.8+99.sha-886bf37
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -111,7 +111,7 @@ const DEFAULT_NAVIGATION_URLS = [
     '/**',
     '!/**/*.*',
     '!/**/*__*',
-    '!/**/*__*/**',
+    '!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
 ];
 /**
  * Consumes service worker configuration files and processes them into control files.
