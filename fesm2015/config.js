@@ -1,50 +1,32 @@
 /**
- * @license Angular v9.0.0-next.12+69.sha-1f498ab.with-local-changes
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * @license Angular v12.0.0-next.8+121.sha-72c4288
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import { __awaiter } from 'tslib';
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** @type {?} */
 const PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
-/** @type {?} */
 const PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
-/**
- * @param {?} duration
- * @return {?}
- */
 function parseDurationToMs(duration) {
-    /** @type {?} */
     const matches = [];
-    /** @type {?} */
     let array;
     while ((array = PARSE_TO_PAIRS.exec(duration)) !== null) {
         matches.push(array[0]);
     }
     return matches
-        .map((/**
-     * @param {?} match
-     * @return {?}
-     */
-    match => {
-        /** @type {?} */
+        .map(match => {
         const res = PAIR_SPLIT.exec(match);
         if (res === null) {
             throw new Error(`Not a valid duration: ${match}`);
         }
-        /** @type {?} */
         let factor = 0;
         switch (res[2]) {
             case 'd':
@@ -66,63 +48,39 @@ function parseDurationToMs(duration) {
                 throw new Error(`Not a valid duration unit: ${res[2]}`);
         }
         return parseInt(res[1]) * factor;
-    }))
-        .reduce((/**
-     * @param {?} total
-     * @param {?} value
-     * @return {?}
-     */
-    (total, value) => total + value), 0);
+    })
+        .reduce((total, value) => total + value, 0);
 }
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** @type {?} */
 const QUESTION_MARK = '[^/]';
-/** @type {?} */
 const WILD_SINGLE = '[^/]*';
-/** @type {?} */
 const WILD_OPEN = '(?:.+\\/)?';
-/** @type {?} */
 const TO_ESCAPE_BASE = [
     { replace: /\./g, with: '\\.' },
     { replace: /\+/g, with: '\\+' },
     { replace: /\*/g, with: WILD_SINGLE },
 ];
-/** @type {?} */
 const TO_ESCAPE_WILDCARD_QM = [
     ...TO_ESCAPE_BASE,
     { replace: /\?/g, with: QUESTION_MARK },
 ];
-/** @type {?} */
 const TO_ESCAPE_LITERAL_QM = [
     ...TO_ESCAPE_BASE,
     { replace: /\?/g, with: '\\?' },
 ];
-/**
- * @param {?} glob
- * @param {?=} literalQuestionMark
- * @return {?}
- */
 function globToRegex(glob, literalQuestionMark = false) {
-    /** @type {?} */
     const toEscape = literalQuestionMark ? TO_ESCAPE_LITERAL_QM : TO_ESCAPE_WILDCARD_QM;
-    /** @type {?} */
     const segments = glob.split('/').reverse();
-    /** @type {?} */
     let regex = '';
     while (segments.length > 0) {
-        /** @type {?} */
-        const segment = (/** @type {?} */ (segments.pop()));
+        const segment = segments.pop();
         if (segment === '**') {
             if (segments.length > 0) {
                 regex += WILD_OPEN;
@@ -132,13 +90,7 @@ function globToRegex(glob, literalQuestionMark = false) {
             }
         }
         else {
-            /** @type {?} */
-            const processed = toEscape.reduce((/**
-             * @param {?} segment
-             * @param {?} escape
-             * @return {?}
-             */
-            (segment, escape) => segment.replace(escape.replace, escape.with)), segment);
+            const processed = toEscape.reduce((segment, escape) => segment.replace(escape.replace, escape.with), segment);
             regex += processed;
             if (segments.length > 0) {
                 regex += '\\/';
@@ -149,175 +101,99 @@ function globToRegex(glob, literalQuestionMark = false) {
 }
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
-/** @type {?} */
 const DEFAULT_NAVIGATION_URLS = [
     '/**',
     '!/**/*.*',
     '!/**/*__*',
-    '!/**/*__*/**',
+    '!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
 ];
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
- * \@publicApi
+ * @publicApi
  */
 class Generator {
-    /**
-     * @param {?} fs
-     * @param {?} baseHref
-     */
     constructor(fs, baseHref) {
         this.fs = fs;
         this.baseHref = baseHref;
     }
-    /**
-     * @param {?} config
-     * @return {?}
-     */
     process(config) {
-        return __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
-            /** @type {?} */
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
             const unorderedHashTable = {};
-            /** @type {?} */
             const assetGroups = yield this.processAssetGroups(config, unorderedHashTable);
             return {
                 configVersion: 1,
                 timestamp: Date.now(),
                 appData: config.appData,
-                index: joinUrls(this.baseHref, config.index), assetGroups,
+                index: joinUrls(this.baseHref, config.index),
+                assetGroups,
                 dataGroups: this.processDataGroups(config),
                 hashTable: withOrderedKeys(unorderedHashTable),
                 navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
+                navigationRequestStrategy: (_a = config.navigationRequestStrategy) !== null && _a !== void 0 ? _a : 'performance',
             };
         });
     }
-    /**
-     * @private
-     * @param {?} config
-     * @param {?} hashTable
-     * @return {?}
-     */
     processAssetGroups(config, hashTable) {
-        return __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
-            /** @type {?} */
+        return __awaiter(this, void 0, void 0, function* () {
             const seenMap = new Set();
-            return Promise.all((config.assetGroups || []).map((/**
-             * @param {?} group
-             * @return {?}
-             */
-            (group) => __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
-                /** @type {?} */
+            return Promise.all((config.assetGroups || []).map((group) => __awaiter(this, void 0, void 0, function* () {
+                if (group.resources.versionedFiles) {
+                    throw new Error(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
+                        'which is no longer supported. Use \'files\' instead.');
+                }
                 const fileMatcher = globListToMatcher(group.resources.files || []);
-                /** @type {?} */
                 const allFiles = yield this.fs.list('/');
-                /** @type {?} */
-                const matchedFiles = allFiles.filter(fileMatcher).filter((/**
-                 * @param {?} file
-                 * @return {?}
-                 */
-                file => !seenMap.has(file))).sort();
-                matchedFiles.forEach((/**
-                 * @param {?} file
-                 * @return {?}
-                 */
-                file => seenMap.add(file)));
+                const matchedFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file)).sort();
+                matchedFiles.forEach(file => seenMap.add(file));
                 // Add the hashes.
-                yield matchedFiles.reduce((/**
-                 * @param {?} previous
-                 * @param {?} file
-                 * @return {?}
-                 */
-                (previous, file) => __awaiter(this, void 0, void 0, /** @this {!Generator} */ function* () {
+                yield matchedFiles.reduce((previous, file) => __awaiter(this, void 0, void 0, function* () {
                     yield previous;
-                    /** @type {?} */
                     const hash = yield this.fs.hash(file);
                     hashTable[joinUrls(this.baseHref, file)] = hash;
-                })), Promise.resolve());
+                }), Promise.resolve());
                 return {
                     name: group.name,
                     installMode: group.installMode || 'prefetch',
                     updateMode: group.updateMode || group.installMode || 'prefetch',
-                    urls: matchedFiles.map((/**
-                     * @param {?} url
-                     * @return {?}
-                     */
-                    url => joinUrls(this.baseHref, url))),
-                    patterns: (group.resources.urls || []).map((/**
-                     * @param {?} url
-                     * @return {?}
-                     */
-                    url => urlToRegex(url, this.baseHref, true))),
+                    cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
+                    urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
+                    patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
                 };
-            }))));
+            })));
         });
     }
-    /**
-     * @private
-     * @param {?} config
-     * @return {?}
-     */
     processDataGroups(config) {
-        return (config.dataGroups || []).map((/**
-         * @param {?} group
-         * @return {?}
-         */
-        group => {
+        return (config.dataGroups || []).map(group => {
             return {
                 name: group.name,
-                patterns: group.urls.map((/**
-                 * @param {?} url
-                 * @return {?}
-                 */
-                url => urlToRegex(url, this.baseHref, true))),
+                patterns: group.urls.map(url => urlToRegex(url, this.baseHref, true)),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
                 timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
+                cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
                 version: group.version !== undefined ? group.version : 1,
             };
-        }));
+        });
     }
 }
-if (false) {
-    /** @type {?} */
-    Generator.prototype.fs;
-    /**
-     * @type {?}
-     * @private
-     */
-    Generator.prototype.baseHref;
-}
-/**
- * @param {?} baseHref
- * @param {?=} urls
- * @return {?}
- */
 function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
-    return urls.map((/**
-     * @param {?} url
-     * @return {?}
-     */
-    url => {
-        /** @type {?} */
+    return urls.map(url => {
         const positive = !url.startsWith('!');
         url = positive ? url : url.substr(1);
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
-    }));
+    });
 }
-/**
- * @param {?} globs
- * @return {?}
- */
 function globListToMatcher(globs) {
-    /** @type {?} */
-    const patterns = globs.map((/**
-     * @param {?} pattern
-     * @return {?}
-     */
-    pattern => {
+    const patterns = globs.map(pattern => {
         if (pattern.startsWith('!')) {
             return {
                 positive: false,
@@ -330,52 +206,29 @@ function globListToMatcher(globs) {
                 regex: new RegExp('^' + globToRegex(pattern) + '$'),
             };
         }
-    }));
-    return (/**
-     * @param {?} file
-     * @return {?}
-     */
-    (file) => matches(file, patterns));
+    });
+    return (file) => matches(file, patterns);
 }
-/**
- * @param {?} file
- * @param {?} patterns
- * @return {?}
- */
 function matches(file, patterns) {
-    /** @type {?} */
-    const res = patterns.reduce((/**
-     * @param {?} isMatch
-     * @param {?} pattern
-     * @return {?}
-     */
-    (isMatch, pattern) => {
+    const res = patterns.reduce((isMatch, pattern) => {
         if (pattern.positive) {
             return isMatch || pattern.regex.test(file);
         }
         else {
             return isMatch && !pattern.regex.test(file);
         }
-    }), false);
+    }, false);
     return res;
 }
-/**
- * @param {?} url
- * @param {?} baseHref
- * @param {?=} literalQuestionMark
- * @return {?}
- */
 function urlToRegex(url, baseHref, literalQuestionMark) {
     if (!url.startsWith('/') && url.indexOf('://') === -1) {
-        url = joinUrls(baseHref, url);
+        // Prefix relative URLs with `baseHref`.
+        // Strip a leading `.` from a relative `baseHref` (e.g. `./foo/`), since it would result in an
+        // incorrect regex (matching a literal `.`).
+        url = joinUrls(baseHref.replace(/^\.(?=\/)/, ''), url);
     }
     return globToRegex(url, literalQuestionMark);
 }
-/**
- * @param {?} a
- * @param {?} b
- * @return {?}
- */
 function joinUrls(a, b) {
     if (a.endsWith('/') && b.startsWith('/')) {
         return a + b.substr(1);
@@ -385,30 +238,29 @@ function joinUrls(a, b) {
     }
     return a + b;
 }
-/**
- * @template T
- * @param {?} unorderedObj
- * @return {?}
- */
 function withOrderedKeys(unorderedObj) {
-    /** @type {?} */
-    const orderedObj = (/** @type {?} */ ({}));
-    Object.keys(unorderedObj).sort().forEach((/**
-     * @param {?} key
-     * @return {?}
-     */
-    key => orderedObj[key] = unorderedObj[key]));
-    return (/** @type {?} */ (orderedObj));
+    const orderedObj = {};
+    Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
+    return orderedObj;
+}
+function buildCacheQueryOptions(inOptions) {
+    return Object.assign({ ignoreVary: true }, inOptions);
 }
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 
 /**

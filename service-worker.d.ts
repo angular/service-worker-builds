@@ -1,6 +1,6 @@
 /**
- * @license Angular v9.0.0-next.12+69.sha-1f498ab.with-local-changes
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * @license Angular v12.0.0-next.8+121.sha-72c4288
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -24,22 +24,25 @@ export declare class ServiceWorkerModule {
 
 /**
  * Subscribe and listen to
- * [Web Push Notifications](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
- * through Angular Service Worker.
+ * [Web Push
+ * Notifications](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices) through
+ * Angular Service Worker.
  *
  * @usageNotes
  *
  * You can inject a `SwPush` instance into any component or service
  * as a dependency.
  *
- * <code-example path="service-worker/push/module.ts" region="inject-sw-push" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="inject-sw-push"
+ * header="app.component.ts"></code-example>
  *
  * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
  * The call returns a `Promise` with a new
  * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
  * instance.
  *
- * <code-example path="service-worker/push/module.ts" region="subscribe-to-push" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-push"
+ * header="app.component.ts"></code-example>
  *
  * A request is rejected if the user denies permission, or if the browser
  * blocks or does not support the Push API or ServiceWorkers.
@@ -70,7 +73,8 @@ export declare class ServiceWorkerModule {
  * ```
  *
  * Only `title` is required. See `Notification`
- * [instance properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
+ * [instance
+ * properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
  *
  * While the subscription is active, Service Worker listens for
  * [PushEvent](https://developer.mozilla.org/en-US/docs/Web/API/PushEvent)
@@ -83,7 +87,8 @@ export declare class ServiceWorkerModule {
  * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
  * clicks on a notification. For example:
  *
- * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks"
+ * header="app.component.ts"></code-example>
  *
  * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
  * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
@@ -126,7 +131,7 @@ export declare class SwPush {
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
      */
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
     private pushManager;
     private subscriptionChanges;
     constructor(sw: ɵangular_packages_service_worker_service_worker_a);
@@ -181,15 +186,19 @@ export declare abstract class SwRegistrationOptions {
      * with the browser.
      *
      * The default behavior of registering once the application stabilizes (i.e. as soon as there are
-     * no pending micro- and macro-tasks), is designed register the ServiceWorker as soon as possible
-     * but without affecting the application's first time load.
+     * no pending micro- and macro-tasks) is designed to register the ServiceWorker as soon as
+     * possible but without affecting the application's first time load.
      *
      * Still, there might be cases where you want more control over when the ServiceWorker is
-     * registered (e.g. there might be a long-running timeout or polling interval, preventing the app
-     * to stabilize). The available option are:
+     * registered (for example, there might be a long-running timeout or polling interval, preventing
+     * the app from stabilizing). The available option are:
      *
-     * - `registerWhenStable`: Register as soon as the application stabilizes (no pending
-     *      micro-/macro-tasks).
+     * - `registerWhenStable:<timeout>`: Register as soon as the application stabilizes (no pending
+     *     micro-/macro-tasks) but no later than `<timeout>` milliseconds. If the app hasn't
+     *     stabilized after `<timeout>` milliseconds (for example, due to a recurrent asynchronous
+     *     task), the ServiceWorker will be registered anyway.
+     *     If `<timeout>` is omitted, the ServiceWorker will only be registered once the app
+     *     stabilizes.
      * - `registerImmediately`: Register immediately.
      * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
      *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
@@ -199,7 +208,7 @@ export declare abstract class SwRegistrationOptions {
      *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
      *     ServiceWorker will be registered as soon as the first value is emitted.
      *
-     * Default: 'registerWhenStable'
+     * Default: 'registerWhenStable:30000'
      */
     registrationStrategy?: string | (() => Observable<unknown>);
 }
@@ -207,6 +216,8 @@ export declare abstract class SwRegistrationOptions {
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -221,10 +232,16 @@ export declare class SwUpdate {
      */
     readonly activated: Observable<UpdateActivatedEvent>;
     /**
+     * Emits an `UnrecoverableStateEvent` event whenever the version of the app used by the service
+     * worker to serve this client is in a broken state that cannot be recovered from without a full
+     * page reload.
+     */
+    readonly unrecoverable: Observable<UnrecoverableStateEvent>;
+    /**
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
      */
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
     constructor(sw: ɵangular_packages_service_worker_service_worker_a);
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
@@ -235,7 +252,27 @@ declare interface TypedEvent {
 }
 
 /**
+ * An event emitted when the version of the app used by the service worker to serve this client is
+ * in a broken state that cannot be recovered from and a full page reload is required.
+ *
+ * For example, the service worker may not be able to retrieve a required resource, neither from the
+ * cache nor from the server. This could happen if a new version is deployed to the server and the
+ * service worker cache has been partially cleaned by the browser, removing some files of a previous
+ * app version but not all.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export declare interface UnrecoverableStateEvent {
+    type: 'UNRECOVERABLE_STATE';
+    reason: string;
+}
+
+/**
  * An event emitted when a new version of the app has been downloaded and activated.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -253,6 +290,8 @@ export declare interface UpdateActivatedEvent {
 
 /**
  * An event emitted when a new version of the app is available.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -283,7 +322,7 @@ export declare class ɵangular_packages_service_worker_service_worker_a {
     eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
     nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
     waitForStatus(nonce: number): Promise<void>;
-    readonly isEnabled: boolean;
+    get isEnabled(): boolean;
 }
 
 export declare const ɵangular_packages_service_worker_service_worker_b: InjectionToken<string>;
