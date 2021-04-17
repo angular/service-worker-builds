@@ -1,25 +1,20 @@
 {
   "name": "@angular/service-worker",
-  "version": "9.0.0-rc.1+246.sha-d3cfad7.with-local-changes",
+  "version": "12.0.0-next.8+77.sha-917664e",
   "description": "Angular - service worker tooling!",
-  "main": "./bundles/service-worker.umd.js",
-  "module": "./fesm5/service-worker.js",
-  "es2015": "./fesm2015/service-worker.js",
-  "esm5": "./esm5/service-worker.js",
-  "esm2015": "./esm2015/service-worker.js",
-  "fesm5": "./fesm5/service-worker.js",
-  "fesm2015": "./fesm2015/service-worker.js",
-  "typings": "./service-worker.d.ts",
   "author": "angular",
   "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.1.0"
+  },
   "peerDependencies": {
-    "@angular/core": "9.0.0-rc.1+246.sha-d3cfad7.with-local-changes",
-    "@angular/common": "9.0.0-rc.1+246.sha-d3cfad7.with-local-changes",
-    "tslib": "^1.10.0"
+    "@angular/core": "12.0.0-next.8+77.sha-917664e",
+    "@angular/common": "12.0.0-next.8+77.sha-917664e"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/angular.git"
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/service-worker"
   },
   "bin": {
     "ngsw-config": "./ngsw-config.js"
@@ -37,8 +32,6 @@
       "@angular/platform-browser-dynamic",
       "@angular/forms",
       "@angular/platform-server",
-      "@angular/platform-webworker",
-      "@angular/platform-webworker-dynamic",
       "@angular/upgrade",
       "@angular/router",
       "@angular/language-service",
@@ -49,5 +42,11 @@
   "sideEffects": false,
   "publishConfig": {
     "registry": "https://wombat-dressing-room.appspot.com"
-  }
+  },
+  "main": "./bundles/service-worker.umd.js",
+  "fesm2015": "./fesm2015/service-worker.js",
+  "esm2015": "./esm2015/service-worker.js",
+  "typings": "./service-worker.d.ts",
+  "module": "./fesm2015/service-worker.js",
+  "es2015": "./fesm2015/service-worker.js"
 }

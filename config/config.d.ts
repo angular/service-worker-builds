@@ -1,6 +1,6 @@
 /**
- * @license Angular v9.0.0-rc.1+246.sha-d3cfad7.with-local-changes
- * (c) 2010-2019 Google LLC. https://angular.io/
+ * @license Angular v12.0.0-next.8+77.sha-917664e
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -18,6 +18,7 @@ export declare interface AssetGroup {
         files?: Glob[];
         urls?: Glob[];
     };
+    cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }
 
 /**
@@ -31,6 +32,7 @@ export declare interface Config {
     assetGroups?: AssetGroup[];
     dataGroups?: DataGroup[];
     navigationUrls?: string[];
+    navigationRequestStrategy?: 'freshness' | 'performance';
 }
 
 /**
@@ -48,6 +50,7 @@ export declare interface DataGroup {
         timeout?: Duration;
         strategy?: 'freshness' | 'performance';
     };
+    cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }
 
 /**
