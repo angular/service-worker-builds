@@ -2392,7 +2392,10 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             return __awaiter(this, void 0, void 0, function* () {
                 // First, check whether the event has a (non empty) client ID. If it does, the version may
                 // already be associated.
-                const clientId = event.clientId;
+                //
+                // NOTE: For navigation requests, we care about the `resultingClientId`. If it is undefined or
+                //       the empty string (which is the case for sub-resource requests), we look at `clientId`.
+                const clientId = event.resultingClientId || event.clientId;
                 if (clientId) {
                     // Check if there is an assigned client id.
                     if (this.clientVersionMap.has(clientId)) {
