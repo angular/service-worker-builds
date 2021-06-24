@@ -2150,6 +2150,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             });
         }
         handleClick(notification, action) {
+            var _a, _b;
             return __awaiter(this, void 0, void 0, function* () {
                 notification.close();
                 const options = {};
@@ -2157,10 +2158,46 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 // hasOwnProperty does not work here
                 NOTIFICATION_OPTION_NAMES.filter(name => name in notification)
                     .forEach(name => options[name] = notification[name]);
+                const notificationAction = action === '' || action === undefined ? 'default' : action;
+                const onActionClick = (_a = notification === null || notification === void 0 ? void 0 : notification.data) === null || _a === void 0 ? void 0 : _a.onActionClick[notificationAction];
+                const urlToOpen = new URL((_b = onActionClick === null || onActionClick === void 0 ? void 0 : onActionClick.url) !== null && _b !== void 0 ? _b : '', this.scope.registration.scope).href;
+                switch (onActionClick === null || onActionClick === void 0 ? void 0 : onActionClick.operation) {
+                    case 'openWindow':
+                        yield this.scope.clients.openWindow(urlToOpen);
+                        break;
+                    case 'focusLastFocusedOrOpen': {
+                        let matchingClient = yield this.getLastFocusedMatchingClient(this.scope);
+                        if (matchingClient) {
+                            yield (matchingClient === null || matchingClient === void 0 ? void 0 : matchingClient.focus());
+                        }
+                        else {
+                            yield this.scope.clients.openWindow(urlToOpen);
+                        }
+                        break;
+                    }
+                    case 'navigateLastFocusedOrOpen': {
+                        let matchingClient = yield this.getLastFocusedMatchingClient(this.scope);
+                        if (matchingClient) {
+                            matchingClient = yield matchingClient.navigate(urlToOpen);
+                            yield (matchingClient === null || matchingClient === void 0 ? void 0 : matchingClient.focus());
+                        }
+                        else {
+                            yield this.scope.clients.openWindow(urlToOpen);
+                        }
+                        break;
+                    }
+                }
                 yield this.broadcast({
                     type: 'NOTIFICATION_CLICK',
                     data: { action, notification: options },
                 });
+            });
+        }
+        getLastFocusedMatchingClient(scope) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const windowClients = yield scope.clients.matchAll({ type: 'window' });
+                // As per the spec windowClients are `sorted in the most recently focused order`
+                return windowClients[0];
             });
         }
         reportStatus(client, promise, nonce) {
