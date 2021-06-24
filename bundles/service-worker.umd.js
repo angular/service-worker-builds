@@ -1,5 +1,5 @@
 /**
- * @license Angular v12.1.0-next.5+49.sha-18fe044
+ * @license Angular v12.1.0-next.6+60.sha-d71d521
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -236,10 +236,16 @@
                 r[k] = a[j];
         return r;
     }
-    function __spreadArray(to, from) {
-        for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-            to[j] = from[i];
-        return to;
+    function __spreadArray(to, from, pack) {
+        if (pack || arguments.length === 2)
+            for (var i = 0, l = from.length, ar; i < l; i++) {
+                if (ar || !(i in from)) {
+                    if (!ar)
+                        ar = Array.prototype.slice.call(from, 0, i);
+                    ar[i] = from[i];
+                }
+            }
+        return to.concat(ar || from);
     }
     function __await(v) {
         return this instanceof __await ? (this.v = v, this) : new __await(v);
@@ -474,6 +480,9 @@
      *
      * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks"
      * header="app.component.ts"></code-example>
+     *
+     * You can read more on handling notification clicks in the [Service worker notifications
+     * guide](guide/service-worker-notifications).
      *
      * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
      * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)

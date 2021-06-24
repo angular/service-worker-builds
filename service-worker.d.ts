@@ -1,5 +1,5 @@
 /**
- * @license Angular v12.1.0-next.5+49.sha-18fe044
+ * @license Angular v12.1.0-next.6+60.sha-d71d521
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -89,6 +89,9 @@ export declare class ServiceWorkerModule {
  *
  * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks"
  * header="app.component.ts"></code-example>
+ *
+ * You can read more on handling notification clicks in the [Service worker notifications
+ * guide](guide/service-worker-notifications).
  *
  * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
  * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
