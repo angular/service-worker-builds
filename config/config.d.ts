@@ -1,5 +1,5 @@
 /**
- * @license Angular v12.1.1+7.sha-aa261e7
+ * @license Angular v12.1.1+12.sha-6da24e6
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -77,7 +77,7 @@ export declare interface Filesystem {
  *
  * @publicApi
  */
-export declare class Generator {
+declare class Generator_2 {
     readonly fs: Filesystem;
     private baseHref;
     constructor(fs: Filesystem, baseHref: string);
@@ -85,6 +85,7 @@ export declare class Generator {
     private processAssetGroups;
     private processDataGroups;
 }
+export { Generator_2 as Generator }
 
 
 /**
