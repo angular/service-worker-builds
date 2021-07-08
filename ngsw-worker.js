@@ -840,7 +840,6 @@
         maybeUpdate(updateFrom, req, cache) {
             return __awaiter(this, void 0, void 0, function* () {
                 const url = this.adapter.normalizeUrl(req.url);
-                const meta = yield this.metadata;
                 // Check if this resource is hashed and already exists in the cache of a prior version.
                 if (this.hashes.has(url)) {
                     const hash = this.hashes.get(url);
@@ -851,7 +850,6 @@
                     if (res !== null) {
                         // Copy to this cache.
                         yield cache.put(req, res);
-                        yield meta.write(req.url, { ts: this.adapter.time, used: false });
                         // No need to do anything further with this resource, it's now cached properly.
                         return true;
                     }
@@ -1737,7 +1735,7 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    const SW_VERSION = '12.2.0-next.1+26.sha-30c82cd';
+    const SW_VERSION = '12.2.0-next.1+29.sha-ad08b17';
     const DEBUG_LOG_BUFFER_SIZE = 100;
     class DebugHandler {
         constructor(driver, adapter) {
