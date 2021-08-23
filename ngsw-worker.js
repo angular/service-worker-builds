@@ -1735,7 +1735,7 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    const SW_VERSION = '13.0.0-next.2+9.sha-ccb09b4.with-local-changes';
+    const SW_VERSION = '13.0.0-next.2+11.sha-6e92431.with-local-changes';
     const DEBUG_LOG_BUFFER_SIZE = 100;
     class DebugHandler {
         constructor(driver, adapter) {
@@ -2218,7 +2218,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             });
         }
         handleClick(notification, action) {
-            var _a, _b;
+            var _a, _b, _c;
             return __awaiter(this, void 0, void 0, function* () {
                 notification.close();
                 const options = {};
@@ -2227,8 +2227,8 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 NOTIFICATION_OPTION_NAMES.filter(name => name in notification)
                     .forEach(name => options[name] = notification[name]);
                 const notificationAction = action === '' || action === undefined ? 'default' : action;
-                const onActionClick = (_a = notification === null || notification === void 0 ? void 0 : notification.data) === null || _a === void 0 ? void 0 : _a.onActionClick[notificationAction];
-                const urlToOpen = new URL((_b = onActionClick === null || onActionClick === void 0 ? void 0 : onActionClick.url) !== null && _b !== void 0 ? _b : '', this.scope.registration.scope).href;
+                const onActionClick = (_b = (_a = notification === null || notification === void 0 ? void 0 : notification.data) === null || _a === void 0 ? void 0 : _a.onActionClick) === null || _b === void 0 ? void 0 : _b[notificationAction];
+                const urlToOpen = new URL((_c = onActionClick === null || onActionClick === void 0 ? void 0 : onActionClick.url) !== null && _c !== void 0 ? _c : '', this.scope.registration.scope).href;
                 switch (onActionClick === null || onActionClick === void 0 ? void 0 : onActionClick.operation) {
                     case 'openWindow':
                         yield this.scope.clients.openWindow(urlToOpen);
