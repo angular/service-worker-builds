@@ -1,5 +1,5 @@
 /**
- * @license Angular v13.0.0-next.7+10.sha-cc427d1.with-local-changes
+ * @license Angular v13.0.0-next.7+11.sha-ea61ec2.with-local-changes
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -389,12 +389,12 @@
         { replace: /\+/g, with: '\\+' },
         { replace: /\*/g, with: WILD_SINGLE },
     ];
-    var TO_ESCAPE_WILDCARD_QM = __spreadArray(__spreadArray([], __read(TO_ESCAPE_BASE)), [
+    var TO_ESCAPE_WILDCARD_QM = __spreadArray(__spreadArray([], __read(TO_ESCAPE_BASE), false), [
         { replace: /\?/g, with: QUESTION_MARK },
-    ]);
-    var TO_ESCAPE_LITERAL_QM = __spreadArray(__spreadArray([], __read(TO_ESCAPE_BASE)), [
+    ], false);
+    var TO_ESCAPE_LITERAL_QM = __spreadArray(__spreadArray([], __read(TO_ESCAPE_BASE), false), [
         { replace: /\?/g, with: '\\?' },
-    ]);
+    ], false);
     function globToRegex(glob, literalQuestionMark) {
         if (literalQuestionMark === void 0) { literalQuestionMark = false; }
         var toEscape = literalQuestionMark ? TO_ESCAPE_LITERAL_QM : TO_ESCAPE_WILDCARD_QM;
