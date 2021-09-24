@@ -1735,7 +1735,7 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    const SW_VERSION = '13.0.0-next.7+36.sha-67ff93d.with-local-changes';
+    const SW_VERSION = '13.0.0-next.7+38.sha-e131540.with-local-changes';
     const DEBUG_LOG_BUFFER_SIZE = 100;
     class DebugHandler {
         constructor(driver, adapter) {
@@ -2345,7 +2345,8 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                                 yield this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
                             }
                             if (err.isCritical) {
-                                // Something went wrong with the activation of this version.
+                                // Something went wrong with handling the request from this version.
+                                this.debugger.log(err, `Driver.handleFetch(version: ${appVersion.manifestHash})`);
                                 yield this.versionFailed(appVersion, err);
                                 return this.safeFetch(event.request);
                             }
@@ -2628,34 +2629,29 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                     return;
                 }
                 const brokenHash = broken[0];
-                const affectedClients = Array.from(this.clientVersionMap.entries())
-                    .filter(([clientId, hash]) => hash === brokenHash)
-                    .map(([clientId]) => clientId);
+                // The specified version is broken and new clients should not be served from it. However, it is
+                // deemed even riskier to switch the existing clients to a different version or to the network.
+                // Therefore, we keep clients on their current version (even if broken) and ensure that no new
+                // clients will be assigned to it.
                 // TODO: notify affected apps.
                 // The action taken depends on whether the broken manifest is the active (latest) or not.
-                // If so, the SW cannot accept new clients, but can continue to service old ones.
+                // - If the broken version is not the latest, no further action is necessary, since new clients
+                //   will be assigned to the latest version anyway.
+                // - If the broken version is the latest, the SW cannot accept new clients (but can continue to
+                //   service old ones).
                 if (this.latestHash === brokenHash) {
-                    // The latest manifest is broken. This means that new clients are at the mercy of the
-                    // network, but caches continue to be valid for previous versions. This is
-                    // unfortunate but unavoidable.
+                    // The latest manifest is broken. This means that new clients are at the mercy of the network,
+                    // but caches continue to be valid for previous versions. This is unfortunate but unavoidable.
                     this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
                     this.stateMessage = `Degraded due to: ${errorToString(err)}`;
-                    // Cancel the binding for the affected clients.
-                    affectedClients.forEach(clientId => this.clientVersionMap.delete(clientId));
-                }
-                else {
-                    // The latest version is viable, but this older version isn't. The only
-                    // possible remedy is to stop serving the older version and go to the network.
-                    // Put the affected clients on the latest version.
-                    affectedClients.forEach(clientId => this.clientVersionMap.set(clientId, this.latestHash));
-                }
-                try {
-                    yield this.sync();
-                }
-                catch (err2) {
-                    // We are already in a bad state. No need to make things worse.
-                    // Just log the error and move on.
-                    this.debugger.log(err2, `Driver.versionFailed(${err.message || err})`);
+                    try {
+                        yield this.sync();
+                    }
+                    catch (err2) {
+                        // We are already in a bad state. No need to make things worse.
+                        // Just log the error and move on.
+                        this.debugger.log(err2, `Driver.versionFailed(${err.message || err})`);
+                    }
                 }
             });
         }
