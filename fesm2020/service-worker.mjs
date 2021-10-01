@@ -1,10 +1,11 @@
 /**
- * @license Angular v13.0.0-next.9+10.sha-9eba260.with-local-changes
+ * @license Angular v13.0.0-next.9+84.sha-c15b8c7.with-local-changes
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import { isPlatformBrowser } from '@angular/common';
+import * as i0 from '@angular/core';
 import { Injectable, InjectionToken, NgZone, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
 import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operators';
@@ -47,7 +48,10 @@ class NgswCommChannel {
     postMessage(action, payload) {
         return this.worker
             .pipe(take(1), tap((sw) => {
-            sw.postMessage(Object.assign({ action }, payload));
+            sw.postMessage({
+                action,
+                ...payload,
+            });
         }))
             .toPromise()
             .then(() => undefined);
@@ -244,12 +248,11 @@ class SwPush {
         return atob(input);
     }
 }
-SwPush.decorators = [
-    { type: Injectable }
-];
-SwPush.ctorParameters = () => [
-    { type: NgswCommChannel }
-];
+SwPush.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+SwPush.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: SwPush });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: SwPush, decorators: [{
+            type: Injectable
+        }], ctorParameters: function () { return [{ type: NgswCommChannel }]; } });
 
 /**
  * @license
@@ -301,12 +304,11 @@ class SwUpdate {
         return this.sw.postMessageWithStatus('ACTIVATE_UPDATE', { statusNonce }, statusNonce);
     }
 }
-SwUpdate.decorators = [
-    { type: Injectable }
-];
-SwUpdate.ctorParameters = () => [
-    { type: NgswCommChannel }
-];
+SwUpdate.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+SwUpdate.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: SwUpdate });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: SwUpdate, decorators: [{
+            type: Injectable
+        }], ctorParameters: function () { return [{ type: NgswCommChannel }]; } });
 
 /**
  * @license
@@ -418,11 +420,15 @@ class ServiceWorkerModule {
         };
     }
 }
-ServiceWorkerModule.decorators = [
-    { type: NgModule, args: [{
-                providers: [SwPush, SwUpdate],
-            },] }
-];
+ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: ServiceWorkerModule });
+ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.0.0-next.9+84.sha-c15b8c7.with-local-changes", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+            type: NgModule,
+            args: [{
+                    providers: [SwPush, SwUpdate],
+                }]
+        }] });
 
 /**
  * @license
@@ -453,5 +459,5 @@ ServiceWorkerModule.decorators = [
  * Generated bundle index. Do not edit.
  */
 
-export { ServiceWorkerModule, SwPush, SwRegistrationOptions, SwUpdate, NgswCommChannel as ɵangular_packages_service_worker_service_worker_a, SCRIPT as ɵangular_packages_service_worker_service_worker_b, ngswAppInitializer as ɵangular_packages_service_worker_service_worker_c, ngswCommChannelFactory as ɵangular_packages_service_worker_service_worker_d };
-//# sourceMappingURL=service-worker.js.map
+export { ServiceWorkerModule, SwPush, SwRegistrationOptions, SwUpdate };
+//# sourceMappingURL=service-worker.mjs.map

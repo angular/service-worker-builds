@@ -1,9 +1,9 @@
 {
   "name": "@angular/service-worker/config",
-  "main": "../bundles/service-worker-config.umd.js",
-  "fesm2015": "../fesm2015/config.js",
-  "esm2015": "../esm2015/config/config.js",
+  "fesm2020": "../fesm2020/config.mjs",
+  "fesm2015": "../fesm2015/config.mjs",
+  "esm2020": "../esm2020/config/config.mjs",
   "typings": "./config.d.ts",
-  "module": "../fesm2015/config.js",
-  "es2015": "../fesm2015/config.js"
+  "module": "../fesm2015/config.mjs",
+  "es2020": "../fesm2020/config.mjs"
 }

@@ -1,18 +1,44 @@
 {
   "name": "@angular/service-worker",
-  "version": "13.0.0-next.9+10.sha-9eba260.with-local-changes",
+  "version": "13.0.0-next.9+84.sha-c15b8c7.with-local-changes",
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
   "engines": {
     "node": "^12.14.1 || >=14.0.0"
   },
+  "exports": {
+    "./ngsw-worker.js": {
+      "default": "./ngsw-worker.js"
+    },
+    "./safety-worker.js": {
+      "default": "./safety-worker.js"
+    },
+    "./config/schema.json": {
+      "default": "./config/schema.json"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./service-worker.d.ts",
+      "es2015": "./fesm2015/service-worker.mjs",
+      "node": "./fesm2015/service-worker.mjs",
+      "default": "./fesm2020/service-worker.mjs"
+    },
+    "./config": {
+      "types": "./config/config.d.ts",
+      "es2015": "./fesm2015/config.mjs",
+      "node": "./fesm2015/config.mjs",
+      "default": "./fesm2020/config.mjs"
+    }
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/core": "13.0.0-next.9+10.sha-9eba260.with-local-changes",
-    "@angular/common": "13.0.0-next.9+10.sha-9eba260.with-local-changes"
+    "@angular/core": "13.0.0-next.9+84.sha-c15b8c7.with-local-changes",
+    "@angular/common": "13.0.0-next.9+84.sha-c15b8c7.with-local-changes"
   },
   "repository": {
     "type": "git",
@@ -43,10 +69,11 @@
     ]
   },
   "sideEffects": false,
-  "main": "./bundles/service-worker.umd.js",
-  "fesm2015": "./fesm2015/service-worker.js",
-  "esm2015": "./esm2015/service-worker.js",
+  "fesm2020": "./fesm2020/service-worker.mjs",
+  "fesm2015": "./fesm2015/service-worker.mjs",
+  "esm2020": "./esm2020/service-worker.mjs",
   "typings": "./service-worker.d.ts",
-  "module": "./fesm2015/service-worker.js",
-  "es2015": "./fesm2015/service-worker.js"
+  "module": "./fesm2015/service-worker.mjs",
+  "es2020": "./fesm2020/service-worker.mjs",
+  "type": "module"
 }

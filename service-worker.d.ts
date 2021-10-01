@@ -1,13 +1,30 @@
 /**
- * @license Angular v13.0.0-next.9+10.sha-9eba260.with-local-changes
+ * @license Angular v13.0.0-next.9+84.sha-c15b8c7.with-local-changes
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
-import { InjectionToken } from '@angular/core';
-import { Injector } from '@angular/core';
+import * as i0 from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
+
+/**
+ * @publicApi
+ */
+declare class NgswCommChannel {
+    private serviceWorker;
+    readonly worker: Observable<ServiceWorker>;
+    readonly registration: Observable<ServiceWorkerRegistration>;
+    readonly events: Observable<TypedEvent>;
+    constructor(serviceWorker: ServiceWorkerContainer | undefined);
+    postMessage(action: string, payload: Object): Promise<void>;
+    postMessageWithStatus(type: string, payload: Object, nonce: number): Promise<void>;
+    generateNonce(): number;
+    eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
+    nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
+    waitForStatus(nonce: number): Promise<void>;
+    get isEnabled(): boolean;
+}
 
 /**
  * @publicApi
@@ -20,6 +37,9 @@ export declare class ServiceWorkerModule {
      * workers are not supported by the browser, and the service worker will not be registered.
      */
     static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ServiceWorkerModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ServiceWorkerModule, never, never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<ServiceWorkerModule>;
 }
 
 /**
@@ -137,7 +157,7 @@ export declare class SwPush {
     get isEnabled(): boolean;
     private pushManager;
     private subscriptionChanges;
-    constructor(sw: ɵangular_packages_service_worker_service_worker_a);
+    constructor(sw: NgswCommChannel);
     /**
      * Subscribes to Web Push Notifications,
      * after requesting and receiving user permission.
@@ -156,6 +176,8 @@ export declare class SwPush {
      */
     unsubscribe(): Promise<void>;
     private decodeBase64;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SwPush, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<SwPush>;
 }
 
 /**
@@ -245,9 +267,11 @@ export declare class SwUpdate {
      * `ServiceWorkerModule`).
      */
     get isEnabled(): boolean;
-    constructor(sw: ɵangular_packages_service_worker_service_worker_a);
+    constructor(sw: NgswCommChannel);
     checkForUpdate(): Promise<void>;
     activateUpdate(): Promise<void>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SwUpdate, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<SwUpdate>;
 }
 
 declare interface TypedEvent {
@@ -309,29 +333,5 @@ export declare interface UpdateAvailableEvent {
         appData?: Object;
     };
 }
-
-/**
- * @publicApi
- */
-export declare class ɵangular_packages_service_worker_service_worker_a {
-    private serviceWorker;
-    readonly worker: Observable<ServiceWorker>;
-    readonly registration: Observable<ServiceWorkerRegistration>;
-    readonly events: Observable<TypedEvent>;
-    constructor(serviceWorker: ServiceWorkerContainer | undefined);
-    postMessage(action: string, payload: Object): Promise<void>;
-    postMessageWithStatus(type: string, payload: Object, nonce: number): Promise<void>;
-    generateNonce(): number;
-    eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
-    nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
-    waitForStatus(nonce: number): Promise<void>;
-    get isEnabled(): boolean;
-}
-
-export declare const ɵangular_packages_service_worker_service_worker_b: InjectionToken<string>;
-
-export declare function ɵangular_packages_service_worker_service_worker_c(injector: Injector, script: string, options: SwRegistrationOptions, platformId: string): Function;
-
-export declare function ɵangular_packages_service_worker_service_worker_d(opts: SwRegistrationOptions, platformId: string): ɵangular_packages_service_worker_service_worker_a;
 
 export { }
