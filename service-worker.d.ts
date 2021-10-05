@@ -1,5 +1,5 @@
 /**
- * @license Angular v13.0.0-next.11+6.sha-318cf91.with-local-changes
+ * @license Angular v13.0.0-next.11+9.sha-0dc4544.with-local-changes
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -18,11 +18,11 @@ declare class NgswCommChannel {
     readonly events: Observable<TypedEvent>;
     constructor(serviceWorker: ServiceWorkerContainer | undefined);
     postMessage(action: string, payload: Object): Promise<void>;
-    postMessageWithStatus(type: string, payload: Object, nonce: number): Promise<void>;
+    postMessageWithOperation(type: string, payload: Object, operationNonce: number): Promise<boolean>;
     generateNonce(): number;
-    eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
+    eventsOfType<T extends TypedEvent>(type: T['type'] | T['type'][]): Observable<T>;
     nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
-    waitForStatus(nonce: number): Promise<void>;
+    waitForOperationCompleted(nonce: number): Promise<boolean>;
     get isEnabled(): boolean;
 }
 
@@ -249,11 +249,39 @@ export declare abstract class SwRegistrationOptions {
 export declare class SwUpdate {
     private sw;
     /**
+     * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
+     *
+     * Emits a `VersionInstallationFailedEvent` event whenever checking for or downloading a new
+     * version fails.
+     *
+     * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
+     * activation.
+     */
+    readonly versionUpdates: Observable<VersionEvent>;
+    /**
      * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
+     *
+     * @deprecated Use {@link versionUpdates} instead.
+     *
+     * The of behavior `available` can be rebuild by filtering for the `VersionReadyEvent`:
+     * ```
+     * import {filter, map} from 'rxjs/operators';
+     * // ...
+     * const updatesAvailable = swUpdate.versionUpdates.pipe(
+     *   filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+     *   map(evt => ({
+     *     type: 'UPDATE_AVAILABLE',
+     *     current: evt.currentVersion,
+     *     available: evt.latestVersion,
+     *   })));
+     * ```
      */
     readonly available: Observable<UpdateAvailableEvent>;
     /**
      * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
+     *
+     * @deprecated Use the return value of {@link SwUpdate#activateUpdate} instead.
+     *
      */
     readonly activated: Observable<UpdateActivatedEvent>;
     /**
@@ -268,8 +296,27 @@ export declare class SwUpdate {
      */
     get isEnabled(): boolean;
     constructor(sw: NgswCommChannel);
-    checkForUpdate(): Promise<void>;
-    activateUpdate(): Promise<void>;
+    /**
+     * Checks for an update and waits until the new version is downloaded from the server and ready
+     * for activation.
+     *
+     * @returns a promise that
+     * - resolves to `true` if a new version was found and is ready to be activated.
+     * - resolves to `false` if no new version was found
+     * - rejects if any error occurs
+     */
+    checkForUpdate(): Promise<boolean>;
+    /**
+     * Updates the current client (i.e. browser tab) to the latest version that is ready for
+     * activation.
+     *
+     * @returns a promise that
+     *  - resolves to `true` if an update was activated successfully
+     *  - resolves to `false` if no update was available (for example, the client was already on the
+     *    latest version).
+     *  - rejects if any error occurs
+     */
+    activateUpdate(): Promise<boolean>;
     static ɵfac: i0.ɵɵFactoryDeclaration<SwUpdate, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<SwUpdate>;
 }
@@ -301,6 +348,10 @@ export declare interface UnrecoverableStateEvent {
  *
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
+ * @deprecated
+ * This event is only emitted by the deprecated {@link SwUpdate#activated}.
+ * Use the return value of {@link SwUpdate#activateUpdate} instead.
+ *
  * @publicApi
  */
 export declare interface UpdateActivatedEvent {
@@ -320,6 +371,11 @@ export declare interface UpdateActivatedEvent {
  *
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
+ * @deprecated
+ * This event is only emitted by the deprecated {@link SwUpdate#available}.
+ * Use the {@link VersionReadyEvent} instead, which is emitted by {@link SwUpdate#versionUpdates}.
+ * See {@link SwUpdate#available} docs for an example.
+ *
  * @publicApi
  */
 export declare interface UpdateAvailableEvent {
@@ -331,6 +387,66 @@ export declare interface UpdateAvailableEvent {
     available: {
         hash: string;
         appData?: Object;
+    };
+}
+
+/**
+ * An event emitted when the service worker has detected a new version of the app on the server and
+ * is about to start downloading it.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export declare interface VersionDetectedEvent {
+    type: 'VERSION_DETECTED';
+    version: {
+        hash: string;
+        appData?: object;
+    };
+}
+
+/**
+ * A union of all event types that can be emitted by
+ * {@link api/service-worker/SwUpdate#versionUpdates SwUpdate#versionUpdates}.
+ *
+ * @publicApi
+ */
+export declare type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent;
+
+/**
+ * An event emitted when the installation of a new version failed.
+ * It may be used for logging/monitoring purposes.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export declare interface VersionInstallationFailedEvent {
+    type: 'VERSION_INSTALLATION_FAILED';
+    version: {
+        hash: string;
+        appData?: object;
+    };
+    error: string;
+}
+
+/**
+ * An event emitted when a new version of the app is available.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export declare interface VersionReadyEvent {
+    type: 'VERSION_READY';
+    currentVersion: {
+        hash: string;
+        appData?: object;
+    };
+    latestVersion: {
+        hash: string;
+        appData?: object;
     };
 }
 

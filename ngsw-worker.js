@@ -1633,7 +1633,7 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    const SW_VERSION = '13.0.0-next.11+6.sha-318cf91.with-local-changes';
+    const SW_VERSION = '13.0.0-next.11+9.sha-0dc4544.with-local-changes';
     const DEBUG_LOG_BUFFER_SIZE = 100;
     class DebugHandler {
         constructor(driver, adapter) {
@@ -2079,13 +2079,12 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
         }
         async handleMessage(msg, from) {
             if (isMsgCheckForUpdates(msg)) {
-                const action = (async () => {
-                    await this.checkForUpdate();
-                })();
-                await this.reportStatus(from, action, msg.statusNonce);
+                const action = this.checkForUpdate();
+                await this.completeOperation(from, action, msg.nonce);
             }
             else if (isMsgActivateUpdate(msg)) {
-                await this.reportStatus(from, this.updateClient(from), msg.statusNonce);
+                const action = this.updateClient(from);
+                await this.completeOperation(from, action, msg.nonce);
             }
         }
         async handlePush(data) {
@@ -2148,16 +2147,17 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             // As per the spec windowClients are `sorted in the most recently focused order`
             return windowClients[0];
         }
-        async reportStatus(client, promise, nonce) {
-            const response = { type: 'STATUS', nonce, status: true };
+        async completeOperation(client, promise, nonce) {
+            const response = { type: 'OPERATION_COMPLETED', nonce };
             try {
-                await promise;
-                client.postMessage(response);
+                client.postMessage({
+                    ...response,
+                    result: await promise,
+                });
             }
             catch (e) {
                 client.postMessage({
                     ...response,
-                    status: false,
                     error: e.toString(),
                 });
             }
@@ -2168,7 +2168,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             const existing = this.clientVersionMap.get(client.id);
             if (existing === this.latestHash) {
                 // Nothing to do, this client is already on the latest version.
-                return;
+                return false;
             }
             // Switch the client over.
             let previous = undefined;
@@ -2189,6 +2189,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 current: this.mergeHashWithAppData(current.manifest, this.latestHash),
             };
             client.postMessage(notice);
+            return true;
         }
         async handleFetch(event) {
             try {
@@ -2522,28 +2523,34 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
             }
         }
         async setupUpdate(manifest, hash) {
-            const newVersion = new AppVersion(this.scope, this.adapter, this.db, this.idle, this.debugger, manifest, hash);
-            // Firstly, check if the manifest version is correct.
-            if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {
-                await this.deleteAllCaches();
-                await this.scope.registration.unregister();
-                throw new Error(`Invalid config version: expected ${SUPPORTED_CONFIG_VERSION}, got ${manifest.configVersion}.`);
+            try {
+                const newVersion = new AppVersion(this.scope, this.adapter, this.db, this.idle, this.debugger, manifest, hash);
+                // Firstly, check if the manifest version is correct.
+                if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {
+                    await this.deleteAllCaches();
+                    await this.scope.registration.unregister();
+                    throw new Error(`Invalid config version: expected ${SUPPORTED_CONFIG_VERSION}, got ${manifest.configVersion}.`);
+                }
+                // Cause the new version to become fully initialized. If this fails, then the
+                // version will not be available for use.
+                await newVersion.initializeFully(this);
+                // Install this as an active version of the app.
+                this.versions.set(hash, newVersion);
+                // Future new clients will use this hash as the latest version.
+                this.latestHash = hash;
+                // If we are in `EXISTING_CLIENTS_ONLY` mode (meaning we didn't have a clean copy of the last
+                // latest version), we can now recover to `NORMAL` mode and start accepting new clients.
+                if (this.state === DriverReadyState.EXISTING_CLIENTS_ONLY) {
+                    this.state = DriverReadyState.NORMAL;
+                    this.stateMessage = '(nominal)';
+                }
+                await this.sync();
+                await this.notifyClientsAboutVersionReady(manifest, hash);
             }
-            // Cause the new version to become fully initialized. If this fails, then the
-            // version will not be available for use.
-            await newVersion.initializeFully(this);
-            // Install this as an active version of the app.
-            this.versions.set(hash, newVersion);
-            // Future new clients will use this hash as the latest version.
-            this.latestHash = hash;
-            // If we are in `EXISTING_CLIENTS_ONLY` mode (meaning we didn't have a clean copy of the last
-            // latest version), we can now recover to `NORMAL` mode and start accepting new clients.
-            if (this.state === DriverReadyState.EXISTING_CLIENTS_ONLY) {
-                this.state = DriverReadyState.NORMAL;
-                this.stateMessage = '(nominal)';
+            catch (e) {
+                await this.notifyClientsAboutVersionInstallationFailed(manifest, hash, e);
+                throw e;
             }
-            await this.sync();
-            await this.notifyClientsAboutUpdate(newVersion);
         }
         async checkForUpdate() {
             let hash = '(unknown)';
@@ -2560,6 +2567,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 if (this.versions.has(hash)) {
                     return false;
                 }
+                await this.notifyClientsAboutVersionDetected(manifest, hash);
                 await this.setupUpdate(manifest, hash);
                 return true;
             }
@@ -2705,7 +2713,33 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 }
             }));
         }
-        async notifyClientsAboutUpdate(next) {
+        async notifyClientsAboutVersionInstallationFailed(manifest, hash, error) {
+            await this.initialized;
+            const clients = await this.scope.clients.matchAll();
+            await Promise.all(clients.map(async (client) => {
+                // Send a notice.
+                client.postMessage({
+                    type: 'VERSION_INSTALLATION_FAILED',
+                    version: this.mergeHashWithAppData(manifest, hash),
+                    error: errorToString(error),
+                });
+            }));
+        }
+        async notifyClientsAboutVersionDetected(manifest, hash) {
+            await this.initialized;
+            const clients = await this.scope.clients.matchAll();
+            await Promise.all(clients.map(async (client) => {
+                // Firstly, determine which version this client is on.
+                const version = this.clientVersionMap.get(client.id);
+                if (version === undefined) {
+                    // Unmapped client - assume it's the latest.
+                    return;
+                }
+                // Send a notice.
+                client.postMessage({ type: 'VERSION_DETECTED', version: this.mergeHashWithAppData(manifest, hash) });
+            }));
+        }
+        async notifyClientsAboutVersionReady(manifest, hash) {
             await this.initialized;
             const clients = await this.scope.clients.matchAll();
             await Promise.all(clients.map(async (client) => {
@@ -2722,9 +2756,9 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                 const current = this.versions.get(version);
                 // Send a notice.
                 const notice = {
-                    type: 'UPDATE_AVAILABLE',
-                    current: this.mergeHashWithAppData(current.manifest, version),
-                    available: this.mergeHashWithAppData(next.manifest, this.latestHash),
+                    type: 'VERSION_READY',
+                    currentVersion: this.mergeHashWithAppData(current.manifest, version),
+                    latestVersion: this.mergeHashWithAppData(manifest, hash),
                 };
                 client.postMessage(notice);
             }));
