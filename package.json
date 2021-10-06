@@ -1,11 +1,11 @@
 {
   "name": "@angular/service-worker",
-  "version": "13.0.0-next.12+14.sha-841c5ae.with-local-changes",
+  "version": "13.0.0-next.12+16.sha-e0a0d05.with-local-changes",
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^12.14.1 || >=14.0.0"
+    "node": "^12.20.0 || ^14.15.0 || >=16.10.0"
   },
   "exports": {
     "./ngsw-worker.js": {
@@ -22,12 +22,16 @@
     },
     ".": {
       "types": "./service-worker.d.ts",
+      "esm2020": "./esm2020/service-worker.mjs",
+      "es2020": "./fesm2020/service-worker.mjs",
       "es2015": "./fesm2015/service-worker.mjs",
       "node": "./fesm2015/service-worker.mjs",
       "default": "./fesm2020/service-worker.mjs"
     },
     "./config": {
       "types": "./config/config.d.ts",
+      "esm2020": "./esm2020/config/config.mjs",
+      "es2020": "./fesm2020/config.mjs",
       "es2015": "./fesm2015/config.mjs",
       "node": "./fesm2015/config.mjs",
       "default": "./fesm2020/config.mjs"
@@ -37,8 +41,8 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/core": "13.0.0-next.12+14.sha-841c5ae.with-local-changes",
-    "@angular/common": "13.0.0-next.12+14.sha-841c5ae.with-local-changes"
+    "@angular/core": "13.0.0-next.12+16.sha-e0a0d05.with-local-changes",
+    "@angular/common": "13.0.0-next.12+16.sha-e0a0d05.with-local-changes"
   },
   "repository": {
     "type": "git",
