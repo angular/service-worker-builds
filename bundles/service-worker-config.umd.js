@@ -1,5 +1,5 @@
 /**
- * @license Angular v12.2.7+49.sha-d6679e2.with-local-changes
+ * @license Angular v12.2.9+13.sha-fced3e8.with-local-changes
  * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -465,56 +465,58 @@
         };
         Generator.prototype.processAssetGroups = function (config, hashTable) {
             return __awaiter(this, void 0, void 0, function () {
-                var seenMap;
+                var allFiles, seenMap, filesPerGroup, _b, _c, group, fileMatcher, matchedFiles, allMatchedFiles, allMatchedHashes;
+                var e_1, _d;
                 var _this = this;
-                return __generator(this, function (_b) {
-                    seenMap = new Set();
-                    return [2 /*return*/, Promise.all((config.assetGroups || []).map(function (group) { return __awaiter(_this, void 0, void 0, function () {
-                            var fileMatcher, allFiles, matchedFiles;
-                            var _this = this;
-                            return __generator(this, function (_b) {
-                                switch (_b.label) {
-                                    case 0:
-                                        if (group.resources.versionedFiles) {
-                                            throw new Error("Asset-group '" + group.name + "' in 'ngsw-config.json' uses the 'versionedFiles' option, " +
-                                                'which is no longer supported. Use \'files\' instead.');
-                                        }
-                                        fileMatcher = globListToMatcher(group.resources.files || []);
-                                        return [4 /*yield*/, this.fs.list('/')];
-                                    case 1:
-                                        allFiles = _b.sent();
-                                        matchedFiles = allFiles.filter(fileMatcher).filter(function (file) { return !seenMap.has(file); }).sort();
-                                        matchedFiles.forEach(function (file) { return seenMap.add(file); });
-                                        // Add the hashes.
-                                        return [4 /*yield*/, matchedFiles.reduce(function (previous, file) { return __awaiter(_this, void 0, void 0, function () {
-                                                var hash;
-                                                return __generator(this, function (_b) {
-                                                    switch (_b.label) {
-                                                        case 0: return [4 /*yield*/, previous];
-                                                        case 1:
-                                                            _b.sent();
-                                                            return [4 /*yield*/, this.fs.hash(file)];
-                                                        case 2:
-                                                            hash = _b.sent();
-                                                            hashTable[joinUrls(this.baseHref, file)] = hash;
-                                                            return [2 /*return*/];
-                                                    }
-                                                });
-                                            }); }, Promise.resolve())];
-                                    case 2:
-                                        // Add the hashes.
-                                        _b.sent();
-                                        return [2 /*return*/, {
-                                                name: group.name,
-                                                installMode: group.installMode || 'prefetch',
-                                                updateMode: group.updateMode || group.installMode || 'prefetch',
-                                                cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
-                                                urls: matchedFiles.map(function (url) { return joinUrls(_this.baseHref, url); }),
-                                                patterns: (group.resources.urls || []).map(function (url) { return urlToRegex(url, _this.baseHref, true); }),
-                                            }];
+                return __generator(this, function (_e) {
+                    switch (_e.label) {
+                        case 0: return [4 /*yield*/, this.fs.list('/')];
+                        case 1:
+                            allFiles = _e.sent();
+                            seenMap = new Set();
+                            filesPerGroup = new Map();
+                            try {
+                                // Computed which files belong to each asset-group.
+                                for (_b = __values((config.assetGroups || [])), _c = _b.next(); !_c.done; _c = _b.next()) {
+                                    group = _c.value;
+                                    if (group.resources.versionedFiles) {
+                                        throw new Error("Asset-group '" + group.name + "' in 'ngsw-config.json' uses the 'versionedFiles' option, " +
+                                            'which is no longer supported. Use \'files\' instead.');
+                                    }
+                                    fileMatcher = globListToMatcher(group.resources.files || []);
+                                    matchedFiles = allFiles.filter(fileMatcher).filter(function (file) { return !seenMap.has(file); }).sort();
+                                    matchedFiles.forEach(function (file) { return seenMap.add(file); });
+                                    filesPerGroup.set(group, matchedFiles);
                                 }
+                            }
+                            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                            finally {
+                                try {
+                                    if (_c && !_c.done && (_d = _b.return)) _d.call(_b);
+                                }
+                                finally { if (e_1) throw e_1.error; }
+                            }
+                            allMatchedFiles = [].concat.apply([], __spreadArray([], __read(Array.from(filesPerGroup.values())))).sort();
+                            return [4 /*yield*/, Promise.all(allMatchedFiles.map(function (file) { return _this.fs.hash(file); }))];
+                        case 2:
+                            allMatchedHashes = _e.sent();
+                            allMatchedFiles.forEach(function (file, idx) {
+                                hashTable[joinUrls(_this.baseHref, file)] = allMatchedHashes[idx];
                             });
-                        }); }))];
+                            // Generate and return the processed asset-groups.
+                            return [2 /*return*/, Array.from(filesPerGroup.entries())
+                                    .map(function (_b) {
+                                    var _c = __read(_b, 2), group = _c[0], matchedFiles = _c[1];
+                                    return ({
+                                        name: group.name,
+                                        installMode: group.installMode || 'prefetch',
+                                        updateMode: group.updateMode || group.installMode || 'prefetch',
+                                        cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
+                                        urls: matchedFiles.map(function (url) { return joinUrls(_this.baseHref, url); }),
+                                        patterns: (group.resources.urls || []).map(function (url) { return urlToRegex(url, _this.baseHref, true); }),
+                                    });
+                                })];
+                    }
                 });
             });
         };
