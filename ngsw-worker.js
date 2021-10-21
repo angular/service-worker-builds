@@ -1735,7 +1735,7 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    const SW_VERSION = '12.2.10+16.sha-d10f143.with-local-changes';
+    const SW_VERSION = '12.2.11+1.sha-e09556f.with-local-changes';
     const DEBUG_LOG_BUFFER_SIZE = 100;
     class DebugHandler {
         constructor(driver, adapter) {
@@ -2644,14 +2644,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ 'Content-Type': 'text/plain' }
                     // but caches continue to be valid for previous versions. This is unfortunate but unavoidable.
                     this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
                     this.stateMessage = `Degraded due to: ${errorToString(err)}`;
-                    try {
-                        yield this.sync();
-                    }
-                    catch (err2) {
-                        // We are already in a bad state. No need to make things worse.
-                        // Just log the error and move on.
-                        this.debugger.log(err2, `Driver.versionFailed(${err.message || err})`);
-                    }
                 }
             });
         }
