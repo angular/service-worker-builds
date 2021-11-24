@@ -1633,7 +1633,7 @@
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-    const SW_VERSION = '13.1.0-next.2+52.sha-d8e6577.with-local-changes';
+    const SW_VERSION = '13.1.0-next.2+53.sha-b31973c.with-local-changes';
     const DEBUG_LOG_BUFFER_SIZE = 100;
     class DebugHandler {
         constructor(driver, adapter) {
