@@ -116,10 +116,10 @@ export class ServiceWorkerModule {
         };
     }
 }
-ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.2.0-next.0+3.sha-9249506.with-local-changes", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "13.2.0-next.0+3.sha-9249506.with-local-changes", ngImport: i0, type: ServiceWorkerModule });
-ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "13.2.0-next.0+3.sha-9249506.with-local-changes", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.2.0-next.0+3.sha-9249506.with-local-changes", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "13.2.0-next.0+4.sha-7b6ca4c.with-local-changes", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "13.2.0-next.0+4.sha-7b6ca4c.with-local-changes", ngImport: i0, type: ServiceWorkerModule });
+ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "13.2.0-next.0+4.sha-7b6ca4c.with-local-changes", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "13.2.0-next.0+4.sha-7b6ca4c.with-local-changes", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{
                     providers: [SwPush, SwUpdate],
