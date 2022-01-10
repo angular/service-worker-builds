@@ -5,24 +5,12 @@
     
 // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.mjs
 import { Generator } from "@angular/service-worker/config";
-import {
-  readFileSync as readFileSync2
-} from "fs";
-import {
-  join as join2
-} from "path";
+import * as fs2 from "fs";
+import * as path2 from "path";
 
 // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/filesystem.mjs
-import {
-  readFileSync,
-  readdirSync,
-  statSync,
-  writeFileSync
-} from "fs";
-import {
-  join,
-  posix
-} from "path";
+import * as fs from "fs";
+import * as path from "path";
 
 // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/sha1.mjs
 function sha1Binary(buffer) {
@@ -133,34 +121,34 @@ var NodeFilesystem = class {
   }
   async list(_path) {
     const dir = this.canonical(_path);
-    const entries = readdirSync(dir).map((entry) => ({ entry, stats: statSync(join(dir, entry)) }));
-    const files = entries.filter((entry) => !entry.stats.isDirectory()).map((entry) => posix.join(_path, entry.entry));
-    return entries.filter((entry) => entry.stats.isDirectory()).map((entry) => posix.join(_path, entry.entry)).reduce(async (list, subdir) => (await list).concat(await this.list(subdir)), Promise.resolve(files));
+    const entries = fs.readdirSync(dir).map((entry) => ({ entry, stats: fs.statSync(path.join(dir, entry)) }));
+    const files = entries.filter((entry) => !entry.stats.isDirectory()).map((entry) => path.posix.join(_path, entry.entry));
+    return entries.filter((entry) => entry.stats.isDirectory()).map((entry) => path.posix.join(_path, entry.entry)).reduce(async (list, subdir) => (await list).concat(await this.list(subdir)), Promise.resolve(files));
   }
   async read(_path) {
     const file = this.canonical(_path);
-    return readFileSync(file).toString();
+    return fs.readFileSync(file).toString();
   }
   async hash(_path) {
     const file = this.canonical(_path);
-    const contents = readFileSync(file);
+    const contents = fs.readFileSync(file);
     return sha1Binary(contents);
   }
   async write(_path, contents) {
     const file = this.canonical(_path);
-    writeFileSync(file, contents);
+    fs.writeFileSync(file, contents);
   }
   canonical(_path) {
-    return posix.join(this.base, _path);
+    return path.posix.join(this.base, _path);
   }
 };
 
 // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.mjs
 var cwd = process.cwd();
-var distDir = join2(cwd, process.argv[2]);
-var config = join2(cwd, process.argv[3]);
+var distDir = path2.join(cwd, process.argv[2]);
+var config = path2.join(cwd, process.argv[3]);
 var baseHref = process.argv[4] || "/";
-var configParsed = JSON.parse(readFileSync2(config).toString());
+var configParsed = JSON.parse(fs2.readFileSync(config).toString());
 var filesystem = new NodeFilesystem(distDir);
 var gen = new Generator(filesystem, baseHref);
 (async () => {
