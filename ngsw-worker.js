@@ -97,7 +97,7 @@
     constructor(adapter2) {
       this.adapter = adapter2;
       this.cacheNamePrefix = "db";
-      this.tables = new Map();
+      this.tables = /* @__PURE__ */ new Map();
     }
     "delete"(name) {
       if (this.tables.has(name)) {
@@ -304,7 +304,7 @@ ${error.stack}`;
       this.config = config;
       this.hashes = hashes;
       this.db = db;
-      this.inFlightRequests = new Map();
+      this.inFlightRequests = /* @__PURE__ */ new Map();
       this.urls = [];
       this.patterns = [];
       this.name = config.name;
@@ -872,7 +872,7 @@ ${error.stack}`;
       this.debugHandler = debugHandler;
       this.manifest = manifest;
       this.manifestHash = manifestHash;
-      this.hashTable = new Map();
+      this.hashTable = /* @__PURE__ */ new Map();
       this.indexUrl = this.adapter.normalizeUrl(this.manifest.index);
       this._okay = true;
       Object.keys(manifest.hashTable).forEach((url) => {
@@ -1010,7 +1010,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "13.1.1+80.sha-abc217b.with-local-changes";
+  var SW_VERSION = "13.1.1+84.sha-c375e5d.with-local-changes";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1063,7 +1063,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       age = age % 6e4;
       const seconds = Math.floor(age / 1e3);
       const millis = age % 1e3;
-      return "" + (days > 0 ? `${days}d` : "") + (hours > 0 ? `${hours}h` : "") + (minutes > 0 ? `${minutes}m` : "") + (seconds > 0 ? `${seconds}s` : "") + (millis > 0 ? `${millis}u` : "");
+      return (days > 0 ? `${days}d` : "") + (hours > 0 ? `${hours}h` : "") + (minutes > 0 ? `${minutes}m` : "") + (seconds > 0 ? `${seconds}s` : "") + (millis > 0 ? `${millis}u` : "");
     }
     log(value, context = "") {
       if (this.debugLogA.length === DEBUG_LOG_BUFFER_SIZE) {
@@ -1209,8 +1209,8 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       this.state = DriverReadyState.NORMAL;
       this.stateMessage = "(nominal)";
       this.initialized = null;
-      this.clientVersionMap = new Map();
-      this.versions = new Map();
+      this.clientVersionMap = /* @__PURE__ */ new Map();
+      this.versions = /* @__PURE__ */ new Map();
       this.latestHash = null;
       this.lastUpdateCheck = null;
       this.scheduledNavUpdateCheck = false;
