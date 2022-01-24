@@ -709,12 +709,14 @@ ${error.stack}`;
       }
     }
     async handleFetchWithPerformance(req, event, lru) {
+      var _a;
+      const okToCacheOpaque = (_a = this.config.cacheOpaqueResponses) != null ? _a : false;
       let res = null;
       const fromCache = await this.loadFromCache(req, lru);
       if (fromCache !== null) {
         res = fromCache.res;
         if (this.config.refreshAheadMs !== void 0 && fromCache.age >= this.config.refreshAheadMs) {
-          event.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru));
+          event.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru, okToCacheOpaque));
         }
       }
       if (res !== null) {
@@ -724,13 +726,15 @@ ${error.stack}`;
       res = await timeoutFetch;
       if (res === void 0) {
         res = this.adapter.newResponse(null, { status: 504, statusText: "Gateway Timeout" });
-        event.waitUntil(this.safeCacheResponse(req, networkFetch, lru));
+        event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, okToCacheOpaque));
       } else {
-        await this.safeCacheResponse(req, res, lru);
+        await this.safeCacheResponse(req, res, lru, okToCacheOpaque);
       }
       return res;
     }
     async handleFetchWithFreshness(req, event, lru) {
+      var _a;
+      const okToCacheOpaque = (_a = this.config.cacheOpaqueResponses) != null ? _a : true;
       const [timeoutFetch, networkFetch] = this.networkFetchWithTimeout(req);
       let res;
       try {
@@ -739,11 +743,11 @@ ${error.stack}`;
         res = void 0;
       }
       if (res === void 0) {
-        event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, true));
+        event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, okToCacheOpaque));
         const fromCache = await this.loadFromCache(req, lru);
         res = fromCache !== null ? fromCache.res : null;
       } else {
-        await this.safeCacheResponse(req, res, lru, true);
+        await this.safeCacheResponse(req, res, lru, okToCacheOpaque);
       }
       if (res !== null) {
         return res;
@@ -1010,7 +1014,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "13.2.0-next.2+58.sha-a534a78.with-local-changes";
+  var SW_VERSION = "13.2.0-next.2+62.sha-ec0a0e0.with-local-changes";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {

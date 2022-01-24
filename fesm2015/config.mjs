@@ -1,5 +1,5 @@
 /**
- * @license Angular v13.2.0-next.2+58.sha-a534a78.with-local-changes
+ * @license Angular v13.2.0-next.2+62.sha-ec0a0e0.with-local-changes
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -178,6 +178,7 @@ class Generator {
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
                 timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
+                cacheOpaqueResponses: group.cacheConfig.cacheOpaqueResponses,
                 cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
                 version: group.version !== undefined ? group.version : 1,
             };
