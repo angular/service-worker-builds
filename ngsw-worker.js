@@ -1014,7 +1014,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "14.0.0-next.5+4.sha-2e105a1";
+  var SW_VERSION = "14.0.0-next.5+6.sha-bd04fbc";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1632,6 +1632,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
         }
         hash = hashManifest(manifest);
         if (this.versions.has(hash)) {
+          await this.notifyClientsAboutNoNewVersionDetected(manifest, hash);
           return false;
         }
         await this.notifyClientsAboutVersionDetected(manifest, hash);
@@ -1738,6 +1739,13 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
           version: this.mergeHashWithAppData(manifest, hash),
           error: errorToString(error)
         });
+      }));
+    }
+    async notifyClientsAboutNoNewVersionDetected(manifest, hash) {
+      await this.initialized;
+      const clients = await this.scope.clients.matchAll();
+      await Promise.all(clients.map(async (client) => {
+        client.postMessage({ type: "NO_NEW_VERSION_DETECTED", version: this.mergeHashWithAppData(manifest, hash) });
       }));
     }
     async notifyClientsAboutVersionDetected(manifest, hash) {

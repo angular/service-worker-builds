@@ -1,5 +1,5 @@
 /**
- * @license Angular v14.0.0-next.5+4.sha-2e105a1
+ * @license Angular v14.0.0-next.5+6.sha-bd04fbc
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -24,6 +24,22 @@ declare class NgswCommChannel {
     nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T>;
     waitForOperationCompleted(nonce: number): Promise<boolean>;
     get isEnabled(): boolean;
+}
+
+/**
+ * An event emitted when the service worker has checked the version of the app on the server
+ * and it is the same as the installed version.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+declare interface NoNewVersionDetectedEvent {
+    type: 'NO_NEW_VERSION_DETECTED';
+    version: {
+        hash: string;
+        appData?: Object;
+    };
 }
 
 /**
@@ -412,7 +428,7 @@ export declare interface VersionDetectedEvent {
  *
  * @publicApi
  */
-export declare type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent;
+export declare type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent | NoNewVersionDetectedEvent;
 
 /**
  * An event emitted when the installation of a new version failed.
