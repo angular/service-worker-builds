@@ -1,5 +1,5 @@
 /**
- * @license Angular v13.2.5+17.sha-ad9d981
+ * @license Angular v13.2.5+21.sha-23003f8
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -154,7 +154,7 @@ class Generator {
         }
         // Compute hashes for all matched files and add them to the hash-table.
         const allMatchedFiles = [].concat(...Array.from(filesPerGroup.values())).sort();
-        const allMatchedHashes = await Promise.all(allMatchedFiles.map(file => this.fs.hash(file)));
+        const allMatchedHashes = await processInBatches(allMatchedFiles, 500, file => this.fs.hash(file));
         allMatchedFiles.forEach((file, idx) => {
             hashTable[joinUrls(this.baseHref, file)] = allMatchedHashes[idx];
         });
@@ -190,6 +190,13 @@ function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
         url = positive ? url : url.substr(1);
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
     });
+}
+async function processInBatches(items, batchSize, processFn) {
+    const batches = [];
+    for (let i = 0; i < items.length; i += batchSize) {
+        batches.push(items.slice(i, i + batchSize));
+    }
+    return batches.reduce(async (prev, batch) => (await prev).concat(await Promise.all(batch.map(item => processFn(item)))), Promise.resolve([]));
 }
 function globListToMatcher(globs) {
     const patterns = globs.map(pattern => {
