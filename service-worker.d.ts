@@ -1,5 +1,5 @@
 /**
- * @license Angular v14.0.0-next.5+22.sha-9fa6f5a
+ * @license Angular v14.0.0-next.5+25.sha-4478dff
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -27,8 +27,8 @@ declare class NgswCommChannel {
 }
 
 /**
- * An event emitted when the service worker has checked the version of the app on the server
- * and it is the same as the installed version.
+ * An event emitted when the service worker has checked the version of the app on the server and it
+ * didn't find a new version that it doesn't have already downloaded.
  *
  * @see {@link guide/service-worker-communications Service worker communication guide}
  *
