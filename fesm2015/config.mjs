@@ -1,5 +1,5 @@
 /**
- * @license Angular v14.0.0-next.5+23.sha-2b7553d
+ * @license Angular v14.0.0-next.5+26.sha-9e56e40
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -153,7 +153,7 @@ class Generator {
             }
             // Compute hashes for all matched files and add them to the hash-table.
             const allMatchedFiles = [].concat(...Array.from(filesPerGroup.values())).sort();
-            const allMatchedHashes = yield Promise.all(allMatchedFiles.map(file => this.fs.hash(file)));
+            const allMatchedHashes = yield processInBatches(allMatchedFiles, 500, file => this.fs.hash(file));
             allMatchedFiles.forEach((file, idx) => {
                 hashTable[joinUrls(this.baseHref, file)] = allMatchedHashes[idx];
             });
@@ -190,6 +190,15 @@ function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
         const positive = !url.startsWith('!');
         url = positive ? url : url.substr(1);
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
+    });
+}
+function processInBatches(items, batchSize, processFn) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const batches = [];
+        for (let i = 0; i < items.length; i += batchSize) {
+            batches.push(items.slice(i, i + batchSize));
+        }
+        return batches.reduce((prev, batch) => __awaiter(this, void 0, void 0, function* () { return (yield prev).concat(yield Promise.all(batch.map(item => processFn(item)))); }), Promise.resolve([]));
     });
 }
 function globListToMatcher(globs) {
