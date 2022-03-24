@@ -135,7 +135,7 @@
       return this.cache.delete(this.request(key), this.cacheQueryOptions);
     }
     keys() {
-      return this.cache.keys().then((requests) => requests.map((req) => req.url.substr(1)));
+      return this.cache.keys().then((requests) => requests.map((req) => req.url.slice(1)));
     }
     read(key) {
       return this.cache.match(this.request(key), this.cacheQueryOptions).then((res) => {
@@ -954,7 +954,7 @@ ${error.stack}`;
         return false;
       }
       const urlPrefix = this.scope.registration.scope.replace(/\/$/, "");
-      const url = req.url.startsWith(urlPrefix) ? req.url.substr(urlPrefix.length) : req.url;
+      const url = req.url.startsWith(urlPrefix) ? req.url.slice(urlPrefix.length) : req.url;
       const urlWithoutQueryOrHash = url.replace(/[?#].*$/, "");
       return this.navigationUrls.include.some((regex) => regex.test(urlWithoutQueryOrHash)) && !this.navigationUrls.exclude.some((regex) => regex.test(urlWithoutQueryOrHash));
     }
@@ -1014,7 +1014,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "14.0.0-next.7+34.sha-0f9b3c6";
+  var SW_VERSION = "14.0.0-next.7+35.sha-4ddcf81";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {

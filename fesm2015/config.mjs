@@ -1,5 +1,5 @@
 /**
- * @license Angular v14.0.0-next.7+34.sha-0f9b3c6
+ * @license Angular v14.0.0-next.7+35.sha-4ddcf81
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -188,7 +188,7 @@ class Generator {
 function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
     return urls.map(url => {
         const positive = !url.startsWith('!');
-        url = positive ? url : url.substr(1);
+        url = positive ? url : url.slice(1);
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
     });
 }
@@ -206,7 +206,7 @@ function globListToMatcher(globs) {
         if (pattern.startsWith('!')) {
             return {
                 positive: false,
-                regex: new RegExp('^' + globToRegex(pattern.substr(1)) + '$'),
+                regex: new RegExp('^' + globToRegex(pattern.slice(1)) + '$'),
             };
         }
         else {
@@ -240,7 +240,7 @@ function urlToRegex(url, baseHref, literalQuestionMark) {
 }
 function joinUrls(a, b) {
     if (a.endsWith('/') && b.startsWith('/')) {
-        return a + b.substr(1);
+        return a + b.slice(1);
     }
     else if (!a.endsWith('/') && !b.startsWith('/')) {
         return a + '/' + b;
