@@ -1,6 +1,6 @@
 {
   "name": "@angular/service-worker",
-  "version": "14.0.0-next.14+9.sha-3dee3d1",
+  "version": "14.0.0-next.14+16.sha-612d6e0",
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
@@ -21,7 +21,7 @@
       "default": "./package.json"
     },
     ".": {
-      "types": "./service-worker.d.ts",
+      "types": "./index.d.ts",
       "esm2020": "./esm2020/service-worker.mjs",
       "es2020": "./fesm2020/service-worker.mjs",
       "es2015": "./fesm2015/service-worker.mjs",
@@ -29,7 +29,7 @@
       "default": "./fesm2020/service-worker.mjs"
     },
     "./config": {
-      "types": "./config/config.d.ts",
+      "types": "./config/index.d.ts",
       "esm2020": "./esm2020/config/config.mjs",
       "es2020": "./fesm2020/config.mjs",
       "es2015": "./fesm2015/config.mjs",
@@ -41,8 +41,8 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/core": "14.0.0-next.14+9.sha-3dee3d1",
-    "@angular/common": "14.0.0-next.14+9.sha-3dee3d1"
+    "@angular/core": "14.0.0-next.14+16.sha-612d6e0",
+    "@angular/common": "14.0.0-next.14+16.sha-612d6e0"
   },
   "repository": {
     "type": "git",
@@ -76,7 +76,7 @@
   "fesm2020": "./fesm2020/service-worker.mjs",
   "fesm2015": "./fesm2015/service-worker.mjs",
   "esm2020": "./esm2020/service-worker.mjs",
-  "typings": "./service-worker.d.ts",
+  "typings": "./index.d.ts",
   "module": "./fesm2015/service-worker.mjs",
   "es2020": "./fesm2020/service-worker.mjs",
   "type": "module"
