@@ -1,0 +1,83 @@
+{
+  "name": "@angular/service-worker",
+  "version": "14.0.0-next.15+sha-c988487",
+  "description": "Angular - service worker tooling!",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^14.15.0 || >=16.10.0"
+  },
+  "exports": {
+    "./ngsw-worker.js": {
+      "default": "./ngsw-worker.js"
+    },
+    "./safety-worker.js": {
+      "default": "./safety-worker.js"
+    },
+    "./config/schema.json": {
+      "default": "./config/schema.json"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./index.d.ts",
+      "esm2020": "./esm2020/service-worker.mjs",
+      "es2020": "./fesm2020/service-worker.mjs",
+      "es2015": "./fesm2015/service-worker.mjs",
+      "node": "./fesm2015/service-worker.mjs",
+      "default": "./fesm2020/service-worker.mjs"
+    },
+    "./config": {
+      "types": "./config/index.d.ts",
+      "esm2020": "./esm2020/config/config.mjs",
+      "es2020": "./fesm2020/config.mjs",
+      "es2015": "./fesm2015/config.mjs",
+      "node": "./fesm2015/config.mjs",
+      "default": "./fesm2020/config.mjs"
+    }
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "14.0.0-next.15+sha-c988487",
+    "@angular/common": "14.0.0-next.15+sha-c988487"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/service-worker"
+  },
+  "bin": {
+    "ngsw-config": "./ngsw-config.js"
+  },
+  "ng-update": {
+    "packageGroup": [
+      "@angular/core",
+      "@angular/bazel",
+      "@angular/common",
+      "@angular/compiler",
+      "@angular/compiler-cli",
+      "@angular/animations",
+      "@angular/elements",
+      "@angular/platform-browser",
+      "@angular/platform-browser-dynamic",
+      "@angular/forms",
+      "@angular/platform-server",
+      "@angular/upgrade",
+      "@angular/router",
+      "@angular/language-service",
+      "@angular/localize",
+      "@angular/service-worker"
+    ]
+  },
+  "sideEffects": false,
+  "fesm2020": "./fesm2020/service-worker.mjs",
+  "fesm2015": "./fesm2015/service-worker.mjs",
+  "esm2020": "./esm2020/service-worker.mjs",
+  "typings": "./index.d.ts",
+  "module": "./fesm2015/service-worker.mjs",
+  "es2020": "./fesm2020/service-worker.mjs",
+  "type": "module"
+}
