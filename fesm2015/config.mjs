@@ -1,5 +1,5 @@
 /**
- * @license Angular v14.1.0-next.0+sha-8629f2d
+ * @license Angular v13.3.9+18.sha-3e3f8fc
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -178,7 +178,6 @@ class Generator {
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
                 timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
-                cacheOpaqueResponses: group.cacheConfig.cacheOpaqueResponses,
                 cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
                 version: group.version !== undefined ? group.version : 1,
             };
@@ -188,7 +187,7 @@ class Generator {
 function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
     return urls.map(url => {
         const positive = !url.startsWith('!');
-        url = positive ? url : url.slice(1);
+        url = positive ? url : url.substr(1);
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
     });
 }
@@ -206,7 +205,7 @@ function globListToMatcher(globs) {
         if (pattern.startsWith('!')) {
             return {
                 positive: false,
-                regex: new RegExp('^' + globToRegex(pattern.slice(1)) + '$'),
+                regex: new RegExp('^' + globToRegex(pattern.substr(1)) + '$'),
             };
         }
         else {
@@ -240,7 +239,7 @@ function urlToRegex(url, baseHref, literalQuestionMark) {
 }
 function joinUrls(a, b) {
     if (a.endsWith('/') && b.startsWith('/')) {
-        return a + b.slice(1);
+        return a + b.substr(1);
     }
     else if (!a.endsWith('/') && !b.startsWith('/')) {
         return a + '/' + b;
