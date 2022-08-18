@@ -1,5 +1,5 @@
 /**
- * @license Angular v14.2.0-rc.0+sha-c83e861
+ * @license Angular v14.2.0-rc.0+sha-591068a
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -35,7 +35,7 @@ declare class NgswCommChannel {
  *
  * @publicApi
  */
-declare interface NoNewVersionDetectedEvent {
+export declare interface NoNewVersionDetectedEvent {
     type: 'NO_NEW_VERSION_DETECTED';
     version: {
         hash: string;
