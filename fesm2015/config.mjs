@@ -1,5 +1,5 @@
 /**
- * @license Angular v14.2.0+sha-626340b
+ * @license Angular v14.2.0+sha-6091786
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -219,7 +219,7 @@ function globListToMatcher(globs) {
     return (file) => matches(file, patterns);
 }
 function matches(file, patterns) {
-    const res = patterns.reduce((isMatch, pattern) => {
+    return patterns.reduce((isMatch, pattern) => {
         if (pattern.positive) {
             return isMatch || pattern.regex.test(file);
         }
@@ -227,7 +227,6 @@ function matches(file, patterns) {
             return isMatch && !pattern.regex.test(file);
         }
     }, false);
-    return res;
 }
 function urlToRegex(url, baseHref, literalQuestionMark) {
     if (!url.startsWith('/') && url.indexOf('://') === -1) {

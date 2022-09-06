@@ -1,5 +1,5 @@
 /**
- * @license Angular v14.2.0+sha-626340b
+ * @license Angular v14.2.0+sha-6091786
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -280,18 +280,11 @@ export declare class SwUpdate {
      *
      * @deprecated Use {@link versionUpdates} instead.
      *
-     * The of behavior `available` can be rebuild by filtering for the `VersionReadyEvent`:
-     * ```
-     * import {filter, map} from 'rxjs/operators';
-     * // ...
-     * const updatesAvailable = swUpdate.versionUpdates.pipe(
-     *   filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-     *   map(evt => ({
-     *     type: 'UPDATE_AVAILABLE',
-     *     current: evt.currentVersion,
-     *     available: evt.latestVersion,
-     *   })));
-     * ```
+     * The behavior of `available` can be replicated by using `versionUpdates` by filtering for the
+     * `VersionReadyEvent`:
+     *
+     * {@example service-worker-getting-started/src/app/prompt-update.service.ts
+     * region='sw-replicate-available'}
      */
     readonly available: Observable<UpdateAvailableEvent>;
     /**
@@ -326,6 +319,20 @@ export declare class SwUpdate {
     /**
      * Updates the current client (i.e. browser tab) to the latest version that is ready for
      * activation.
+     *
+     * In most cases, you should not use this method and instead should update a client by reloading
+     * the page.
+     *
+     * <div class="alert is-important">
+     *
+     * Updating a client without reloading can easily result in a broken application due to a version
+     * mismatch between the [application shell](guide/glossary#app-shell) and other page resources,
+     * such as [lazy-loaded chunks](guide/glossary#lazy-loading), whose filenames may change between
+     * versions.
+     *
+     * Only use this method, if you are certain it is safe for your specific use case.
+     *
+     * </div>
      *
      * @returns a promise that
      *  - resolves to `true` if an update was activated successfully
