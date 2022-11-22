@@ -3,6 +3,7 @@
       import {createRequire as __cjsCompatRequire} from 'module';
       const require = __cjsCompatRequire(import.meta.url);
     
+
 // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.mjs
 import { Generator } from "@angular/service-worker/config";
 import * as fs2 from "fs";
