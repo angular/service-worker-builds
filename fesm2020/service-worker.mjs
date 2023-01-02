@@ -1,5 +1,5 @@
 /**
- * @license Angular v15.1.0-next.3+sha-cc284af
+ * @license Angular v15.1.0-next.3+sha-2d539e1
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -10,13 +10,6 @@ import { Injectable, InjectionToken, NgZone, ApplicationRef, PLATFORM_ID, APP_IN
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
 import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operators';
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 function errorObservable(message) {
     return defer(() => throwError(new Error(message)));
@@ -92,13 +85,6 @@ class NgswCommChannel {
     }
 }
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /**
  * Subscribe and listen to
  * [Web Push
@@ -254,19 +240,12 @@ class SwPush {
         return atob(input);
     }
 }
-SwPush.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-SwPush.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: SwPush });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: SwPush, decorators: [{
+SwPush.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+SwPush.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: SwPush });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: NgswCommChannel }]; } });
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
@@ -354,19 +333,12 @@ class SwUpdate {
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
 }
-SwUpdate.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-SwUpdate.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: SwUpdate });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: SwUpdate, decorators: [{
+SwUpdate.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+SwUpdate.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: SwUpdate });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: NgswCommChannel }]; } });
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /**
  * Token that can be used to provide options for `ServiceWorkerModule` outside of
  * `ServiceWorkerModule.register()`.
@@ -469,10 +441,10 @@ class ServiceWorkerModule {
         };
     }
 }
-ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: ServiceWorkerModule });
-ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-cc284af", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: ServiceWorkerModule });
+ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.0-next.3+sha-2d539e1", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{
                     providers: [SwPush, SwUpdate],
@@ -480,29 +452,13 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.1.0-next.3+sh
         }] });
 
 /**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * @module
+ * @description
+ * Entry point for all public APIs of this package.
  */
 // This file only reexports content of the `src` folder. Keep it that way.
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
+// This file is not used to build this module. It is only used during editing
 
 /**
  * Generated bundle index. Do not edit.
