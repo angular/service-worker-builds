@@ -1,18 +1,11 @@
 /**
- * @license Angular v15.1.0+sha-dd54f6b
+ * @license Angular v15.1.0+sha-5978eed
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import { __awaiter } from 'tslib';
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 const PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
 const PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
 function parseDurationToMs(duration) {
@@ -52,13 +45,6 @@ function parseDurationToMs(duration) {
         .reduce((total, value) => total + value, 0);
 }
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 const QUESTION_MARK = '[^/]';
 const WILD_SINGLE = '[^/]*';
 const WILD_OPEN = '(?:.+\\/)?';
@@ -255,21 +241,7 @@ function buildCacheQueryOptions(inOptions) {
     return Object.assign({ ignoreVary: true }, inOptions);
 }
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
+// This file is not used to build this module. It is only used during editing
 
 /**
  * Generated bundle index. Do not edit.
