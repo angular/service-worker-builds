@@ -1,5 +1,5 @@
 /**
- * @license Angular v15.2.0-next.1+sha-82c8b7a
+ * @license Angular v15.2.0-next.1+sha-09053f7
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -171,6 +171,7 @@ class SwPush {
     }
     constructor(sw) {
         this.sw = sw;
+        this.pushManager = null;
         this.subscriptionChanges = new Subject();
         if (!sw.isEnabled) {
             this.messages = NEVER;
@@ -193,7 +194,7 @@ class SwPush {
      * @returns A Promise that resolves to the new subscription object.
      */
     requestSubscription(options) {
-        if (!this.sw.isEnabled) {
+        if (!this.sw.isEnabled || this.pushManager === null) {
             return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
         }
         const pushOptions = { userVisibleOnly: true };
@@ -237,9 +238,9 @@ class SwPush {
         return atob(input);
     }
 }
-SwPush.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-SwPush.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: SwPush });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: SwPush, decorators: [{
+SwPush.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+SwPush.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: SwPush });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: NgswCommChannel }]; } });
 
@@ -330,9 +331,9 @@ class SwUpdate {
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
 }
-SwUpdate.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-SwUpdate.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: SwUpdate });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: SwUpdate, decorators: [{
+SwUpdate.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+SwUpdate.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: SwUpdate });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: NgswCommChannel }]; } });
 
@@ -438,10 +439,10 @@ class ServiceWorkerModule {
         };
     }
 }
-ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: ServiceWorkerModule });
-ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-82c8b7a", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: ServiceWorkerModule });
+ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "15.2.0-next.1+sha-09053f7", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{
                     providers: [SwPush, SwUpdate],
