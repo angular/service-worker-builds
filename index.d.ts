@@ -1,10 +1,11 @@
 /**
- * @license Angular v16.0.0-next.2+sha-86fc4d3
+ * @license Angular v16.0.0-next.2+sha-5e7fc25
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
 
 
+import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -45,6 +46,25 @@ export declare interface NoNewVersionDetectedEvent {
 
 /**
  * @publicApi
+ *
+ * Sets up providers to register the given Angular Service Worker script.
+ *
+ * If `enabled` is set to `false` in the given options, the module will behave as if service
+ * workers are not supported by the browser, and the service worker will not be registered.
+ *
+ * Example usage:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [
+ *     provideServiceWorker('ngsw-worker.js')
+ *   ],
+ * });
+ * ```
+ */
+export declare function provideServiceWorker(script: string, options?: SwRegistrationOptions): EnvironmentProviders;
+
+/**
+ * @publicApi
  */
 export declare class ServiceWorkerModule {
     /**
@@ -53,7 +73,7 @@ export declare class ServiceWorkerModule {
      * If `enabled` is set to `false` in the given options, the module will behave as if service
      * workers are not supported by the browser, and the service worker will not be registered.
      */
-    static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
+    static register(script: string, options?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ServiceWorkerModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<ServiceWorkerModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<ServiceWorkerModule>;

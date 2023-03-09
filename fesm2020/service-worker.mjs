@@ -1,12 +1,12 @@
 /**
- * @license Angular v16.0.0-next.2+sha-86fc4d3
+ * @license Angular v16.0.0-next.2+sha-5e7fc25
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
 
-import { isPlatformBrowser } from '@angular/common';
 import * as i0 from '@angular/core';
-import { Injectable, InjectionToken, NgZone, ApplicationRef, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule } from '@angular/core';
+import { Injectable, InjectionToken, NgZone, ApplicationRef, makeEnvironmentProviders, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
 import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operators';
 
@@ -241,9 +241,9 @@ class SwPush {
         return atob(input);
     }
 }
-SwPush.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-SwPush.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: SwPush });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: SwPush, decorators: [{
+SwPush.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+SwPush.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: SwPush });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: NgswCommChannel }]; } });
 
@@ -334,26 +334,19 @@ class SwUpdate {
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
 }
-SwUpdate.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-SwUpdate.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: SwUpdate });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: SwUpdate, decorators: [{
+SwUpdate.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+SwUpdate.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: SwUpdate });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: NgswCommChannel }]; } });
 
-/**
- * Token that can be used to provide options for `ServiceWorkerModule` outside of
- * `ServiceWorkerModule.register()`.
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
  *
- * You can use this token to define a provider that generates the registration options at runtime,
- * for example via a function call:
- *
- * {@example service-worker/registration-options/module.ts region="registration-options"
- *     header="app.module.ts"}
- *
- * @publicApi
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
-class SwRegistrationOptions {
-}
 const SCRIPT = new InjectionToken('NGSW_REGISTER_SCRIPT');
 function ngswAppInitializer(injector, script, options, platformId) {
     return () => {
@@ -412,6 +405,57 @@ function ngswCommChannelFactory(opts, platformId) {
         undefined);
 }
 /**
+ * Token that can be used to provide options for `ServiceWorkerModule` outside of
+ * `ServiceWorkerModule.register()`.
+ *
+ * You can use this token to define a provider that generates the registration options at runtime,
+ * for example via a function call:
+ *
+ * {@example service-worker/registration-options/module.ts region="registration-options"
+ *     header="app.module.ts"}
+ *
+ * @publicApi
+ */
+class SwRegistrationOptions {
+}
+/**
+ * @publicApi
+ *
+ * Sets up providers to register the given Angular Service Worker script.
+ *
+ * If `enabled` is set to `false` in the given options, the module will behave as if service
+ * workers are not supported by the browser, and the service worker will not be registered.
+ *
+ * Example usage:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [
+ *     provideServiceWorker('ngsw-worker.js')
+ *   ],
+ * });
+ * ```
+ */
+function provideServiceWorker(script, options = {}) {
+    return makeEnvironmentProviders([
+        SwPush,
+        SwUpdate,
+        { provide: SCRIPT, useValue: script },
+        { provide: SwRegistrationOptions, useValue: options },
+        {
+            provide: NgswCommChannel,
+            useFactory: ngswCommChannelFactory,
+            deps: [SwRegistrationOptions, PLATFORM_ID]
+        },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: ngswAppInitializer,
+            deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
+            multi: true,
+        },
+    ]);
+}
+
+/**
  * @publicApi
  */
 class ServiceWorkerModule {
@@ -421,35 +465,19 @@ class ServiceWorkerModule {
      * If `enabled` is set to `false` in the given options, the module will behave as if service
      * workers are not supported by the browser, and the service worker will not be registered.
      */
-    static register(script, opts = {}) {
+    static register(script, options = {}) {
         return {
             ngModule: ServiceWorkerModule,
-            providers: [
-                { provide: SCRIPT, useValue: script },
-                { provide: SwRegistrationOptions, useValue: opts },
-                {
-                    provide: NgswCommChannel,
-                    useFactory: ngswCommChannelFactory,
-                    deps: [SwRegistrationOptions, PLATFORM_ID]
-                },
-                {
-                    provide: APP_INITIALIZER,
-                    useFactory: ngswAppInitializer,
-                    deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
-                    multi: true,
-                },
-            ],
+            providers: [provideServiceWorker(script, options)],
         };
     }
 }
-ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: ServiceWorkerModule });
-ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-86fc4d3", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+ServiceWorkerModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+ServiceWorkerModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: ServiceWorkerModule });
+ServiceWorkerModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.0.0-next.2+sha-5e7fc25", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
-            args: [{
-                    providers: [SwPush, SwUpdate],
-                }]
+            args: [{ providers: [SwPush, SwUpdate] }]
         }] });
 
 /**
@@ -465,5 +493,5 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "16.0.0-next.2+sh
  * Generated bundle index. Do not edit.
  */
 
-export { ServiceWorkerModule, SwPush, SwRegistrationOptions, SwUpdate };
+export { ServiceWorkerModule, SwPush, SwRegistrationOptions, SwUpdate, provideServiceWorker };
 //# sourceMappingURL=service-worker.mjs.map
