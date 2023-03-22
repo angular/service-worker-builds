@@ -117,6 +117,7 @@ function byteStringToHexString(str) {
 
 // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/filesystem.mjs
 var NodeFilesystem = class {
+  base;
   constructor(base) {
     this.base = base;
   }
