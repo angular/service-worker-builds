@@ -1,10 +1,8 @@
 /**
- * @license Angular v16.0.0-next.4+sha-07cbaa3
+ * @license Angular v16.0.0-next.4+sha-6161c50
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
-
-import { __awaiter } from 'tslib';
 
 const PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
 const PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
@@ -102,58 +100,53 @@ class Generator {
         this.fs = fs;
         this.baseHref = baseHref;
     }
-    process(config) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const unorderedHashTable = {};
-            const assetGroups = yield this.processAssetGroups(config, unorderedHashTable);
-            return {
-                configVersion: 1,
-                timestamp: Date.now(),
-                appData: config.appData,
-                index: joinUrls(this.baseHref, config.index),
-                assetGroups,
-                dataGroups: this.processDataGroups(config),
-                hashTable: withOrderedKeys(unorderedHashTable),
-                navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
-                navigationRequestStrategy: (_a = config.navigationRequestStrategy) !== null && _a !== void 0 ? _a : 'performance',
-            };
-        });
+    async process(config) {
+        const unorderedHashTable = {};
+        const assetGroups = await this.processAssetGroups(config, unorderedHashTable);
+        return {
+            configVersion: 1,
+            timestamp: Date.now(),
+            appData: config.appData,
+            index: joinUrls(this.baseHref, config.index),
+            assetGroups,
+            dataGroups: this.processDataGroups(config),
+            hashTable: withOrderedKeys(unorderedHashTable),
+            navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
+            navigationRequestStrategy: config.navigationRequestStrategy ?? 'performance',
+        };
     }
-    processAssetGroups(config, hashTable) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Retrieve all files of the build.
-            const allFiles = yield this.fs.list('/');
-            const seenMap = new Set();
-            const filesPerGroup = new Map();
-            // Computed which files belong to each asset-group.
-            for (const group of (config.assetGroups || [])) {
-                if (group.resources.versionedFiles) {
-                    throw new Error(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
-                        'which is no longer supported. Use \'files\' instead.');
-                }
-                const fileMatcher = globListToMatcher(group.resources.files || []);
-                const matchedFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file)).sort();
-                matchedFiles.forEach(file => seenMap.add(file));
-                filesPerGroup.set(group, matchedFiles);
+    async processAssetGroups(config, hashTable) {
+        // Retrieve all files of the build.
+        const allFiles = await this.fs.list('/');
+        const seenMap = new Set();
+        const filesPerGroup = new Map();
+        // Computed which files belong to each asset-group.
+        for (const group of (config.assetGroups || [])) {
+            if (group.resources.versionedFiles) {
+                throw new Error(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
+                    'which is no longer supported. Use \'files\' instead.');
             }
-            // Compute hashes for all matched files and add them to the hash-table.
-            const allMatchedFiles = [].concat(...Array.from(filesPerGroup.values())).sort();
-            const allMatchedHashes = yield processInBatches(allMatchedFiles, 500, file => this.fs.hash(file));
-            allMatchedFiles.forEach((file, idx) => {
-                hashTable[joinUrls(this.baseHref, file)] = allMatchedHashes[idx];
-            });
-            // Generate and return the processed asset-groups.
-            return Array.from(filesPerGroup.entries())
-                .map(([group, matchedFiles]) => ({
-                name: group.name,
-                installMode: group.installMode || 'prefetch',
-                updateMode: group.updateMode || group.installMode || 'prefetch',
-                cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
-                urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
-                patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
-            }));
+            const fileMatcher = globListToMatcher(group.resources.files || []);
+            const matchedFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file)).sort();
+            matchedFiles.forEach(file => seenMap.add(file));
+            filesPerGroup.set(group, matchedFiles);
+        }
+        // Compute hashes for all matched files and add them to the hash-table.
+        const allMatchedFiles = [].concat(...Array.from(filesPerGroup.values())).sort();
+        const allMatchedHashes = await processInBatches(allMatchedFiles, 500, file => this.fs.hash(file));
+        allMatchedFiles.forEach((file, idx) => {
+            hashTable[joinUrls(this.baseHref, file)] = allMatchedHashes[idx];
         });
+        // Generate and return the processed asset-groups.
+        return Array.from(filesPerGroup.entries())
+            .map(([group, matchedFiles]) => ({
+            name: group.name,
+            installMode: group.installMode || 'prefetch',
+            updateMode: group.updateMode || group.installMode || 'prefetch',
+            cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
+            urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
+            patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
+        }));
     }
     processDataGroups(config) {
         return (config.dataGroups || []).map(group => {
@@ -178,14 +171,12 @@ function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
     });
 }
-function processInBatches(items, batchSize, processFn) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const batches = [];
-        for (let i = 0; i < items.length; i += batchSize) {
-            batches.push(items.slice(i, i + batchSize));
-        }
-        return batches.reduce((prev, batch) => __awaiter(this, void 0, void 0, function* () { return (yield prev).concat(yield Promise.all(batch.map(item => processFn(item)))); }), Promise.resolve([]));
-    });
+async function processInBatches(items, batchSize, processFn) {
+    const batches = [];
+    for (let i = 0; i < items.length; i += batchSize) {
+        batches.push(items.slice(i, i + batchSize));
+    }
+    return batches.reduce(async (prev, batch) => (await prev).concat(await Promise.all(batch.map(item => processFn(item)))), Promise.resolve([]));
 }
 function globListToMatcher(globs) {
     const patterns = globs.map(pattern => {
@@ -238,7 +229,10 @@ function withOrderedKeys(unorderedObj) {
     return orderedObj;
 }
 function buildCacheQueryOptions(inOptions) {
-    return Object.assign({ ignoreVary: true }, inOptions);
+    return {
+        ignoreVary: true,
+        ...inOptions,
+    };
 }
 
 // This file is not used to build this module. It is only used during editing
