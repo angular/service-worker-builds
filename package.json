@@ -1,6 +1,6 @@
 {
   "name": "@angular/service-worker",
-  "version": "17.0.0-next.1+sha-0f86a0b",
+  "version": "17.0.0-next.1+sha-c340d6e",
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
@@ -37,8 +37,8 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/core": "17.0.0-next.1+sha-0f86a0b",
-    "@angular/common": "17.0.0-next.1+sha-0f86a0b"
+    "@angular/core": "17.0.0-next.1+sha-c340d6e",
+    "@angular/common": "17.0.0-next.1+sha-c340d6e"
   },
   "repository": {
     "type": "git",
