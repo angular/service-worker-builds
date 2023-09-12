@@ -1017,7 +1017,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "17.0.0-next.3+sha-caaabd8";
+  var SW_VERSION = "17.0.0-next.3+sha-52cc7f8";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1516,7 +1516,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
           await this.scheduleInitialization(this.versions.get(hash));
         } catch (err) {
           this.debugger.log(err, `initialize: schedule init of ${hash}`);
-          return false;
         }
       }));
     }
