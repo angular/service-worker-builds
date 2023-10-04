@@ -523,7 +523,12 @@ ${error.stack}`;
       await this.urls.reduce(async (previous, url) => {
         await previous;
         const req = this.adapter.newRequest(url);
-        const alreadyCached = await cache.match(req, this.config.cacheQueryOptions) !== void 0;
+        let alreadyCached = false;
+        try {
+          alreadyCached = await cache.match(req, this.config.cacheQueryOptions) !== void 0;
+        } catch (error) {
+          throw new SwCriticalError(`Cache is throwing while looking for a match in a PrefetchAssetGroup: ${error}`);
+        }
         if (alreadyCached) {
           return;
         }
@@ -560,7 +565,12 @@ ${error.stack}`;
       await this.urls.reduce(async (previous, url) => {
         await previous;
         const req = this.adapter.newRequest(url);
-        const alreadyCached = await cache.match(req, this.config.cacheQueryOptions) !== void 0;
+        let alreadyCached = false;
+        try {
+          alreadyCached = await cache.match(req, this.config.cacheQueryOptions) !== void 0;
+        } catch (error) {
+          throw new SwCriticalError(`Cache is throwing while looking for a match in a LazyAssetGroup: ${error}`);
+        }
         if (alreadyCached) {
           return;
         }
@@ -1022,7 +1032,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "17.0.0-next.6+sha-7426948";
+  var SW_VERSION = "17.0.0-next.6+sha-cc7973f";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
