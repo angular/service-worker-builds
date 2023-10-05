@@ -1032,7 +1032,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "17.0.0-next.7+sha-a3b0891";
+  var SW_VERSION = "17.0.0-next.7+sha-2da3551";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
