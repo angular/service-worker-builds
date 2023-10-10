@@ -1,5 +1,5 @@
 /**
- * @license Angular v17.0.0-next.7+sha-21b085d
+ * @license Angular v17.0.0-next.7+sha-75d610d
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -296,25 +296,6 @@ export declare class SwUpdate {
      */
     readonly versionUpdates: Observable<VersionEvent>;
     /**
-     * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
-     *
-     * @deprecated Use {@link versionUpdates} instead.
-     *
-     * The behavior of `available` can be replicated by using `versionUpdates` by filtering for the
-     * `VersionReadyEvent`:
-     *
-     * {@example service-worker-getting-started/src/app/prompt-update.service.ts
-     * region='sw-replicate-available'}
-     */
-    readonly available: Observable<UpdateAvailableEvent>;
-    /**
-     * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
-     *
-     * @deprecated Use the return value of {@link SwUpdate#activateUpdate} instead.
-     *
-     */
-    readonly activated: Observable<UpdateActivatedEvent>;
-    /**
      * Emits an `UnrecoverableStateEvent` event whenever the version of the app used by the service
      * worker to serve this client is in a broken state that cannot be recovered from without a full
      * page reload.
@@ -385,53 +366,6 @@ declare interface TypedEvent {
 export declare interface UnrecoverableStateEvent {
     type: 'UNRECOVERABLE_STATE';
     reason: string;
-}
-
-/**
- * An event emitted when a new version of the app has been downloaded and activated.
- *
- * @see {@link guide/service-worker-communications Service worker communication guide}
- *
- * @deprecated
- * This event is only emitted by the deprecated {@link SwUpdate#activated}.
- * Use the return value of {@link SwUpdate#activateUpdate} instead.
- *
- * @publicApi
- */
-export declare interface UpdateActivatedEvent {
-    type: 'UPDATE_ACTIVATED';
-    previous?: {
-        hash: string;
-        appData?: Object;
-    };
-    current: {
-        hash: string;
-        appData?: Object;
-    };
-}
-
-/**
- * An event emitted when a new version of the app is available.
- *
- * @see {@link guide/service-worker-communications Service worker communication guide}
- *
- * @deprecated
- * This event is only emitted by the deprecated {@link SwUpdate#available}.
- * Use the {@link VersionReadyEvent} instead, which is emitted by {@link SwUpdate#versionUpdates}.
- * See {@link SwUpdate#available} docs for an example.
- *
- * @publicApi
- */
-export declare interface UpdateAvailableEvent {
-    type: 'UPDATE_AVAILABLE';
-    current: {
-        hash: string;
-        appData?: Object;
-    };
-    available: {
-        hash: string;
-        appData?: Object;
-    };
 }
 
 /**
