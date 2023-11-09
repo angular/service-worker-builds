@@ -1,5 +1,5 @@
 /**
- * @license Angular v17.1.0-next.0+sha-f84cce0
+ * @license Angular v17.1.0-next.0+sha-94096c6
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -85,9 +85,9 @@ function globToRegex(glob, literalQuestionMark = false) {
 }
 
 const DEFAULT_NAVIGATION_URLS = [
-    '/**',
-    '!/**/*.*',
-    '!/**/*__*',
+    '/**', // Include all URLs.
+    '!/**/*.*', // Exclude URLs to files (containing a file extension in the last segment).
+    '!/**/*__*', // Exclude URLs containing `__` in the last segment.
     '!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
 ];
 /**
