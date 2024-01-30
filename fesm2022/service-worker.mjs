@@ -1,5 +1,5 @@
 /**
- * @license Angular v17.1.1+sha-8d85de7
+ * @license Angular v17.1.1+sha-7001b5d
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -31,8 +31,8 @@ class NgswCommChannel {
             this.worker = controllerWithChanges.pipe(filter((c) => !!c));
             this.registration = (this.worker.pipe(switchMap(() => serviceWorker.getRegistration())));
             const rawEvents = fromEvent(serviceWorker, 'message');
-            const rawEventPayload = rawEvents.pipe(map(event => event.data));
-            const eventsUnconnected = rawEventPayload.pipe(filter(event => event && event.type));
+            const rawEventPayload = rawEvents.pipe(map((event) => event.data));
+            const eventsUnconnected = rawEventPayload.pipe(filter((event) => event && event.type));
             const events = eventsUnconnected.pipe(publish());
             events.connect();
             this.events = events;
@@ -72,7 +72,7 @@ class NgswCommChannel {
     }
     waitForOperationCompleted(nonce) {
         return this.eventsOfType('OPERATION_COMPLETED')
-            .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
+            .pipe(filter((event) => event.nonce === nonce), take(1), map((event) => {
             if (event.result !== undefined) {
                 return event.result;
             }
@@ -182,11 +182,12 @@ class SwPush {
             this.subscription = NEVER;
             return;
         }
-        this.messages = this.sw.eventsOfType('PUSH').pipe(map(message => message.data));
-        this.notificationClicks =
-            this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message) => message.data));
-        this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
-        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap(pm => pm.getSubscription()));
+        this.messages = this.sw.eventsOfType('PUSH').pipe(map((message) => message.data));
+        this.notificationClicks = this.sw
+            .eventsOfType('NOTIFICATION_CLICK')
+            .pipe(map((message) => message.data));
+        this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));
+        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription()));
         this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
     }
     /**
@@ -207,9 +208,10 @@ class SwPush {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
-        return this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1))
+        return this.pushManager
+            .pipe(switchMap((pm) => pm.subscribe(pushOptions)), take(1))
             .toPromise()
-            .then(sub => {
+            .then((sub) => {
             this.subscriptionChanges.next(sub);
             return sub;
         });
@@ -228,7 +230,7 @@ class SwPush {
             if (sub === null) {
                 throw new Error('Not subscribed to push notifications.');
             }
-            return sub.unsubscribe().then(success => {
+            return sub.unsubscribe().then((success) => {
                 if (!success) {
                     throw new Error('Unsubscribe failed!');
                 }
@@ -240,10 +242,10 @@ class SwPush {
     decodeBase64(input) {
         return atob(input);
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
-    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: SwPush }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: SwPush }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: SwPush, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -325,10 +327,10 @@ class SwUpdate {
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
-    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: SwUpdate }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: SwUpdate }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: SwUpdate, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -342,8 +344,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.1.1+sha-8d85d
 const SCRIPT = new InjectionToken(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
 function ngswAppInitializer(injector, script, options, platformId) {
     return () => {
-        if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
-            options.enabled !== false)) {
+        if (!(isPlatformBrowser(platformId) && 'serviceWorker' in navigator && options.enabled !== false)) {
             return;
         }
         // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
@@ -368,8 +369,9 @@ function ngswAppInitializer(injector, script, options, platformId) {
                     readyToRegister$ = delayWithTimeout(+args[0] || 0);
                     break;
                 case 'registerWhenStable':
-                    readyToRegister$ = !args[0] ? whenStable(injector) :
-                        merge(whenStable(injector), delayWithTimeout(+args[0]));
+                    readyToRegister$ = !args[0]
+                        ? whenStable(injector)
+                        : merge(whenStable(injector), delayWithTimeout(+args[0]));
                     break;
                 default:
                     // Unknown strategy.
@@ -381,8 +383,11 @@ function ngswAppInitializer(injector, script, options, platformId) {
         // given that some registration strategies wait for the app to stabilize).
         // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
         const ngZone = injector.get(NgZone);
-        ngZone.runOutsideAngular(() => readyToRegister$.pipe(take(1)).subscribe(() => navigator.serviceWorker.register(script, { scope: options.scope })
-            .catch(err => console.error('Service worker registration failed with:', err))));
+        ngZone.runOutsideAngular(() => readyToRegister$
+            .pipe(take(1))
+            .subscribe(() => navigator.serviceWorker
+            .register(script, { scope: options.scope })
+            .catch((err) => console.error('Service worker registration failed with:', err))));
     };
 }
 function delayWithTimeout(timeout) {
@@ -390,11 +395,10 @@ function delayWithTimeout(timeout) {
 }
 function whenStable(injector) {
     const appRef = injector.get(ApplicationRef);
-    return appRef.isStable.pipe(filter(stable => stable));
+    return appRef.isStable.pipe(filter((stable) => stable));
 }
 function ngswCommChannelFactory(opts, platformId) {
-    return new NgswCommChannel(isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
-        undefined);
+    return new NgswCommChannel(isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker : undefined);
 }
 /**
  * Token that can be used to provide options for `ServiceWorkerModule` outside of
@@ -436,7 +440,7 @@ function provideServiceWorker(script, options = {}) {
         {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID]
+            deps: [SwRegistrationOptions, PLATFORM_ID],
         },
         {
             provide: APP_INITIALIZER,
@@ -463,11 +467,11 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
-    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: ServiceWorkerModule }); }
-    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: ServiceWorkerModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.1.1+sha-8d85de7", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "17.1.1+sha-7001b5d", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{ providers: [SwPush, SwUpdate] }]
         }] });
