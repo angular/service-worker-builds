@@ -1,5 +1,5 @@
 /**
- * @license Angular v17.2.0-next.0+sha-274a489
+ * @license Angular v17.2.0-next.0+sha-c4b880a
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -13,7 +13,7 @@ function parseDurationToMs(duration) {
         matches.push(array[0]);
     }
     return matches
-        .map(match => {
+        .map((match) => {
         const res = PAIR_SPLIT.exec(match);
         if (res === null) {
             throw new Error(`Not a valid duration: ${match}`);
@@ -51,14 +51,8 @@ const TO_ESCAPE_BASE = [
     { replace: /\+/g, with: '\\+' },
     { replace: /\*/g, with: WILD_SINGLE },
 ];
-const TO_ESCAPE_WILDCARD_QM = [
-    ...TO_ESCAPE_BASE,
-    { replace: /\?/g, with: QUESTION_MARK },
-];
-const TO_ESCAPE_LITERAL_QM = [
-    ...TO_ESCAPE_BASE,
-    { replace: /\?/g, with: '\\?' },
-];
+const TO_ESCAPE_WILDCARD_QM = [...TO_ESCAPE_BASE, { replace: /\?/g, with: QUESTION_MARK }];
+const TO_ESCAPE_LITERAL_QM = [...TO_ESCAPE_BASE, { replace: /\?/g, with: '\\?' }];
 function globToRegex(glob, literalQuestionMark = false) {
     const toEscape = literalQuestionMark ? TO_ESCAPE_LITERAL_QM : TO_ESCAPE_WILDCARD_QM;
     const segments = glob.split('/').reverse();
@@ -121,38 +115,40 @@ class Generator {
         const seenMap = new Set();
         const filesPerGroup = new Map();
         // Computed which files belong to each asset-group.
-        for (const group of (config.assetGroups || [])) {
+        for (const group of config.assetGroups || []) {
             if (group.resources.versionedFiles) {
                 throw new Error(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
-                    'which is no longer supported. Use \'files\' instead.');
+                    "which is no longer supported. Use 'files' instead.");
             }
             const fileMatcher = globListToMatcher(group.resources.files || []);
-            const matchedFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file)).sort();
-            matchedFiles.forEach(file => seenMap.add(file));
+            const matchedFiles = allFiles
+                .filter(fileMatcher)
+                .filter((file) => !seenMap.has(file))
+                .sort();
+            matchedFiles.forEach((file) => seenMap.add(file));
             filesPerGroup.set(group, matchedFiles);
         }
         // Compute hashes for all matched files and add them to the hash-table.
         const allMatchedFiles = [].concat(...Array.from(filesPerGroup.values())).sort();
-        const allMatchedHashes = await processInBatches(allMatchedFiles, 500, file => this.fs.hash(file));
+        const allMatchedHashes = await processInBatches(allMatchedFiles, 500, (file) => this.fs.hash(file));
         allMatchedFiles.forEach((file, idx) => {
             hashTable[joinUrls(this.baseHref, file)] = allMatchedHashes[idx];
         });
         // Generate and return the processed asset-groups.
-        return Array.from(filesPerGroup.entries())
-            .map(([group, matchedFiles]) => ({
+        return Array.from(filesPerGroup.entries()).map(([group, matchedFiles]) => ({
             name: group.name,
             installMode: group.installMode || 'prefetch',
             updateMode: group.updateMode || group.installMode || 'prefetch',
             cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
-            urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
-            patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
+            urls: matchedFiles.map((url) => joinUrls(this.baseHref, url)),
+            patterns: (group.resources.urls || []).map((url) => urlToRegex(url, this.baseHref, true)),
         }));
     }
     processDataGroups(config) {
-        return (config.dataGroups || []).map(group => {
+        return (config.dataGroups || []).map((group) => {
             return {
                 name: group.name,
-                patterns: group.urls.map(url => urlToRegex(url, this.baseHref, true)),
+                patterns: group.urls.map((url) => urlToRegex(url, this.baseHref, true)),
                 strategy: group.cacheConfig.strategy || 'performance',
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -165,7 +161,7 @@ class Generator {
     }
 }
 function processNavigationUrls(baseHref, urls = DEFAULT_NAVIGATION_URLS) {
-    return urls.map(url => {
+    return urls.map((url) => {
         const positive = !url.startsWith('!');
         url = positive ? url : url.slice(1);
         return { positive, regex: `^${urlToRegex(url, baseHref)}$` };
@@ -176,10 +172,10 @@ async function processInBatches(items, batchSize, processFn) {
     for (let i = 0; i < items.length; i += batchSize) {
         batches.push(items.slice(i, i + batchSize));
     }
-    return batches.reduce(async (prev, batch) => (await prev).concat(await Promise.all(batch.map(item => processFn(item)))), Promise.resolve([]));
+    return batches.reduce(async (prev, batch) => (await prev).concat(await Promise.all(batch.map((item) => processFn(item)))), Promise.resolve([]));
 }
 function globListToMatcher(globs) {
-    const patterns = globs.map(pattern => {
+    const patterns = globs.map((pattern) => {
         if (pattern.startsWith('!')) {
             return {
                 positive: false,
@@ -225,7 +221,9 @@ function joinUrls(a, b) {
 }
 function withOrderedKeys(unorderedObj) {
     const orderedObj = {};
-    Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
+    Object.keys(unorderedObj)
+        .sort()
+        .forEach((key) => (orderedObj[key] = unorderedObj[key]));
     return orderedObj;
 }
 function buildCacheQueryOptions(inOptions) {
