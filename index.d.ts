@@ -1,5 +1,5 @@
 /**
- * @license Angular v18.0.0-next.2+sha-914e453
+ * @license Angular v18.0.0-next.2+sha-b87b2fc
  * (c) 2010-2022 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -327,8 +327,8 @@ export declare class SwUpdate {
      * <div class="alert is-important">
      *
      * Updating a client without reloading can easily result in a broken application due to a version
-     * mismatch between the [application shell](guide/glossary#app-shell) and other page resources,
-     * such as [lazy-loaded chunks](guide/glossary#lazy-loading), whose filenames may change between
+     * mismatch between the application shell and other page resources,
+     * such as lazy-loaded chunks, whose filenames may change between
      * versions.
      *
      * Only use this method, if you are certain it is safe for your specific use case.
