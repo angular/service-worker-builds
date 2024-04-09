@@ -1,5 +1,5 @@
 /**
- * @license Angular v18.0.0-next.3+sha-216199d
+ * @license Angular v18.0.0-next.3+sha-1c6553e
  * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -32,7 +32,7 @@ declare class NgswCommChannel {
  * An event emitted when the service worker has checked the version of the app on the server and it
  * didn't find a new version that it doesn't have already downloaded.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -148,7 +148,7 @@ export declare class ServiceWorkerModule {
  * header="app.component.ts"></code-example>
  *
  * You can read more on handling notification clicks in the [Service worker notifications
- * guide](guide/service-worker-notifications).
+ * guide](ecosystem/service-workers/push-notifications).
  *
  * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
  * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
@@ -266,7 +266,7 @@ export declare abstract class SwRegistrationOptions {
      *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
      *     `<timeout>` is omitted, is defaults to `0`, which will register the ServiceWorker as soon
      *     as possible but still asynchronously, once all pending micro-tasks are completed.
-     * - An [Observable](guide/observables) factory function: A function that returns an `Observable`.
+     * - An Observable factory function: A function that returns an `Observable`.
      *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
      *     ServiceWorker will be registered as soon as the first value is emitted.
      *
@@ -279,7 +279,7 @@ export declare abstract class SwRegistrationOptions {
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -359,7 +359,7 @@ declare interface TypedEvent {
  * service worker cache has been partially cleaned by the browser, removing some files of a previous
  * app version but not all.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -372,7 +372,7 @@ export declare interface UnrecoverableStateEvent {
  * An event emitted when the service worker has detected a new version of the app on the server and
  * is about to start downloading it.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -396,7 +396,7 @@ export declare type VersionEvent = VersionDetectedEvent | VersionInstallationFai
  * An event emitted when the installation of a new version failed.
  * It may be used for logging/monitoring purposes.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -412,7 +412,7 @@ export declare interface VersionInstallationFailedEvent {
 /**
  * An event emitted when a new version of the app is available.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
