@@ -1,5 +1,5 @@
 /**
- * @license Angular v18.0.0-next.4+sha-d28614b
+ * @license Angular v18.0.0-next.4+sha-3bc63ea
  * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -242,10 +242,10 @@ class SwPush {
     decodeBase64(input) {
         return atob(input);
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
-    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: SwPush }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: SwPush }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: SwPush, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -327,10 +327,10 @@ class SwUpdate {
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
-    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: SwUpdate }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: SwUpdate }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: SwUpdate, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -347,13 +347,19 @@ function ngswAppInitializer(injector, script, options, platformId) {
         if (!(isPlatformBrowser(platformId) && 'serviceWorker' in navigator && options.enabled !== false)) {
             return;
         }
-        // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
-        // becomes active. This allows the SW to initialize itself even if there is no application
-        // traffic.
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (navigator.serviceWorker.controller !== null) {
-                navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
-            }
+        const ngZone = injector.get(NgZone);
+        // Set up the `controllerchange` event listener outside of
+        // the Angular zone to avoid unnecessary change detections,
+        // as this event has no impact on view updates.
+        ngZone.runOutsideAngular(() => {
+            // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+            // becomes active. This allows the SW to initialize itself even if there is no application
+            // traffic.
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (navigator.serviceWorker.controller !== null) {
+                    navigator.serviceWorker.controller.postMessage({ action: 'INITIALIZE' });
+                }
+            });
         });
         let readyToRegister$;
         if (typeof options.registrationStrategy === 'function') {
@@ -382,7 +388,6 @@ function ngswAppInitializer(injector, script, options, platformId) {
         // Also, run outside the Angular zone to avoid preventing the app from stabilizing (especially
         // given that some registration strategies wait for the app to stabilize).
         // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
-        const ngZone = injector.get(NgZone);
         ngZone.runOutsideAngular(() => readyToRegister$
             .pipe(take(1))
             .subscribe(() => navigator.serviceWorker
@@ -467,11 +472,11 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
-    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: ServiceWorkerModule }); }
-    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: ServiceWorkerModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-d28614b", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.0.0-next.4+sha-3bc63ea", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{ providers: [SwPush, SwUpdate] }]
         }] });
