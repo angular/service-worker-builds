@@ -1,5 +1,5 @@
 /**
- * @license Angular v18.1.1+sha-e904f34
+ * @license Angular v18.1.1+sha-7792aad
  * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -386,7 +386,7 @@ export declare interface VersionDetectedEvent {
 
 /**
  * A union of all event types that can be emitted by
- * {@link api/service-worker/SwUpdate#versionUpdates SwUpdate#versionUpdates}.
+ * {@link SwUpdate#versionUpdates}.
  *
  * @publicApi
  */
