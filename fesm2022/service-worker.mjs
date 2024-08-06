@@ -1,5 +1,5 @@
 /**
- * @license Angular v18.2.0-next.4+sha-f9a97c7
+ * @license Angular v18.2.0-next.4+sha-7919982
  * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -7,7 +7,7 @@
 import * as i0 from '@angular/core';
 import { Injectable, InjectionToken, NgZone, ApplicationRef, makeEnvironmentProviders, PLATFORM_ID, APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge } from 'rxjs';
+import { defer, throwError, fromEvent, of, concat, Subject, NEVER, merge, from } from 'rxjs';
 import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operators';
 
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
@@ -242,10 +242,10 @@ class SwPush {
     decodeBase64(input) {
         return atob(input);
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
-    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: SwPush }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: SwPush }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: SwPush, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -327,10 +327,10 @@ class SwUpdate {
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
-    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: SwUpdate }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
+    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: SwUpdate }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: SwUpdate, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -377,9 +377,10 @@ function ngswAppInitializer(injector, script, options, platformId) {
                     readyToRegister$ = delayWithTimeout(+args[0] || 0);
                     break;
                 case 'registerWhenStable':
+                    const whenStable$ = from(injector.get(ApplicationRef).whenStable());
                     readyToRegister$ = !args[0]
-                        ? whenStable(injector)
-                        : merge(whenStable(injector), delayWithTimeout(+args[0]));
+                        ? whenStable$
+                        : merge(whenStable$, delayWithTimeout(+args[0]));
                     break;
                 default:
                     // Unknown strategy.
@@ -399,10 +400,6 @@ function ngswAppInitializer(injector, script, options, platformId) {
 }
 function delayWithTimeout(timeout) {
     return of(null).pipe(delay(timeout));
-}
-function whenStable(injector) {
-    const appRef = injector.get(ApplicationRef);
-    return appRef.isStable.pipe(filter((stable) => stable));
 }
 function ngswCommChannelFactory(opts, platformId) {
     return new NgswCommChannel(isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker : undefined);
@@ -474,11 +471,11 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
-    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: ServiceWorkerModule }); }
-    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] }); }
+    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
+    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: ServiceWorkerModule }); }
+    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] }); }
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-f9a97c7", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "18.2.0-next.4+sha-7919982", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{ providers: [SwPush, SwUpdate] }]
         }] });
