@@ -878,11 +878,6 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/app-version.mjs
-  var BACKWARDS_COMPATIBILITY_NAVIGATION_URLS = [
-    { positive: true, regex: "^/.*$" },
-    { positive: false, regex: "^/.*\\.[^/]*$" },
-    { positive: false, regex: "^/.*__" }
-  ];
   var AppVersion = class {
     get okay() {
       return this._okay;
@@ -910,7 +905,6 @@ ${error.stack}`;
         }
       });
       this.dataGroups = (manifest.dataGroups || []).map((config) => new DataGroup(scope2, adapter2, config, database, debugHandler, `${config.version}:data`));
-      manifest.navigationUrls = manifest.navigationUrls || BACKWARDS_COMPATIBILITY_NAVIGATION_URLS;
       const includeUrls = manifest.navigationUrls.filter((spec) => spec.positive);
       const excludeUrls = manifest.navigationUrls.filter((spec) => !spec.positive);
       this.navigationUrls = {
@@ -1029,7 +1023,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "19.0.0-next.8+sha-2d11314";
+  var SW_VERSION = "19.0.0-next.8+sha-95bee15";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1242,13 +1236,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       this.scope.addEventListener("activate", (event) => {
         event.waitUntil((async () => {
           await this.scope.clients.claim();
-          this.idle.schedule("activate: cleanup-old-sw-caches", async () => {
-            try {
-              await this.cleanupOldSwCaches();
-            } catch (err) {
-              this.debugger.log(err, "cleanupOldSwCaches @ activate: cleanup-old-sw-caches");
-            }
-          });
         })());
         if (this.scope.registration.active !== null) {
           this.scope.registration.active.postMessage({ action: "INITIALIZE" });
@@ -1693,12 +1680,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       } catch (err) {
         this.debugger.log(err, "cleanupCaches");
       }
-    }
-    async cleanupOldSwCaches() {
-      const caches = this.adapter.caches.original;
-      const cacheNames = await caches.keys();
-      const oldSwCacheNames = cacheNames.filter((name) => /^ngsw:(?!\/)/.test(name));
-      await Promise.all(oldSwCacheNames.map((name) => caches.delete(name)));
     }
     lookupResourceWithHash(url, hash) {
       return Array.from(this.versions.values()).reduce(async (prev, version) => {
