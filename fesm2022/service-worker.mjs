@@ -1,5 +1,5 @@
 /**
- * @license Angular v19.1.0-next.0+sha-0f2f7ec
+ * @license Angular v19.1.0-next.0+sha-db467e1
  * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -18,6 +18,10 @@ function errorObservable(message) {
  * @publicApi
  */
 class NgswCommChannel {
+    serviceWorker;
+    worker;
+    registration;
+    events;
     constructor(serviceWorker) {
         this.serviceWorker = serviceWorker;
         if (!serviceWorker) {
@@ -165,6 +169,29 @@ class NgswCommChannel {
  * @publicApi
  */
 class SwPush {
+    sw;
+    /**
+     * Emits the payloads of the received push notification messages.
+     */
+    messages;
+    /**
+     * Emits the payloads of the received push notification messages as well as the action the user
+     * interacted with. If no action was used the `action` property contains an empty string `''`.
+     *
+     * Note that the `notification` property does **not** contain a
+     * [Notification][Mozilla Notification] object but rather a
+     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+     *
+     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+     */
+    notificationClicks;
+    /**
+     * Emits the currently active
+     * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
+     * associated to the Service Worker registration or `null` if there is no subscription.
+     */
+    subscription;
     /**
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
@@ -172,10 +199,10 @@ class SwPush {
     get isEnabled() {
         return this.sw.isEnabled;
     }
+    pushManager = null;
+    subscriptionChanges = new Subject();
     constructor(sw) {
         this.sw = sw;
-        this.pushManager = null;
-        this.subscriptionChanges = new Subject();
         if (!sw.isEnabled) {
             this.messages = NEVER;
             this.notificationClicks = NEVER;
@@ -242,10 +269,10 @@ class SwPush {
     decodeBase64(input) {
         return atob(input);
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
-    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: SwPush }); }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: SwPush });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: SwPush, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -258,6 +285,23 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.1.0-next.0+sh
  * @publicApi
  */
 class SwUpdate {
+    sw;
+    /**
+     * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
+     *
+     * Emits a `VersionInstallationFailedEvent` event whenever checking for or downloading a new
+     * version fails.
+     *
+     * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
+     * activation.
+     */
+    versionUpdates;
+    /**
+     * Emits an `UnrecoverableStateEvent` event whenever the version of the app used by the service
+     * worker to serve this client is in a broken state that cannot be recovered from without a full
+     * page reload.
+     */
+    unrecoverable;
     /**
      * True if the Service Worker is enabled (supported by the browser and enabled via
      * `ServiceWorkerModule`).
@@ -327,10 +371,10 @@ class SwUpdate {
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable }); }
-    static { this.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: SwUpdate }); }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: SwUpdate });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: SwUpdate, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -417,6 +461,49 @@ function ngswCommChannelFactory(opts, platformId) {
  * @publicApi
  */
 class SwRegistrationOptions {
+    /**
+     * Whether the ServiceWorker will be registered and the related services (such as `SwPush` and
+     * `SwUpdate`) will attempt to communicate and interact with it.
+     *
+     * Default: true
+     */
+    enabled;
+    /**
+     * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can
+     * control. It will be used when calling
+     * [ServiceWorkerContainer#register()](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
+     */
+    scope;
+    /**
+     * Defines the ServiceWorker registration strategy, which determines when it will be registered
+     * with the browser.
+     *
+     * The default behavior of registering once the application stabilizes (i.e. as soon as there are
+     * no pending micro- and macro-tasks) is designed to register the ServiceWorker as soon as
+     * possible but without affecting the application's first time load.
+     *
+     * Still, there might be cases where you want more control over when the ServiceWorker is
+     * registered (for example, there might be a long-running timeout or polling interval, preventing
+     * the app from stabilizing). The available option are:
+     *
+     * - `registerWhenStable:<timeout>`: Register as soon as the application stabilizes (no pending
+     *     micro-/macro-tasks) but no later than `<timeout>` milliseconds. If the app hasn't
+     *     stabilized after `<timeout>` milliseconds (for example, due to a recurrent asynchronous
+     *     task), the ServiceWorker will be registered anyway.
+     *     If `<timeout>` is omitted, the ServiceWorker will only be registered once the app
+     *     stabilizes.
+     * - `registerImmediately`: Register immediately.
+     * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
+     *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
+     *     `<timeout>` is omitted, is defaults to `0`, which will register the ServiceWorker as soon
+     *     as possible but still asynchronously, once all pending micro-tasks are completed.
+     * - An Observable factory function: A function that returns an `Observable`.
+     *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
+     *     ServiceWorker will be registered as soon as the first value is emitted.
+     *
+     * Default: 'registerWhenStable:30000'
+     */
+    registrationStrategy;
 }
 /**
  * @publicApi
@@ -471,11 +558,11 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule }); }
-    static { this.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: ServiceWorkerModule }); }
-    static { this.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] }); }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: ServiceWorkerModule });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-0f2f7ec", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.1.0-next.0+sha-db467e1", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{ providers: [SwPush, SwUpdate] }]
         }] });
