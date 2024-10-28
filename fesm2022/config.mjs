@@ -1,5 +1,5 @@
 /**
- * @license Angular v19.0.0-next.11+sha-395cb34
+ * @license Angular v19.0.0-next.11+sha-f815d7b
  * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -90,6 +90,8 @@ const DEFAULT_NAVIGATION_URLS = [
  * @publicApi
  */
 class Generator {
+    fs;
+    baseHref;
     constructor(fs, baseHref) {
         this.fs = fs;
         this.baseHref = baseHref;
