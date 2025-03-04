@@ -1,5 +1,5 @@
 /**
- * @license Angular v19.2.0+sha-26b3a8f
+ * @license Angular v19.2.0+sha-31bbbe9
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -32,7 +32,8 @@ declare class NgswCommChannel {
  * An event emitted when the service worker has checked the version of the app on the server and it
  * didn't find a new version that it doesn't have already downloaded.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+
  *
  * @publicApi
  */
@@ -279,7 +280,7 @@ export declare abstract class SwRegistrationOptions {
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
  *
  * @publicApi
  */
@@ -359,7 +360,8 @@ declare interface TypedEvent {
  * service worker cache has been partially cleaned by the browser, removing some files of a previous
  * app version but not all.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+
  *
  * @publicApi
  */
@@ -372,7 +374,8 @@ export declare interface UnrecoverableStateEvent {
  * An event emitted when the service worker has detected a new version of the app on the server and
  * is about to start downloading it.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+
  *
  * @publicApi
  */
@@ -396,8 +399,8 @@ export declare type VersionEvent = VersionDetectedEvent | VersionInstallationFai
  * An event emitted when the installation of a new version failed.
  * It may be used for logging/monitoring purposes.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
- *
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+ *a
  * @publicApi
  */
 export declare interface VersionInstallationFailedEvent {
@@ -412,7 +415,8 @@ export declare interface VersionInstallationFailedEvent {
 /**
  * An event emitted when a new version of the app is available.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+
  *
  * @publicApi
  */
