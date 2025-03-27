@@ -4,8 +4,219 @@
       const require = __cjsCompatRequire(import.meta.url);
     
 
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/duration.mjs
+var PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
+var PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
+function parseDurationToMs(duration) {
+  const matches2 = [];
+  let array;
+  while ((array = PARSE_TO_PAIRS.exec(duration)) !== null) {
+    matches2.push(array[0]);
+  }
+  return matches2.map((match) => {
+    const res = PAIR_SPLIT.exec(match);
+    if (res === null) {
+      throw new Error(`Not a valid duration: ${match}`);
+    }
+    let factor = 0;
+    switch (res[2]) {
+      case "d":
+        factor = 864e5;
+        break;
+      case "h":
+        factor = 36e5;
+        break;
+      case "m":
+        factor = 6e4;
+        break;
+      case "s":
+        factor = 1e3;
+        break;
+      case "u":
+        factor = 1;
+        break;
+      default:
+        throw new Error(`Not a valid duration unit: ${res[2]}`);
+    }
+    return parseInt(res[1]) * factor;
+  }).reduce((total, value) => total + value, 0);
+}
+
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/glob.mjs
+var QUESTION_MARK = "[^/]";
+var WILD_SINGLE = "[^/]*";
+var WILD_OPEN = "(?:.+\\/)?";
+var TO_ESCAPE_BASE = [
+  { replace: /\./g, with: "\\." },
+  { replace: /\+/g, with: "\\+" },
+  { replace: /\*/g, with: WILD_SINGLE }
+];
+var TO_ESCAPE_WILDCARD_QM = [...TO_ESCAPE_BASE, { replace: /\?/g, with: QUESTION_MARK }];
+var TO_ESCAPE_LITERAL_QM = [...TO_ESCAPE_BASE, { replace: /\?/g, with: "\\?" }];
+function globToRegex(glob, literalQuestionMark = false) {
+  const toEscape = literalQuestionMark ? TO_ESCAPE_LITERAL_QM : TO_ESCAPE_WILDCARD_QM;
+  const segments = glob.split("/").reverse();
+  let regex = "";
+  while (segments.length > 0) {
+    const segment = segments.pop();
+    if (segment === "**") {
+      if (segments.length > 0) {
+        regex += WILD_OPEN;
+      } else {
+        regex += ".*";
+      }
+    } else {
+      const processed = toEscape.reduce((segment2, escape) => segment2.replace(escape.replace, escape.with), segment);
+      regex += processed;
+      if (segments.length > 0) {
+        regex += "\\/";
+      }
+    }
+  }
+  return regex;
+}
+
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/generator.mjs
+var DEFAULT_NAVIGATION_URLS = [
+  "/**",
+  "!/**/*.*",
+  "!/**/*__*",
+  "!/**/*__*/**"
+];
+var Generator = class {
+  fs;
+  baseHref;
+  constructor(fs3, baseHref2) {
+    this.fs = fs3;
+    this.baseHref = baseHref2;
+  }
+  async process(config2) {
+    var _a;
+    const unorderedHashTable = {};
+    const assetGroups = await this.processAssetGroups(config2, unorderedHashTable);
+    return {
+      configVersion: 1,
+      timestamp: Date.now(),
+      appData: config2.appData,
+      index: joinUrls(this.baseHref, config2.index),
+      assetGroups,
+      dataGroups: this.processDataGroups(config2),
+      hashTable: withOrderedKeys(unorderedHashTable),
+      navigationUrls: processNavigationUrls(this.baseHref, config2.navigationUrls),
+      navigationRequestStrategy: (_a = config2.navigationRequestStrategy) != null ? _a : "performance",
+      applicationMaxAge: config2.applicationMaxAge ? parseDurationToMs(config2.applicationMaxAge) : void 0
+    };
+  }
+  async processAssetGroups(config2, hashTable) {
+    const allFiles = await this.fs.list("/");
+    const seenMap = /* @__PURE__ */ new Set();
+    const filesPerGroup = /* @__PURE__ */ new Map();
+    for (const group of config2.assetGroups || []) {
+      if (group.resources.versionedFiles) {
+        throw new Error(`Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, which is no longer supported. Use 'files' instead.`);
+      }
+      const fileMatcher = globListToMatcher(group.resources.files || []);
+      const matchedFiles = allFiles.filter(fileMatcher).filter((file) => !seenMap.has(file)).sort();
+      matchedFiles.forEach((file) => seenMap.add(file));
+      filesPerGroup.set(group, matchedFiles);
+    }
+    const allMatchedFiles = [].concat(...Array.from(filesPerGroup.values())).sort();
+    const allMatchedHashes = await processInBatches(allMatchedFiles, 500, (file) => this.fs.hash(file));
+    allMatchedFiles.forEach((file, idx) => {
+      hashTable[joinUrls(this.baseHref, file)] = allMatchedHashes[idx];
+    });
+    return Array.from(filesPerGroup.entries()).map(([group, matchedFiles]) => ({
+      name: group.name,
+      installMode: group.installMode || "prefetch",
+      updateMode: group.updateMode || group.installMode || "prefetch",
+      cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
+      urls: matchedFiles.map((url) => joinUrls(this.baseHref, url)),
+      patterns: (group.resources.urls || []).map((url) => urlToRegex(url, this.baseHref, true))
+    }));
+  }
+  processDataGroups(config2) {
+    return (config2.dataGroups || []).map((group) => {
+      return {
+        name: group.name,
+        patterns: group.urls.map((url) => urlToRegex(url, this.baseHref, true)),
+        strategy: group.cacheConfig.strategy || "performance",
+        maxSize: group.cacheConfig.maxSize,
+        maxAge: parseDurationToMs(group.cacheConfig.maxAge),
+        timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
+        refreshAheadMs: group.cacheConfig.refreshAhead && parseDurationToMs(group.cacheConfig.refreshAhead),
+        cacheOpaqueResponses: group.cacheConfig.cacheOpaqueResponses,
+        cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
+        version: group.version !== void 0 ? group.version : 1
+      };
+    });
+  }
+};
+function processNavigationUrls(baseHref2, urls = DEFAULT_NAVIGATION_URLS) {
+  return urls.map((url) => {
+    const positive = !url.startsWith("!");
+    url = positive ? url : url.slice(1);
+    return { positive, regex: `^${urlToRegex(url, baseHref2)}$` };
+  });
+}
+async function processInBatches(items, batchSize, processFn) {
+  const batches = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    batches.push(items.slice(i, i + batchSize));
+  }
+  return batches.reduce(async (prev, batch) => (await prev).concat(await Promise.all(batch.map((item) => processFn(item)))), Promise.resolve([]));
+}
+function globListToMatcher(globs) {
+  const patterns = globs.map((pattern) => {
+    if (pattern.startsWith("!")) {
+      return {
+        positive: false,
+        regex: new RegExp("^" + globToRegex(pattern.slice(1)) + "$")
+      };
+    } else {
+      return {
+        positive: true,
+        regex: new RegExp("^" + globToRegex(pattern) + "$")
+      };
+    }
+  });
+  return (file) => matches(file, patterns);
+}
+function matches(file, patterns) {
+  return patterns.reduce((isMatch, pattern) => {
+    if (pattern.positive) {
+      return isMatch || pattern.regex.test(file);
+    } else {
+      return isMatch && !pattern.regex.test(file);
+    }
+  }, false);
+}
+function urlToRegex(url, baseHref2, literalQuestionMark) {
+  if (!url.startsWith("/") && url.indexOf("://") === -1) {
+    url = joinUrls(baseHref2.replace(/^\.(?=\/)/, ""), url);
+  }
+  return globToRegex(url, literalQuestionMark);
+}
+function joinUrls(a, b) {
+  if (a.endsWith("/") && b.startsWith("/")) {
+    return a + b.slice(1);
+  } else if (!a.endsWith("/") && !b.startsWith("/")) {
+    return a + "/" + b;
+  }
+  return a + b;
+}
+function withOrderedKeys(unorderedObj) {
+  const orderedObj = {};
+  Object.keys(unorderedObj).sort().forEach((key) => orderedObj[key] = unorderedObj[key]);
+  return orderedObj;
+}
+function buildCacheQueryOptions(inOptions) {
+  return {
+    ignoreVary: true,
+    ...inOptions
+  };
+}
+
 // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.mjs
-import { Generator } from "@angular/service-worker/config";
 import * as fs2 from "fs";
 import * as path2 from "path";
 
