@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.0.0-next.4+sha-5948cd0
+ * @license Angular v20.0.0-next.4+sha-0b34c58
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -88,4 +88,5 @@ declare class Generator {
     private processDataGroups;
 }
 
-export { type AssetGroup, type Config, type DataGroup, type Duration, type Filesystem, Generator, type Glob };
+export { Generator };
+export type { AssetGroup, Config, DataGroup, Duration, Filesystem, Glob };
