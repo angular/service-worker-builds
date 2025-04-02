@@ -1,25 +1,15 @@
 /**
- * @license Angular v20.0.0-next.4+sha-cdbc6e8
+ * @license Angular v20.0.0-next.4+sha-59d40f2
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import * as i0 from '@angular/core';
-import { Injectable, makeEnvironmentProviders, InjectionToken, Injector, APP_INITIALIZER, NgZone, ApplicationRef, NgModule } from '@angular/core';
-import { Observable, defer, of, concat, throwError, Subject, NEVER, merge, from } from 'rxjs';
-import { map, filter, switchMap, publish, take, tap, delay } from 'rxjs/operators';
+import { ApplicationRef, Injectable, makeEnvironmentProviders, InjectionToken, Injector, provideAppInitializer, inject, NgZone, NgModule } from '@angular/core';
+import { Observable, Subject, NEVER } from 'rxjs';
+import { switchMap, take, filter, map } from 'rxjs/operators';
 
 const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
-function errorObservable(message) {
-    return defer(() => throwError(new Error(message)));
-}
-// Manually creating the observable imports fewer symbols
-// from RxJS than using `fromEvent(...)`.
-const fromEvent = (serviceWorker, eventName) => new Observable((subscriber) => {
-    const onEvent = (event) => subscriber.next(event);
-    serviceWorker.addEventListener(eventName, onEvent);
-    return () => serviceWorker.removeEventListener(eventName, onEvent);
-});
 /**
  * @publicApi
  */
@@ -28,36 +18,61 @@ class NgswCommChannel {
     worker;
     registration;
     events;
-    constructor(serviceWorker) {
+    constructor(serviceWorker, injector) {
         this.serviceWorker = serviceWorker;
         if (!serviceWorker) {
-            this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
+            this.worker =
+                this.events =
+                    this.registration =
+                        new Observable((subscriber) => subscriber.error(new Error(ERR_SW_NOT_SUPPORTED)));
         }
         else {
-            const controllerChangeEvents = fromEvent(serviceWorker, 'controllerchange');
-            const controllerChanges = controllerChangeEvents.pipe(map(() => serviceWorker.controller));
-            const currentController = defer(() => of(serviceWorker.controller));
-            const controllerWithChanges = concat(currentController, controllerChanges);
-            this.worker = controllerWithChanges.pipe(filter((c) => !!c));
+            let currentWorker = null;
+            const workerSubject = new Subject();
+            this.worker = new Observable((subscriber) => {
+                if (currentWorker !== null) {
+                    subscriber.next(currentWorker);
+                }
+                return workerSubject.subscribe((v) => subscriber.next(v));
+            });
+            const updateController = () => {
+                const { controller } = serviceWorker;
+                if (controller === null) {
+                    return;
+                }
+                currentWorker = controller;
+                workerSubject.next(currentWorker);
+            };
+            serviceWorker.addEventListener('controllerchange', updateController);
+            updateController();
             this.registration = (this.worker.pipe(switchMap(() => serviceWorker.getRegistration())));
-            const rawEvents = fromEvent(serviceWorker, 'message');
-            const rawEventPayload = rawEvents.pipe(map((event) => event.data));
-            const eventsUnconnected = rawEventPayload.pipe(filter((event) => event && event.type));
-            const events = eventsUnconnected.pipe(publish());
-            events.connect();
-            this.events = events;
+            const _events = new Subject();
+            this.events = _events.asObservable();
+            const messageListener = (event) => {
+                const { data } = event;
+                if (data?.type) {
+                    _events.next(data);
+                }
+            };
+            serviceWorker.addEventListener('message', messageListener);
+            // The injector is optional to avoid breaking changes.
+            const appRef = injector?.get(ApplicationRef, null, { optional: true });
+            appRef?.onDestroy(() => {
+                serviceWorker.removeEventListener('controllerchange', updateController);
+                serviceWorker.removeEventListener('message', messageListener);
+            });
         }
     }
     postMessage(action, payload) {
-        return this.worker
-            .pipe(take(1), tap((sw) => {
-            sw.postMessage({
-                action,
-                ...payload,
+        return new Promise((resolve) => {
+            this.worker.pipe(take(1)).subscribe((sw) => {
+                sw.postMessage({
+                    action,
+                    ...payload,
+                });
+                resolve();
             });
-        }))
-            .toPromise()
-            .then(() => undefined);
+        });
     }
     postMessageWithOperation(type, payload, operationNonce) {
         const waitForOperationCompleted = this.waitForOperationCompleted(operationNonce);
@@ -81,14 +96,19 @@ class NgswCommChannel {
         return this.eventsOfType(type).pipe(take(1));
     }
     waitForOperationCompleted(nonce) {
-        return this.eventsOfType('OPERATION_COMPLETED')
-            .pipe(filter((event) => event.nonce === nonce), take(1), map((event) => {
-            if (event.result !== undefined) {
-                return event.result;
-            }
-            throw new Error(event.error);
-        }))
-            .toPromise();
+        return new Promise((resolve, reject) => {
+            this.eventsOfType('OPERATION_COMPLETED')
+                .pipe(filter((event) => event.nonce === nonce), take(1), map((event) => {
+                if (event.result !== undefined) {
+                    return event.result;
+                }
+                throw new Error(event.error);
+            }))
+                .subscribe({
+                next: resolve,
+                error: reject,
+            });
+        });
     }
     get isEnabled() {
         return !!this.serviceWorker;
@@ -221,7 +241,14 @@ class SwPush {
             .pipe(map((message) => message.data));
         this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));
         const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription()));
-        this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
+        this.subscription = new Observable((subscriber) => {
+            const workerDrivenSubscription = workerDrivenSubscriptions.subscribe(subscriber);
+            const subscriptionChanges = this.subscriptionChanges.subscribe(subscriber);
+            return () => {
+                workerDrivenSubscription.unsubscribe();
+                subscriptionChanges.unsubscribe();
+            };
+        });
     }
     /**
      * Subscribes to Web Push Notifications,
@@ -241,12 +268,14 @@ class SwPush {
             applicationServerKey[i] = key.charCodeAt(i);
         }
         pushOptions.applicationServerKey = applicationServerKey;
-        return this.pushManager
-            .pipe(switchMap((pm) => pm.subscribe(pushOptions)), take(1))
-            .toPromise()
-            .then((sub) => {
-            this.subscriptionChanges.next(sub);
-            return sub;
+        return new Promise((resolve, reject) => {
+            this.pushManager.pipe(switchMap((pm) => pm.subscribe(pushOptions)), take(1)).subscribe({
+                next: (sub) => {
+                    this.subscriptionChanges.next(sub);
+                    resolve(sub);
+                },
+                error: reject,
+            });
         });
     }
     /**
@@ -270,15 +299,19 @@ class SwPush {
                 this.subscriptionChanges.next(null);
             });
         };
-        return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
+        return new Promise((resolve, reject) => {
+            this.subscription
+                .pipe(take(1), switchMap(doUnsubscribe))
+                .subscribe({ next: resolve, error: reject });
+        });
     }
     decodeBase64(input) {
         return atob(input);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: SwPush });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: SwPush });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: SwPush, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -377,10 +410,10 @@ class SwUpdate {
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: SwUpdate });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: SwUpdate });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: SwUpdate, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -392,48 +425,50 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.4+sh
  * found in the LICENSE file at https://angular.dev/license
  */
 const SCRIPT = new InjectionToken(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
-function ngswAppInitializer(injector, script, options) {
-    return () => {
-        if (typeof ngServerMode !== 'undefined' && ngServerMode) {
-            return;
-        }
-        if (!('serviceWorker' in navigator && options.enabled !== false)) {
-            return;
-        }
-        const ngZone = injector.get(NgZone);
-        const appRef = injector.get(ApplicationRef);
-        // Set up the `controllerchange` event listener outside of
-        // the Angular zone to avoid unnecessary change detections,
-        // as this event has no impact on view updates.
-        ngZone.runOutsideAngular(() => {
-            // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
-            // becomes active. This allows the SW to initialize itself even if there is no application
-            // traffic.
-            const sw = navigator.serviceWorker;
-            const onControllerChange = () => sw.controller?.postMessage({ action: 'INITIALIZE' });
-            sw.addEventListener('controllerchange', onControllerChange);
-            appRef.onDestroy(() => {
-                sw.removeEventListener('controllerchange', onControllerChange);
-            });
+function ngswAppInitializer() {
+    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+        return;
+    }
+    const options = inject(SwRegistrationOptions);
+    if (!('serviceWorker' in navigator && options.enabled !== false)) {
+        return;
+    }
+    const script = inject(SCRIPT);
+    const ngZone = inject(NgZone);
+    const appRef = inject(ApplicationRef);
+    // Set up the `controllerchange` event listener outside of
+    // the Angular zone to avoid unnecessary change detections,
+    // as this event has no impact on view updates.
+    ngZone.runOutsideAngular(() => {
+        // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+        // becomes active. This allows the SW to initialize itself even if there is no application
+        // traffic.
+        const sw = navigator.serviceWorker;
+        const onControllerChange = () => sw.controller?.postMessage({ action: 'INITIALIZE' });
+        sw.addEventListener('controllerchange', onControllerChange);
+        appRef.onDestroy(() => {
+            sw.removeEventListener('controllerchange', onControllerChange);
         });
-        let readyToRegister$;
-        if (typeof options.registrationStrategy === 'function') {
-            readyToRegister$ = options.registrationStrategy();
+    });
+    // Run outside the Angular zone to avoid preventing the app from stabilizing (especially
+    // given that some registration strategies wait for the app to stabilize).
+    ngZone.runOutsideAngular(() => {
+        let readyToRegister;
+        const { registrationStrategy } = options;
+        if (typeof registrationStrategy === 'function') {
+            readyToRegister = new Promise((resolve) => registrationStrategy().subscribe(() => resolve()));
         }
         else {
-            const [strategy, ...args] = (options.registrationStrategy || 'registerWhenStable:30000').split(':');
+            const [strategy, ...args] = (registrationStrategy || 'registerWhenStable:30000').split(':');
             switch (strategy) {
                 case 'registerImmediately':
-                    readyToRegister$ = of(null);
+                    readyToRegister = Promise.resolve();
                     break;
                 case 'registerWithDelay':
-                    readyToRegister$ = delayWithTimeout(+args[0] || 0);
+                    readyToRegister = delayWithTimeout(+args[0] || 0);
                     break;
                 case 'registerWhenStable':
-                    const whenStable$ = from(injector.get(ApplicationRef).whenStable());
-                    readyToRegister$ = !args[0]
-                        ? whenStable$
-                        : merge(whenStable$, delayWithTimeout(+args[0]));
+                    readyToRegister = Promise.race([appRef.whenStable(), delayWithTimeout(+args[0])]);
                     break;
                 default:
                     // Unknown strategy.
@@ -441,22 +476,18 @@ function ngswAppInitializer(injector, script, options) {
             }
         }
         // Don't return anything to avoid blocking the application until the SW is registered.
-        // Also, run outside the Angular zone to avoid preventing the app from stabilizing (especially
-        // given that some registration strategies wait for the app to stabilize).
         // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
-        ngZone.runOutsideAngular(() => readyToRegister$
-            .pipe(take(1))
-            .subscribe(() => navigator.serviceWorker
+        readyToRegister.then(() => navigator.serviceWorker
             .register(script, { scope: options.scope })
-            .catch((err) => console.error('Service worker registration failed with:', err))));
-    };
+            .catch((err) => console.error('Service worker registration failed with:', err)));
+    });
 }
 function delayWithTimeout(timeout) {
-    return of(null).pipe(delay(timeout));
+    return new Promise((resolve) => setTimeout(resolve, timeout));
 }
-function ngswCommChannelFactory(opts) {
+function ngswCommChannelFactory(opts, injector) {
     const isBrowser = !(typeof ngServerMode !== 'undefined' && ngServerMode);
-    return new NgswCommChannel(isBrowser && opts.enabled !== false ? navigator.serviceWorker : undefined);
+    return new NgswCommChannel(isBrowser && opts.enabled !== false ? navigator.serviceWorker : undefined, injector);
 }
 /**
  * Token that can be used to provide options for `ServiceWorkerModule` outside of
@@ -541,14 +572,9 @@ function provideServiceWorker(script, options = {}) {
         {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions],
+            deps: [SwRegistrationOptions, Injector],
         },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: ngswAppInitializer,
-            deps: [Injector, SCRIPT, SwRegistrationOptions],
-            multi: true,
-        },
+        provideAppInitializer(ngswAppInitializer),
     ]);
 }
 
@@ -568,11 +594,11 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: ServiceWorkerModule });
-    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: ServiceWorkerModule });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-cdbc6e8", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.4+sha-59d40f2", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{ providers: [SwPush, SwUpdate] }]
         }] });
