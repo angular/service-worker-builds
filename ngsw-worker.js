@@ -1069,7 +1069,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "19.2.4+sha-0c5b697";
+  var SW_VERSION = "19.2.4+sha-8f68d1b";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1579,7 +1579,8 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       return this.versions.get(hash);
     }
     async assignVersion(event) {
-      const clientId = event.resultingClientId || event.clientId;
+      const isWorkerScriptRequest = event.request.destination === "worker" && event.resultingClientId && event.clientId;
+      const clientId = isWorkerScriptRequest ? event.clientId : event.resultingClientId || event.clientId;
       if (clientId) {
         if (this.clientVersionMap.has(clientId)) {
           const hash = this.clientVersionMap.get(clientId);
@@ -1594,6 +1595,14 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
             }
             appVersion = this.lookupVersionByHash(this.latestHash, "assignVersion");
           }
+          if (isWorkerScriptRequest) {
+            if (!this.clientVersionMap.has(event.resultingClientId)) {
+              this.clientVersionMap.set(event.resultingClientId, hash);
+              await this.sync();
+            } else if (this.clientVersionMap.get(event.resultingClientId) !== hash) {
+              throw new Error(`Version mismatch between worker client ${event.resultingClientId} and requesting client ${clientId}`);
+            }
+          }
           return appVersion;
         } else {
           if (this.state !== DriverReadyState.NORMAL) {
@@ -1601,6 +1610,13 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
           }
           if (this.latestHash === null) {
             throw new Error(`Invariant violated (assignVersion): latestHash was null`);
+          }
+          if (isWorkerScriptRequest) {
+            if (!this.clientVersionMap.has(event.resultingClientId)) {
+              this.clientVersionMap.set(event.resultingClientId, this.latestHash);
+            } else if (this.clientVersionMap.get(event.resultingClientId) !== this.latestHash) {
+              throw new Error(`Version mismatch between worker client ${event.resultingClientId} and requesting client ${clientId}`);
+            }
           }
           this.clientVersionMap.set(clientId, this.latestHash);
           await this.sync();
