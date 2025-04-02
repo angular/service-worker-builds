@@ -1,12 +1,12 @@
 /**
- * @license Angular v19.2.4+sha-8f68d1b
+ * @license Angular v19.2.4+sha-635fb00
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
-import { Observable } from 'rxjs';
 import * as i0 from '@angular/core';
-import { EnvironmentProviders, ModuleWithProviders } from '@angular/core';
+import { Injector, EnvironmentProviders, ModuleWithProviders } from '@angular/core';
+import { Observable } from 'rxjs';
 
 /**
  * An event emitted when the service worker has checked the version of the app on the server and it
@@ -111,7 +111,7 @@ declare class NgswCommChannel {
     readonly worker: Observable<ServiceWorker>;
     readonly registration: Observable<ServiceWorkerRegistration>;
     readonly events: Observable<TypedEvent>;
-    constructor(serviceWorker: ServiceWorkerContainer | undefined);
+    constructor(serviceWorker: ServiceWorkerContainer | undefined, injector?: Injector);
     postMessage(action: string, payload: Object): Promise<void>;
     postMessageWithOperation(type: string, payload: Object, operationNonce: number): Promise<boolean>;
     generateNonce(): number;
