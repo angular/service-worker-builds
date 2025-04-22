@@ -1,6 +1,6 @@
 {
   "name": "@angular/service-worker",
-  "version": "19.2.7+sha-763e3ca",
+  "version": "19.2.7+sha-5555e9f",
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/core": "19.2.7+sha-763e3ca",
+    "@angular/core": "19.2.7+sha-5555e9f",
     "rxjs": "^6.5.3 || ^7.4.0"
   },
   "repository": {
