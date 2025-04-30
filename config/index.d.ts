@@ -1,16 +1,50 @@
 /**
- * @license Angular v18.1.0-next.0+sha-87c5f3c
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * @license Angular v20.0.0-next.9+sha-f4d60ff
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
+/**
+ * An abstraction over a virtual file system used to enable testing and operation
+ * of the config generator in different environments.
+ *
+ * @publicApi
+ */
+interface Filesystem {
+    list(dir: string): Promise<string[]>;
+    read(file: string): Promise<string>;
+    hash(file: string): Promise<string>;
+    write(file: string, contents: string): Promise<void>;
+}
 
+/**
+ * @publicApi
+ */
+type Glob = string;
+/**
+ * @publicApi
+ */
+type Duration = string;
+/**
+ * A top-level Angular Service Worker configuration object.
+ *
+ * @publicApi
+ */
+interface Config {
+    appData?: {};
+    index: string;
+    assetGroups?: AssetGroup[];
+    dataGroups?: DataGroup[];
+    navigationUrls?: string[];
+    navigationRequestStrategy?: 'freshness' | 'performance';
+    applicationMaxAge?: Duration;
+}
 /**
  * Configuration for a particular group of assets.
  *
  * @publicApi
  */
-export declare interface AssetGroup {
+interface AssetGroup {
     name: string;
     installMode?: 'prefetch' | 'lazy';
     updateMode?: 'prefetch' | 'lazy';
@@ -20,27 +54,12 @@ export declare interface AssetGroup {
     };
     cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }
-
-/**
- * A top-level Angular Service Worker configuration object.
- *
- * @publicApi
- */
-export declare interface Config {
-    appData?: {};
-    index: string;
-    assetGroups?: AssetGroup[];
-    dataGroups?: DataGroup[];
-    navigationUrls?: string[];
-    navigationRequestStrategy?: 'freshness' | 'performance';
-}
-
 /**
  * Configuration for a particular group of dynamic URLs.
  *
  * @publicApi
  */
-export declare interface DataGroup {
+interface DataGroup {
     name: string;
     urls: Glob[];
     version?: number;
@@ -48,6 +67,7 @@ export declare interface DataGroup {
         maxSize: number;
         maxAge: Duration;
         timeout?: Duration;
+        refreshAhead?: Duration;
         strategy?: 'freshness' | 'performance';
         cacheOpaqueResponses?: boolean;
     };
@@ -55,30 +75,11 @@ export declare interface DataGroup {
 }
 
 /**
- * @publicApi
- */
-export declare type Duration = string;
-
-
-/**
- * An abstraction over a virtual file system used to enable testing and operation
- * of the config generator in different environments.
- *
- * @publicApi
- */
-export declare interface Filesystem {
-    list(dir: string): Promise<string[]>;
-    read(file: string): Promise<string>;
-    hash(file: string): Promise<string>;
-    write(file: string, contents: string): Promise<void>;
-}
-
-/**
  * Consumes service worker configuration files and processes them into control files.
  *
  * @publicApi
  */
-declare class Generator_2 {
+declare class Generator {
     readonly fs: Filesystem;
     private baseHref;
     constructor(fs: Filesystem, baseHref: string);
@@ -86,12 +87,6 @@ declare class Generator_2 {
     private processAssetGroups;
     private processDataGroups;
 }
-export { Generator_2 as Generator }
 
-
-/**
- * @publicApi
- */
-export declare type Glob = string;
-
-export { }
+export { Generator };
+export type { AssetGroup, Config, DataGroup, Duration, Filesystem, Glob };

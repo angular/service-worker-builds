@@ -1,6 +1,6 @@
 /**
- * @license Angular v18.1.0-next.0+sha-87c5f3c
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * @license Angular v20.0.0-next.9+sha-f4d60ff
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -90,6 +90,8 @@ const DEFAULT_NAVIGATION_URLS = [
  * @publicApi
  */
 class Generator {
+    fs;
+    baseHref;
     constructor(fs, baseHref) {
         this.fs = fs;
         this.baseHref = baseHref;
@@ -107,6 +109,9 @@ class Generator {
             hashTable: withOrderedKeys(unorderedHashTable),
             navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
             navigationRequestStrategy: config.navigationRequestStrategy ?? 'performance',
+            applicationMaxAge: config.applicationMaxAge
+                ? parseDurationToMs(config.applicationMaxAge)
+                : undefined,
         };
     }
     async processAssetGroups(config, hashTable) {
@@ -153,6 +158,7 @@ class Generator {
                 maxSize: group.cacheConfig.maxSize,
                 maxAge: parseDurationToMs(group.cacheConfig.maxAge),
                 timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
+                refreshAheadMs: group.cacheConfig.refreshAhead && parseDurationToMs(group.cacheConfig.refreshAhead),
                 cacheOpaqueResponses: group.cacheConfig.cacheOpaqueResponses,
                 cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
                 version: group.version !== undefined ? group.version : 1,
@@ -232,12 +238,6 @@ function buildCacheQueryOptions(inOptions) {
         ...inOptions,
     };
 }
-
-// This file is not used to build this module. It is only used during editing
-
-/**
- * Generated bundle index. Do not edit.
- */
 
 export { Generator };
 //# sourceMappingURL=config.mjs.map

@@ -1,15 +1,108 @@
 /**
- * @license Angular v18.1.0-next.0+sha-87c5f3c
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * @license Angular v20.0.0-next.9+sha-f4d60ff
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
-
-import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
-import { ModuleWithProviders } from '@angular/core';
+import { Injector, EnvironmentProviders, ModuleWithProviders } from '@angular/core';
 import { Observable } from 'rxjs';
 
+/**
+ * An event emitted when the service worker has checked the version of the app on the server and it
+ * didn't find a new version that it doesn't have already downloaded.
+ *
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+
+ *
+ * @publicApi
+ */
+interface NoNewVersionDetectedEvent {
+    type: 'NO_NEW_VERSION_DETECTED';
+    version: {
+        hash: string;
+        appData?: Object;
+    };
+}
+/**
+ * An event emitted when the service worker has detected a new version of the app on the server and
+ * is about to start downloading it.
+ *
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+
+ *
+ * @publicApi
+ */
+interface VersionDetectedEvent {
+    type: 'VERSION_DETECTED';
+    version: {
+        hash: string;
+        appData?: object;
+    };
+}
+/**
+ * An event emitted when the installation of a new version failed.
+ * It may be used for logging/monitoring purposes.
+ *
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+ *a
+ * @publicApi
+ */
+interface VersionInstallationFailedEvent {
+    type: 'VERSION_INSTALLATION_FAILED';
+    version: {
+        hash: string;
+        appData?: object;
+    };
+    error: string;
+}
+/**
+ * An event emitted when a new version of the app is available.
+ *
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+
+ *
+ * @publicApi
+ */
+interface VersionReadyEvent {
+    type: 'VERSION_READY';
+    currentVersion: {
+        hash: string;
+        appData?: object;
+    };
+    latestVersion: {
+        hash: string;
+        appData?: object;
+    };
+}
+/**
+ * A union of all event types that can be emitted by
+ * {@link SwUpdate#versionUpdates}.
+ *
+ * @publicApi
+ */
+type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent | NoNewVersionDetectedEvent;
+/**
+ * An event emitted when the version of the app used by the service worker to serve this client is
+ * in a broken state that cannot be recovered from and a full page reload is required.
+ *
+ * For example, the service worker may not be able to retrieve a required resource, neither from the
+ * cache nor from the server. This could happen if a new version is deployed to the server and the
+ * service worker cache has been partially cleaned by the browser, removing some files of a previous
+ * app version but not all.
+ *
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+
+ *
+ * @publicApi
+ */
+interface UnrecoverableStateEvent {
+    type: 'UNRECOVERABLE_STATE';
+    reason: string;
+}
+interface TypedEvent {
+    type: string;
+}
 /**
  * @publicApi
  */
@@ -18,7 +111,7 @@ declare class NgswCommChannel {
     readonly worker: Observable<ServiceWorker>;
     readonly registration: Observable<ServiceWorkerRegistration>;
     readonly events: Observable<TypedEvent>;
-    constructor(serviceWorker: ServiceWorkerContainer | undefined);
+    constructor(serviceWorker: ServiceWorkerContainer | undefined, injector?: Injector);
     postMessage(action: string, payload: Object): Promise<void>;
     postMessageWithOperation(type: string, payload: Object, operationNonce: number): Promise<boolean>;
     generateNonce(): number;
@@ -28,22 +121,71 @@ declare class NgswCommChannel {
     get isEnabled(): boolean;
 }
 
-/**
- * An event emitted when the service worker has checked the version of the app on the server and it
- * didn't find a new version that it doesn't have already downloaded.
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+/**
+ * Token that can be used to provide options for `ServiceWorkerModule` outside of
+ * `ServiceWorkerModule.register()`.
+ *
+ * You can use this token to define a provider that generates the registration options at runtime,
+ * for example via a function call:
+ *
+ * {@example service-worker/registration-options/module.ts region="registration-options"
+ *     header="app.module.ts"}
  *
  * @publicApi
  */
-export declare interface NoNewVersionDetectedEvent {
-    type: 'NO_NEW_VERSION_DETECTED';
-    version: {
-        hash: string;
-        appData?: Object;
-    };
+declare abstract class SwRegistrationOptions {
+    /**
+     * Whether the ServiceWorker will be registered and the related services (such as `SwPush` and
+     * `SwUpdate`) will attempt to communicate and interact with it.
+     *
+     * Default: true
+     */
+    enabled?: boolean;
+    /**
+     * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can
+     * control. It will be used when calling
+     * [ServiceWorkerContainer#register()](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
+     */
+    scope?: string;
+    /**
+     * Defines the ServiceWorker registration strategy, which determines when it will be registered
+     * with the browser.
+     *
+     * The default behavior of registering once the application stabilizes (i.e. as soon as there are
+     * no pending micro- and macro-tasks) is designed to register the ServiceWorker as soon as
+     * possible but without affecting the application's first time load.
+     *
+     * Still, there might be cases where you want more control over when the ServiceWorker is
+     * registered (for example, there might be a long-running timeout or polling interval, preventing
+     * the app from stabilizing). The available option are:
+     *
+     * - `registerWhenStable:<timeout>`: Register as soon as the application stabilizes (no pending
+     *     micro-/macro-tasks) but no later than `<timeout>` milliseconds. If the app hasn't
+     *     stabilized after `<timeout>` milliseconds (for example, due to a recurrent asynchronous
+     *     task), the ServiceWorker will be registered anyway.
+     *     If `<timeout>` is omitted, the ServiceWorker will only be registered once the app
+     *     stabilizes.
+     * - `registerImmediately`: Register immediately.
+     * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
+     *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
+     *     `<timeout>` is omitted, is defaults to `0`, which will register the ServiceWorker as soon
+     *     as possible but still asynchronously, once all pending micro-tasks are completed.
+     * - An Observable factory function: A function that returns an `Observable`.
+     *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
+     *     ServiceWorker will be registered as soon as the first value is emitted.
+     *
+     * Default: 'registerWhenStable:30000'
+     */
+    registrationStrategy?: string | (() => Observable<unknown>);
 }
-
 /**
  * @publicApi
  *
@@ -61,12 +203,12 @@ export declare interface NoNewVersionDetectedEvent {
  * });
  * ```
  */
-export declare function provideServiceWorker(script: string, options?: SwRegistrationOptions): EnvironmentProviders;
+declare function provideServiceWorker(script: string, options?: SwRegistrationOptions): EnvironmentProviders;
 
 /**
  * @publicApi
  */
-export declare class ServiceWorkerModule {
+declare class ServiceWorkerModule {
     /**
      * Register the given Angular Service Worker script.
      *
@@ -158,7 +300,7 @@ export declare class ServiceWorkerModule {
  *
  * @publicApi
  */
-export declare class SwPush {
+declare class SwPush {
     private sw;
     /**
      * Emits the payloads of the received push notification messages.
@@ -218,72 +360,14 @@ export declare class SwPush {
 }
 
 /**
- * Token that can be used to provide options for `ServiceWorkerModule` outside of
- * `ServiceWorkerModule.register()`.
- *
- * You can use this token to define a provider that generates the registration options at runtime,
- * for example via a function call:
- *
- * {@example service-worker/registration-options/module.ts region="registration-options"
- *     header="app.module.ts"}
- *
- * @publicApi
- */
-export declare abstract class SwRegistrationOptions {
-    /**
-     * Whether the ServiceWorker will be registered and the related services (such as `SwPush` and
-     * `SwUpdate`) will attempt to communicate and interact with it.
-     *
-     * Default: true
-     */
-    enabled?: boolean;
-    /**
-     * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can
-     * control. It will be used when calling
-     * [ServiceWorkerContainer#register()](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
-     */
-    scope?: string;
-    /**
-     * Defines the ServiceWorker registration strategy, which determines when it will be registered
-     * with the browser.
-     *
-     * The default behavior of registering once the application stabilizes (i.e. as soon as there are
-     * no pending micro- and macro-tasks) is designed to register the ServiceWorker as soon as
-     * possible but without affecting the application's first time load.
-     *
-     * Still, there might be cases where you want more control over when the ServiceWorker is
-     * registered (for example, there might be a long-running timeout or polling interval, preventing
-     * the app from stabilizing). The available option are:
-     *
-     * - `registerWhenStable:<timeout>`: Register as soon as the application stabilizes (no pending
-     *     micro-/macro-tasks) but no later than `<timeout>` milliseconds. If the app hasn't
-     *     stabilized after `<timeout>` milliseconds (for example, due to a recurrent asynchronous
-     *     task), the ServiceWorker will be registered anyway.
-     *     If `<timeout>` is omitted, the ServiceWorker will only be registered once the app
-     *     stabilizes.
-     * - `registerImmediately`: Register immediately.
-     * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
-     *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
-     *     `<timeout>` is omitted, is defaults to `0`, which will register the ServiceWorker as soon
-     *     as possible but still asynchronously, once all pending micro-tasks are completed.
-     * - An Observable factory function: A function that returns an `Observable`.
-     *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
-     *     ServiceWorker will be registered as soon as the first value is emitted.
-     *
-     * Default: 'registerWhenStable:30000'
-     */
-    registrationStrategy?: string | (() => Observable<unknown>);
-}
-
-/**
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
  *
  * @publicApi
  */
-export declare class SwUpdate {
+declare class SwUpdate {
     private sw;
     /**
      * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
@@ -324,7 +408,7 @@ export declare class SwUpdate {
      * In most cases, you should not use this method and instead should update a client by reloading
      * the page.
      *
-     * <div class="alert is-important">
+     * <div class="docs-alert docs-alert-important">
      *
      * Updating a client without reloading can easily result in a broken application due to a version
      * mismatch between the application shell and other page resources,
@@ -346,86 +430,5 @@ export declare class SwUpdate {
     static ɵprov: i0.ɵɵInjectableDeclaration<SwUpdate>;
 }
 
-declare interface TypedEvent {
-    type: string;
-}
-
-/**
- * An event emitted when the version of the app used by the service worker to serve this client is
- * in a broken state that cannot be recovered from and a full page reload is required.
- *
- * For example, the service worker may not be able to retrieve a required resource, neither from the
- * cache nor from the server. This could happen if a new version is deployed to the server and the
- * service worker cache has been partially cleaned by the browser, removing some files of a previous
- * app version but not all.
- *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
- *
- * @publicApi
- */
-export declare interface UnrecoverableStateEvent {
-    type: 'UNRECOVERABLE_STATE';
-    reason: string;
-}
-
-/**
- * An event emitted when the service worker has detected a new version of the app on the server and
- * is about to start downloading it.
- *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
- *
- * @publicApi
- */
-export declare interface VersionDetectedEvent {
-    type: 'VERSION_DETECTED';
-    version: {
-        hash: string;
-        appData?: object;
-    };
-}
-
-/**
- * A union of all event types that can be emitted by
- * {@link api/service-worker/SwUpdate#versionUpdates SwUpdate#versionUpdates}.
- *
- * @publicApi
- */
-export declare type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent | NoNewVersionDetectedEvent;
-
-/**
- * An event emitted when the installation of a new version failed.
- * It may be used for logging/monitoring purposes.
- *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
- *
- * @publicApi
- */
-export declare interface VersionInstallationFailedEvent {
-    type: 'VERSION_INSTALLATION_FAILED';
-    version: {
-        hash: string;
-        appData?: object;
-    };
-    error: string;
-}
-
-/**
- * An event emitted when a new version of the app is available.
- *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
- *
- * @publicApi
- */
-export declare interface VersionReadyEvent {
-    type: 'VERSION_READY';
-    currentVersion: {
-        hash: string;
-        appData?: object;
-    };
-    latestVersion: {
-        hash: string;
-        appData?: object;
-    };
-}
-
-export { }
+export { ServiceWorkerModule, SwPush, SwRegistrationOptions, SwUpdate, provideServiceWorker };
+export type { NoNewVersionDetectedEvent, UnrecoverableStateEvent, VersionDetectedEvent, VersionEvent, VersionInstallationFailedEvent, VersionReadyEvent };

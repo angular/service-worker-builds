@@ -1,11 +1,11 @@
 {
   "name": "@angular/service-worker",
-  "version": "18.1.0-next.0+sha-87c5f3c",
+  "version": "20.0.0-next.9+sha-f4d60ff",
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^18.13.0 || >=20.9.0"
+    "node": "^20.11.1 || >=22.11.0"
   },
   "exports": {
     "./ngsw-worker.js": {
@@ -22,14 +22,10 @@
     },
     ".": {
       "types": "./index.d.ts",
-      "esm2022": "./esm2022/service-worker.mjs",
-      "esm": "./esm2022/service-worker.mjs",
       "default": "./fesm2022/service-worker.mjs"
     },
     "./config": {
       "types": "./config/index.d.ts",
-      "esm2022": "./esm2022/config/config.mjs",
-      "esm": "./esm2022/config/config.mjs",
       "default": "./fesm2022/config.mjs"
     }
   },
@@ -37,8 +33,8 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/core": "18.1.0-next.0+sha-87c5f3c",
-    "@angular/common": "18.1.0-next.0+sha-87c5f3c"
+    "@angular/core": "20.0.0-next.9+sha-f4d60ff",
+    "rxjs": "^6.5.3 || ^7.4.0"
   },
   "repository": {
     "type": "git",
