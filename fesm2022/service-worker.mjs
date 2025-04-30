@@ -1,11 +1,11 @@
 /**
- * @license Angular v20.0.0-next.9+sha-f4d60ff
+ * @license Angular v20.0.0-next.9+sha-59ca539
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import * as i0 from '@angular/core';
-import { ApplicationRef, Injectable, makeEnvironmentProviders, InjectionToken, Injector, provideAppInitializer, inject, NgZone, NgModule } from '@angular/core';
+import { ɵRuntimeError as _RuntimeError, ApplicationRef, Injectable, makeEnvironmentProviders, InjectionToken, Injector, provideAppInitializer, inject, NgZone, ɵformatRuntimeError as _formatRuntimeError, NgModule } from '@angular/core';
 import { Observable, Subject, NEVER } from 'rxjs';
 import { switchMap, take, filter, map } from 'rxjs/operators';
 
@@ -24,7 +24,7 @@ class NgswCommChannel {
             this.worker =
                 this.events =
                     this.registration =
-                        new Observable((subscriber) => subscriber.error(new Error(ERR_SW_NOT_SUPPORTED)));
+                        new Observable((subscriber) => subscriber.error(new _RuntimeError(5601 /* RuntimeErrorCode.SERVICE_WORKER_DISABLED_OR_NOT_SUPPORTED_BY_THIS_BROWSER */, (typeof ngDevMode === 'undefined' || ngDevMode) && ERR_SW_NOT_SUPPORTED)));
         }
         else {
             let currentWorker = null;
@@ -290,11 +290,12 @@ class SwPush {
         }
         const doUnsubscribe = (sub) => {
             if (sub === null) {
-                throw new Error('Not subscribed to push notifications.');
+                throw new _RuntimeError(5602 /* RuntimeErrorCode.NOT_SUBSCRIBED_TO_PUSH_NOTIFICATIONS */, (typeof ngDevMode === 'undefined' || ngDevMode) &&
+                    'Not subscribed to push notifications.');
             }
             return sub.unsubscribe().then((success) => {
                 if (!success) {
-                    throw new Error('Unsubscribe failed!');
+                    throw new _RuntimeError(5603 /* RuntimeErrorCode.PUSH_SUBSCRIPTION_UNSUBSCRIBE_FAILED */, (typeof ngDevMode === 'undefined' || ngDevMode) && 'Unsubscribe failed!');
                 }
                 this.subscriptionChanges.next(null);
             });
@@ -308,10 +309,10 @@ class SwPush {
     decodeBase64(input) {
         return atob(input);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: SwPush });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: SwPush });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: SwPush, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -405,15 +406,15 @@ class SwUpdate {
      */
     activateUpdate() {
         if (!this.sw.isEnabled) {
-            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+            return Promise.reject(new _RuntimeError(5601 /* RuntimeErrorCode.SERVICE_WORKER_DISABLED_OR_NOT_SUPPORTED_BY_THIS_BROWSER */, (typeof ngDevMode === 'undefined' || ngDevMode) && ERR_SW_NOT_SUPPORTED));
         }
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: SwUpdate });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: SwUpdate });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: SwUpdate, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -472,14 +473,16 @@ function ngswAppInitializer() {
                     break;
                 default:
                     // Unknown strategy.
-                    throw new Error(`Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`);
+                    throw new _RuntimeError(5600 /* RuntimeErrorCode.UNKNOWN_REGISTRATION_STRATEGY */, (typeof ngDevMode === 'undefined' || ngDevMode) &&
+                        `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`);
             }
         }
         // Don't return anything to avoid blocking the application until the SW is registered.
         // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
         readyToRegister.then(() => navigator.serviceWorker
             .register(script, { scope: options.scope })
-            .catch((err) => console.error('Service worker registration failed with:', err)));
+            .catch((err) => console.error(_formatRuntimeError(5604 /* RuntimeErrorCode.SERVICE_WORKER_REGISTRATION_FAILED */, (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            'Service worker registration failed with: ' + err))));
     });
 }
 function delayWithTimeout(timeout) {
@@ -594,11 +597,11 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: ServiceWorkerModule });
-    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: ServiceWorkerModule });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-f4d60ff", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.0.0-next.9+sha-59ca539", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{ providers: [SwPush, SwUpdate] }]
         }] });
