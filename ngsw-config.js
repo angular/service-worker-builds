@@ -216,15 +216,15 @@ function buildCacheQueryOptions(inOptions) {
   };
 }
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.mjs
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.js
 import * as fs2 from "fs";
 import * as path2 from "path";
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/filesystem.mjs
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/filesystem.js
 import * as fs from "fs";
 import * as path from "path";
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/sha1.mjs
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/sha1.js
 function sha1Binary(buffer) {
   const words32 = arrayBufferToWords32(buffer, Endian.Big);
   return _sha1(words32, buffer.byteLength * 8);
@@ -326,7 +326,7 @@ function byteStringToHexString(str) {
   return hex.toLowerCase();
 }
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/filesystem.mjs
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/filesystem.js
 var NodeFilesystem = class {
   base;
   constructor(base) {
@@ -356,7 +356,7 @@ var NodeFilesystem = class {
   }
 };
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.mjs
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.js
 var cwd = process.cwd();
 var distDir = path2.join(cwd, process.argv[2]);
 var config = path2.join(cwd, process.argv[3]);
