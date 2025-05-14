@@ -4,7 +4,7 @@
       const require = __cjsCompatRequire(import.meta.url);
     
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/duration.mjs
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/duration.js
 var PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
 var PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
 function parseDurationToMs(duration) {
@@ -42,7 +42,7 @@ function parseDurationToMs(duration) {
   }).reduce((total, value) => total + value, 0);
 }
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/glob.mjs
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/glob.js
 var QUESTION_MARK = "[^/]";
 var WILD_SINGLE = "[^/]*";
 var WILD_OPEN = "(?:.+\\/)?";
@@ -76,7 +76,7 @@ function globToRegex(glob, literalQuestionMark = false) {
   return regex;
 }
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/generator.mjs
+// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/generator.js
 var DEFAULT_NAVIGATION_URLS = [
   "/**",
   "!/**/*.*",
