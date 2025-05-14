@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.1.0-next.0+sha-4108efa
+ * @license Angular v20.1.0-next.0+sha-a07413a
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -309,12 +309,12 @@ class SwPush {
     decodeBase64(input) {
         return atob(input);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: SwPush });
+    static ɵfac = function SwPush_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || SwPush)(i0.ɵɵinject(NgswCommChannel)); };
+    static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: SwPush, factory: SwPush.ɵfac });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: SwPush, decorators: [{
-            type: Injectable
-        }], ctorParameters: () => [{ type: NgswCommChannel }] });
+(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SwPush, [{
+        type: Injectable
+    }], () => [{ type: NgswCommChannel }], null); })();
 
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
@@ -411,12 +411,12 @@ class SwUpdate {
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: SwUpdate });
+    static ɵfac = function SwUpdate_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || SwUpdate)(i0.ɵɵinject(NgswCommChannel)); };
+    static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: SwUpdate, factory: SwUpdate.ɵfac });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: SwUpdate, decorators: [{
-            type: Injectable
-        }], ctorParameters: () => [{ type: NgswCommChannel }] });
+(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SwUpdate, [{
+        type: Injectable
+    }], () => [{ type: NgswCommChannel }], null); })();
 
 /*!
  * @license
@@ -597,14 +597,14 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: ServiceWorkerModule });
-    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+    static ɵfac = function ServiceWorkerModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || ServiceWorkerModule)(); };
+    static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ServiceWorkerModule });
+    static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [SwPush, SwUpdate] });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4108efa", ngImport: i0, type: ServiceWorkerModule, decorators: [{
-            type: NgModule,
-            args: [{ providers: [SwPush, SwUpdate] }]
-        }] });
+(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ServiceWorkerModule, [{
+        type: NgModule,
+        args: [{ providers: [SwPush, SwUpdate] }]
+    }], null, null); })();
 
 export { ServiceWorkerModule, SwPush, SwRegistrationOptions, SwUpdate, provideServiceWorker };
 //# sourceMappingURL=service-worker.mjs.map
