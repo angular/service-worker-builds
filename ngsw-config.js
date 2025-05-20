@@ -4,7 +4,7 @@
       const require = __cjsCompatRequire(import.meta.url);
     
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/duration.js
+// bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/config/src/duration.js
 var PARSE_TO_PAIRS = /([0-9]+[^0-9]+)/g;
 var PAIR_SPLIT = /^([0-9]+)([dhmsu]+)$/;
 function parseDurationToMs(duration) {
@@ -42,7 +42,7 @@ function parseDurationToMs(duration) {
   }).reduce((total, value) => total + value, 0);
 }
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/glob.js
+// bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/config/src/glob.js
 var QUESTION_MARK = "[^/]";
 var WILD_SINGLE = "[^/]*";
 var WILD_OPEN = "(?:.+\\/)?";
@@ -76,7 +76,7 @@ function globToRegex(glob, literalQuestionMark = false) {
   return regex;
 }
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/config/src/generator.js
+// bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/config/src/generator.js
 var DEFAULT_NAVIGATION_URLS = [
   "/**",
   "!/**/*.*",
@@ -216,15 +216,15 @@ function buildCacheQueryOptions(inOptions) {
   };
 }
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.js
+// bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/cli/main.js
 import * as fs2 from "fs";
 import * as path2 from "path";
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/filesystem.js
+// bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/cli/filesystem.js
 import * as fs from "fs";
 import * as path from "path";
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/sha1.js
+// bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/cli/sha1.js
 function sha1Binary(buffer) {
   const words32 = arrayBufferToWords32(buffer, Endian.Big);
   return _sha1(words32, buffer.byteLength * 8);
@@ -326,7 +326,7 @@ function byteStringToHexString(str) {
   return hex.toLowerCase();
 }
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/filesystem.js
+// bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/cli/filesystem.js
 var NodeFilesystem = class {
   base;
   constructor(base) {
@@ -356,7 +356,7 @@ var NodeFilesystem = class {
   }
 };
 
-// bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/cli/main.js
+// bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/cli/main.js
 var cwd = process.cwd();
 var distDir = path2.join(cwd, process.argv[2]);
 var config = path2.join(cwd, process.argv[3]);
