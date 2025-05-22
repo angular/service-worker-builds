@@ -91,7 +91,6 @@ var Generator = class {
     this.baseHref = baseHref2;
   }
   async process(config2) {
-    var _a;
     const unorderedHashTable = {};
     const assetGroups = await this.processAssetGroups(config2, unorderedHashTable);
     return {
@@ -103,7 +102,7 @@ var Generator = class {
       dataGroups: this.processDataGroups(config2),
       hashTable: withOrderedKeys(unorderedHashTable),
       navigationUrls: processNavigationUrls(this.baseHref, config2.navigationUrls),
-      navigationRequestStrategy: (_a = config2.navigationRequestStrategy) != null ? _a : "performance",
+      navigationRequestStrategy: config2.navigationRequestStrategy ?? "performance",
       applicationMaxAge: config2.applicationMaxAge ? parseDurationToMs(config2.applicationMaxAge) : void 0
     };
   }
