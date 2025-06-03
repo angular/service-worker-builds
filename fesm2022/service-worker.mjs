@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.1.0-next.0+sha-c6f470e
+ * @license Angular v20.1.0-next.0+sha-c67dbda
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -213,6 +213,19 @@ class SwPush {
      */
     notificationClicks;
     /**
+     * Emits the payloads of notifications that were closed, along with the action (if any)
+     * associated with the close event. If no action was used, the `action` property contains
+     * an empty string `''`.
+     *
+     * Note that the `notification` property does **not** contain a
+     * [Notification][Mozilla Notification] object but rather a
+     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+     *
+     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+     */
+    notificationCloses;
+    /**
      * Emits the currently active
      * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
      * associated to the Service Worker registration or `null` if there is no subscription.
@@ -232,12 +245,16 @@ class SwPush {
         if (!sw.isEnabled) {
             this.messages = NEVER;
             this.notificationClicks = NEVER;
+            this.notificationCloses = NEVER;
             this.subscription = NEVER;
             return;
         }
         this.messages = this.sw.eventsOfType('PUSH').pipe(map((message) => message.data));
         this.notificationClicks = this.sw
             .eventsOfType('NOTIFICATION_CLICK')
+            .pipe(map((message) => message.data));
+        this.notificationCloses = this.sw
+            .eventsOfType('NOTIFICATION_CLOSE')
             .pipe(map((message) => message.data));
         this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));
         const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription()));
@@ -309,10 +326,10 @@ class SwPush {
     decodeBase64(input) {
         return atob(input);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: SwPush });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: SwPush });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: SwPush, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -411,10 +428,10 @@ class SwUpdate {
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: SwUpdate });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: SwUpdate });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: SwUpdate, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -605,11 +622,11 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: ServiceWorkerModule });
-    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: ServiceWorkerModule });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c6f470e", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-c67dbda", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{ providers: [SwPush, SwUpdate] }]
         }] });

@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.1.0-next.0+sha-c6f470e
+ * @license Angular v20.1.0-next.0+sha-c67dbda
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -318,6 +318,24 @@ declare class SwPush {
      * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
      */
     readonly notificationClicks: Observable<{
+        action: string;
+        notification: NotificationOptions & {
+            title: string;
+        };
+    }>;
+    /**
+     * Emits the payloads of notifications that were closed, along with the action (if any)
+     * associated with the close event. If no action was used, the `action` property contains
+     * an empty string `''`.
+     *
+     * Note that the `notification` property does **not** contain a
+     * [Notification][Mozilla Notification] object but rather a
+     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+     *
+     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+     */
+    readonly notificationCloses: Observable<{
         action: string;
         notification: NotificationOptions & {
             title: string;

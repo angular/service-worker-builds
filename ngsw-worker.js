@@ -1069,7 +1069,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "20.1.0-next.0+sha-c6f470e";
+  var SW_VERSION = "20.1.0-next.0+sha-c67dbda";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1304,6 +1304,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       this.scope.addEventListener("message", (event) => this.onMessage(event));
       this.scope.addEventListener("push", (event) => this.onPush(event));
       this.scope.addEventListener("notificationclick", (event) => this.onClick(event));
+      this.scope.addEventListener("notificationclose", (event) => this.onClose(event));
       this.debugger = new DebugHandler(this, this.adapter);
       this.idle = new IdleScheduler(this.adapter, IDLE_DELAY, MAX_IDLE_DELAY, this.debugger);
     }
@@ -1410,6 +1411,9 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
     onClick(event) {
       event.waitUntil(this.handleClick(event.notification, event.action));
     }
+    onClose(event) {
+      event.waitUntil(this.handleClose(event.notification, event.action));
+    }
     async ensureInitialized(event) {
       if (this.initialized !== null) {
         return this.initialized;
@@ -1487,6 +1491,14 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       }
       await this.broadcast({
         type: "NOTIFICATION_CLICK",
+        data: { action, notification: options }
+      });
+    }
+    async handleClose(notification, action) {
+      const options = {};
+      NOTIFICATION_OPTION_NAMES.filter((name) => name in notification).forEach((name) => options[name] = notification[name]);
+      await this.broadcast({
+        type: "NOTIFICATION_CLOSE",
         data: { action, notification: options }
       });
     }
