@@ -1069,7 +1069,7 @@ ${error.stack}`;
   };
 
   // bazel-out/k8-fastbuild-ST-2d99d9656325/bin/packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "20.1.0-next.0+sha-4fa1dca";
+  var SW_VERSION = "20.1.0-next.0+sha-c663277";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1314,6 +1314,10 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       if (req.headers.has("ngsw-bypass") || /[?&]ngsw-bypass(?:[=&]|$)/i.test(requestUrlObj.search)) {
         return;
       }
+      if (req.headers.has("range")) {
+        event.respondWith(this.handleRangeRequest(req));
+        return;
+      }
       if (requestUrlObj.path === this.ngswStatePath) {
         event.respondWith(this.debugger.handleFetch(req));
         return;
@@ -1334,6 +1338,49 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
         return;
       }
       event.respondWith(this.handleFetch(event));
+    }
+    async handleRangeRequest(req) {
+      try {
+        const response = await fetch(req);
+        const contentType = response.headers.get("Content-Type");
+        if (!contentType || !contentType.startsWith("video/")) {
+          return response;
+        }
+        const rangeHeader = req.headers.get("range");
+        if (!rangeHeader) {
+          return new Response(null, {
+            status: 416,
+            statusText: "Range Not Satisfiable"
+          });
+        }
+        const rangeMatch = /bytes=(\d+)-(\d+)?/.exec(rangeHeader);
+        if (!rangeMatch) {
+          return new Response(null, {
+            status: 416,
+            statusText: "Range Not Satisfiable"
+          });
+        }
+        const start = Number(rangeMatch[1]);
+        const end = rangeMatch[2] ? Number(rangeMatch[2]) : void 0;
+        const buffer = await response.arrayBuffer();
+        const contentLength = buffer.byteLength;
+        const chunk = buffer.slice(start, end ? end + 1 : contentLength);
+        const chunkLength = chunk.byteLength;
+        const headers = new Headers(response.headers);
+        headers.set("Content-Range", `bytes ${start}-${end ? end : contentLength - 1}/${contentLength}`);
+        headers.set("Content-Length", chunkLength.toString());
+        headers.set("Accept-Ranges", "bytes");
+        return new Response(chunk, {
+          status: 206,
+          statusText: "Partial Content",
+          headers
+        });
+      } catch (error) {
+        return new Response(null, {
+          status: 500,
+          statusText: "Internal Server Error"
+        });
+      }
     }
     onMessage(event) {
       if (this.state === DriverReadyState.SAFE_MODE) {
