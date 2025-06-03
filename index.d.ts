@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.1.0-next.0+sha-c67dbda
+ * @license Angular v20.1.0-next.0+sha-6adf022
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -408,6 +408,7 @@ declare class SwUpdate {
      * `ServiceWorkerModule`).
      */
     get isEnabled(): boolean;
+    private ongoingCheckForUpdate;
     constructor(sw: NgswCommChannel);
     /**
      * Checks for an update and waits until the new version is downloaded from the server and ready
