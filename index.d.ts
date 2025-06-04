@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.1.0-next.0+sha-4178e82
+ * @license Angular v20.1.0-next.0+sha-b839d08
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -340,6 +340,23 @@ declare class SwPush {
         notification: NotificationOptions & {
             title: string;
         };
+    }>;
+    /**
+     * Emits updates to the push subscription, including both the previous (`oldSubscription`)
+     * and current (`newSubscription`) values. Either subscription may be `null`, depending on
+     * the context:
+     *
+     * - `oldSubscription` is `null` if no previous subscription existed.
+     * - `newSubscription` is `null` if the subscription was invalidated and not replaced.
+     *
+     * This stream allows clients to react to automatic changes in push subscriptions,
+     * such as those triggered by browser expiration or key rotation.
+     *
+     * [Push API]: https://w3c.github.io/push-api
+     */
+    readonly pushSubscriptionChanges: Observable<{
+        oldSubscription: PushSubscription | null;
+        newSubscription: PushSubscription | null;
     }>;
     /**
      * Emits the currently active

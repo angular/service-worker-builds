@@ -1,11 +1,11 @@
 /**
- * @license Angular v20.1.0-next.0+sha-4178e82
+ * @license Angular v20.1.0-next.0+sha-b839d08
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
 import * as i0 from '@angular/core';
-import { ɵRuntimeError as _RuntimeError, ApplicationRef, Injectable, makeEnvironmentProviders, InjectionToken, Injector, provideAppInitializer, inject, NgZone, ɵformatRuntimeError as _formatRuntimeError, NgModule } from '@angular/core';
+import { ɵRuntimeError as _RuntimeError, ApplicationRef, InjectionToken, makeEnvironmentProviders, Injector, provideAppInitializer, inject, NgZone, ɵformatRuntimeError as _formatRuntimeError, NgModule, Injectable } from '@angular/core';
 import { Observable, Subject, NEVER } from 'rxjs';
 import { switchMap, take, filter, map } from 'rxjs/operators';
 
@@ -114,335 +114,6 @@ class NgswCommChannel {
         return !!this.serviceWorker;
     }
 }
-
-/**
- * Subscribe and listen to
- * [Web Push
- * Notifications](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices) through
- * Angular Service Worker.
- *
- * @usageNotes
- *
- * You can inject a `SwPush` instance into any component or service
- * as a dependency.
- *
- * <code-example path="service-worker/push/module.ts" region="inject-sw-push"
- * header="app.component.ts"></code-example>
- *
- * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
- * The call returns a `Promise` with a new
- * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
- * instance.
- *
- * <code-example path="service-worker/push/module.ts" region="subscribe-to-push"
- * header="app.component.ts"></code-example>
- *
- * A request is rejected if the user denies permission, or if the browser
- * blocks or does not support the Push API or ServiceWorkers.
- * Check `SwPush.isEnabled` to confirm status.
- *
- * Invoke Push Notifications by pushing a message with the following payload.
- *
- * ```ts
- * {
- *   "notification": {
- *     "actions": NotificationAction[],
- *     "badge": USVString,
- *     "body": DOMString,
- *     "data": any,
- *     "dir": "auto"|"ltr"|"rtl",
- *     "icon": USVString,
- *     "image": USVString,
- *     "lang": DOMString,
- *     "renotify": boolean,
- *     "requireInteraction": boolean,
- *     "silent": boolean,
- *     "tag": DOMString,
- *     "timestamp": DOMTimeStamp,
- *     "title": DOMString,
- *     "vibrate": number[]
- *   }
- * }
- * ```
- *
- * Only `title` is required. See `Notification`
- * [instance
- * properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
- *
- * While the subscription is active, Service Worker listens for
- * [PushEvent](https://developer.mozilla.org/en-US/docs/Web/API/PushEvent)
- * occurrences and creates
- * [Notification](https://developer.mozilla.org/en-US/docs/Web/API/Notification)
- * instances in response.
- *
- * Unsubscribe using `SwPush.unsubscribe()`.
- *
- * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
- * clicks on a notification. For example:
- *
- * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks"
- * header="app.component.ts"></code-example>
- *
- * You can read more on handling notification clicks in the [Service worker notifications
- * guide](ecosystem/service-workers/push-notifications).
- *
- * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
- * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
- * @see [MDN: Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
- * @see [MDN: Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API)
- * @see [MDN: Web Push API Notifications best practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
- *
- * @publicApi
- */
-class SwPush {
-    sw;
-    /**
-     * Emits the payloads of the received push notification messages.
-     */
-    messages;
-    /**
-     * Emits the payloads of the received push notification messages as well as the action the user
-     * interacted with. If no action was used the `action` property contains an empty string `''`.
-     *
-     * Note that the `notification` property does **not** contain a
-     * [Notification][Mozilla Notification] object but rather a
-     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
-     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
-     *
-     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
-     */
-    notificationClicks;
-    /**
-     * Emits the payloads of notifications that were closed, along with the action (if any)
-     * associated with the close event. If no action was used, the `action` property contains
-     * an empty string `''`.
-     *
-     * Note that the `notification` property does **not** contain a
-     * [Notification][Mozilla Notification] object but rather a
-     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
-     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
-     *
-     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
-     */
-    notificationCloses;
-    /**
-     * Emits the currently active
-     * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
-     * associated to the Service Worker registration or `null` if there is no subscription.
-     */
-    subscription;
-    /**
-     * True if the Service Worker is enabled (supported by the browser and enabled via
-     * `ServiceWorkerModule`).
-     */
-    get isEnabled() {
-        return this.sw.isEnabled;
-    }
-    pushManager = null;
-    subscriptionChanges = new Subject();
-    constructor(sw) {
-        this.sw = sw;
-        if (!sw.isEnabled) {
-            this.messages = NEVER;
-            this.notificationClicks = NEVER;
-            this.notificationCloses = NEVER;
-            this.subscription = NEVER;
-            return;
-        }
-        this.messages = this.sw.eventsOfType('PUSH').pipe(map((message) => message.data));
-        this.notificationClicks = this.sw
-            .eventsOfType('NOTIFICATION_CLICK')
-            .pipe(map((message) => message.data));
-        this.notificationCloses = this.sw
-            .eventsOfType('NOTIFICATION_CLOSE')
-            .pipe(map((message) => message.data));
-        this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));
-        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription()));
-        this.subscription = new Observable((subscriber) => {
-            const workerDrivenSubscription = workerDrivenSubscriptions.subscribe(subscriber);
-            const subscriptionChanges = this.subscriptionChanges.subscribe(subscriber);
-            return () => {
-                workerDrivenSubscription.unsubscribe();
-                subscriptionChanges.unsubscribe();
-            };
-        });
-    }
-    /**
-     * Subscribes to Web Push Notifications,
-     * after requesting and receiving user permission.
-     *
-     * @param options An object containing the `serverPublicKey` string.
-     * @returns A Promise that resolves to the new subscription object.
-     */
-    requestSubscription(options) {
-        if (!this.sw.isEnabled || this.pushManager === null) {
-            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
-        }
-        const pushOptions = { userVisibleOnly: true };
-        let key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
-        let applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
-        for (let i = 0; i < key.length; i++) {
-            applicationServerKey[i] = key.charCodeAt(i);
-        }
-        pushOptions.applicationServerKey = applicationServerKey;
-        return new Promise((resolve, reject) => {
-            this.pushManager.pipe(switchMap((pm) => pm.subscribe(pushOptions)), take(1)).subscribe({
-                next: (sub) => {
-                    this.subscriptionChanges.next(sub);
-                    resolve(sub);
-                },
-                error: reject,
-            });
-        });
-    }
-    /**
-     * Unsubscribes from Service Worker push notifications.
-     *
-     * @returns A Promise that is resolved when the operation succeeds, or is rejected if there is no
-     *          active subscription or the unsubscribe operation fails.
-     */
-    unsubscribe() {
-        if (!this.sw.isEnabled) {
-            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
-        }
-        const doUnsubscribe = (sub) => {
-            if (sub === null) {
-                throw new _RuntimeError(5602 /* RuntimeErrorCode.NOT_SUBSCRIBED_TO_PUSH_NOTIFICATIONS */, (typeof ngDevMode === 'undefined' || ngDevMode) &&
-                    'Not subscribed to push notifications.');
-            }
-            return sub.unsubscribe().then((success) => {
-                if (!success) {
-                    throw new _RuntimeError(5603 /* RuntimeErrorCode.PUSH_SUBSCRIPTION_UNSUBSCRIBE_FAILED */, (typeof ngDevMode === 'undefined' || ngDevMode) && 'Unsubscribe failed!');
-                }
-                this.subscriptionChanges.next(null);
-            });
-        };
-        return new Promise((resolve, reject) => {
-            this.subscription
-                .pipe(take(1), switchMap(doUnsubscribe))
-                .subscribe({ next: resolve, error: reject });
-        });
-    }
-    decodeBase64(input) {
-        return atob(input);
-    }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: SwPush });
-}
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: SwPush, decorators: [{
-            type: Injectable
-        }], ctorParameters: () => [{ type: NgswCommChannel }] });
-
-/**
- * Subscribe to update notifications from the Service Worker, trigger update
- * checks, and forcibly activate updates.
- *
- * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
- *
- * @publicApi
- */
-class SwUpdate {
-    sw;
-    /**
-     * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
-     *
-     * Emits a `VersionInstallationFailedEvent` event whenever checking for or downloading a new
-     * version fails.
-     *
-     * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
-     * activation.
-     */
-    versionUpdates;
-    /**
-     * Emits an `UnrecoverableStateEvent` event whenever the version of the app used by the service
-     * worker to serve this client is in a broken state that cannot be recovered from without a full
-     * page reload.
-     */
-    unrecoverable;
-    /**
-     * True if the Service Worker is enabled (supported by the browser and enabled via
-     * `ServiceWorkerModule`).
-     */
-    get isEnabled() {
-        return this.sw.isEnabled;
-    }
-    ongoingCheckForUpdate = null;
-    constructor(sw) {
-        this.sw = sw;
-        if (!sw.isEnabled) {
-            this.versionUpdates = NEVER;
-            this.unrecoverable = NEVER;
-            return;
-        }
-        this.versionUpdates = this.sw.eventsOfType([
-            'VERSION_DETECTED',
-            'VERSION_INSTALLATION_FAILED',
-            'VERSION_READY',
-            'NO_NEW_VERSION_DETECTED',
-        ]);
-        this.unrecoverable = this.sw.eventsOfType('UNRECOVERABLE_STATE');
-    }
-    /**
-     * Checks for an update and waits until the new version is downloaded from the server and ready
-     * for activation.
-     *
-     * @returns a promise that
-     * - resolves to `true` if a new version was found and is ready to be activated.
-     * - resolves to `false` if no new version was found
-     * - rejects if any error occurs
-     */
-    checkForUpdate() {
-        if (!this.sw.isEnabled) {
-            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
-        }
-        if (this.ongoingCheckForUpdate) {
-            return this.ongoingCheckForUpdate;
-        }
-        const nonce = this.sw.generateNonce();
-        this.ongoingCheckForUpdate = this.sw
-            .postMessageWithOperation('CHECK_FOR_UPDATES', { nonce }, nonce)
-            .finally(() => {
-            this.ongoingCheckForUpdate = null;
-        });
-        return this.ongoingCheckForUpdate;
-    }
-    /**
-     * Updates the current client (i.e. browser tab) to the latest version that is ready for
-     * activation.
-     *
-     * In most cases, you should not use this method and instead should update a client by reloading
-     * the page.
-     *
-     * <div class="docs-alert docs-alert-important">
-     *
-     * Updating a client without reloading can easily result in a broken application due to a version
-     * mismatch between the application shell and other page resources,
-     * such as lazy-loaded chunks, whose filenames may change between
-     * versions.
-     *
-     * Only use this method, if you are certain it is safe for your specific use case.
-     *
-     * </div>
-     *
-     * @returns a promise that
-     *  - resolves to `true` if an update was activated successfully
-     *  - resolves to `false` if no update was available (for example, the client was already on the
-     *    latest version).
-     *  - rejects if any error occurs
-     */
-    activateUpdate() {
-        if (!this.sw.isEnabled) {
-            return Promise.reject(new _RuntimeError(5601 /* RuntimeErrorCode.SERVICE_WORKER_DISABLED_OR_NOT_SUPPORTED_BY_THIS_BROWSER */, (typeof ngDevMode === 'undefined' || ngDevMode) && ERR_SW_NOT_SUPPORTED));
-        }
-        const nonce = this.sw.generateNonce();
-        return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
-    }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: SwUpdate });
-}
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: SwUpdate, decorators: [{
-            type: Injectable
-        }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
 /*!
  * @license
@@ -602,8 +273,6 @@ class SwRegistrationOptions {
  */
 function provideServiceWorker(script, options = {}) {
     return makeEnvironmentProviders([
-        SwPush,
-        SwUpdate,
         { provide: SCRIPT, useValue: script },
         { provide: SwRegistrationOptions, useValue: options },
         {
@@ -631,14 +300,362 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: ServiceWorkerModule });
-    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: ServiceWorkerModule });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: ServiceWorkerModule });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-4178e82", ngImport: i0, type: ServiceWorkerModule, decorators: [{
-            type: NgModule,
-            args: [{ providers: [SwPush, SwUpdate] }]
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+            type: NgModule
         }] });
+
+/**
+ * Subscribe and listen to
+ * [Web Push
+ * Notifications](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices) through
+ * Angular Service Worker.
+ *
+ * @usageNotes
+ *
+ * You can inject a `SwPush` instance into any component or service
+ * as a dependency.
+ *
+ * <code-example path="service-worker/push/module.ts" region="inject-sw-push"
+ * header="app.component.ts"></code-example>
+ *
+ * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
+ * The call returns a `Promise` with a new
+ * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
+ * instance.
+ *
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-push"
+ * header="app.component.ts"></code-example>
+ *
+ * A request is rejected if the user denies permission, or if the browser
+ * blocks or does not support the Push API or ServiceWorkers.
+ * Check `SwPush.isEnabled` to confirm status.
+ *
+ * Invoke Push Notifications by pushing a message with the following payload.
+ *
+ * ```ts
+ * {
+ *   "notification": {
+ *     "actions": NotificationAction[],
+ *     "badge": USVString,
+ *     "body": DOMString,
+ *     "data": any,
+ *     "dir": "auto"|"ltr"|"rtl",
+ *     "icon": USVString,
+ *     "image": USVString,
+ *     "lang": DOMString,
+ *     "renotify": boolean,
+ *     "requireInteraction": boolean,
+ *     "silent": boolean,
+ *     "tag": DOMString,
+ *     "timestamp": DOMTimeStamp,
+ *     "title": DOMString,
+ *     "vibrate": number[]
+ *   }
+ * }
+ * ```
+ *
+ * Only `title` is required. See `Notification`
+ * [instance
+ * properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
+ *
+ * While the subscription is active, Service Worker listens for
+ * [PushEvent](https://developer.mozilla.org/en-US/docs/Web/API/PushEvent)
+ * occurrences and creates
+ * [Notification](https://developer.mozilla.org/en-US/docs/Web/API/Notification)
+ * instances in response.
+ *
+ * Unsubscribe using `SwPush.unsubscribe()`.
+ *
+ * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
+ * clicks on a notification. For example:
+ *
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks"
+ * header="app.component.ts"></code-example>
+ *
+ * You can read more on handling notification clicks in the [Service worker notifications
+ * guide](ecosystem/service-workers/push-notifications).
+ *
+ * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
+ * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
+ * @see [MDN: Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
+ * @see [MDN: Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API)
+ * @see [MDN: Web Push API Notifications best practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
+ *
+ * @publicApi
+ */
+class SwPush {
+    sw;
+    /**
+     * Emits the payloads of the received push notification messages.
+     */
+    messages;
+    /**
+     * Emits the payloads of the received push notification messages as well as the action the user
+     * interacted with. If no action was used the `action` property contains an empty string `''`.
+     *
+     * Note that the `notification` property does **not** contain a
+     * [Notification][Mozilla Notification] object but rather a
+     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+     *
+     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+     */
+    notificationClicks;
+    /**
+     * Emits the payloads of notifications that were closed, along with the action (if any)
+     * associated with the close event. If no action was used, the `action` property contains
+     * an empty string `''`.
+     *
+     * Note that the `notification` property does **not** contain a
+     * [Notification][Mozilla Notification] object but rather a
+     * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+     * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+     *
+     * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+     */
+    notificationCloses;
+    /**
+     * Emits updates to the push subscription, including both the previous (`oldSubscription`)
+     * and current (`newSubscription`) values. Either subscription may be `null`, depending on
+     * the context:
+     *
+     * - `oldSubscription` is `null` if no previous subscription existed.
+     * - `newSubscription` is `null` if the subscription was invalidated and not replaced.
+     *
+     * This stream allows clients to react to automatic changes in push subscriptions,
+     * such as those triggered by browser expiration or key rotation.
+     *
+     * [Push API]: https://w3c.github.io/push-api
+     */
+    pushSubscriptionChanges;
+    /**
+     * Emits the currently active
+     * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
+     * associated to the Service Worker registration or `null` if there is no subscription.
+     */
+    subscription;
+    /**
+     * True if the Service Worker is enabled (supported by the browser and enabled via
+     * `ServiceWorkerModule`).
+     */
+    get isEnabled() {
+        return this.sw.isEnabled;
+    }
+    pushManager = null;
+    subscriptionChanges = new Subject();
+    constructor(sw) {
+        this.sw = sw;
+        if (!sw.isEnabled) {
+            this.messages = NEVER;
+            this.notificationClicks = NEVER;
+            this.notificationCloses = NEVER;
+            this.pushSubscriptionChanges = NEVER;
+            this.subscription = NEVER;
+            return;
+        }
+        this.messages = this.sw.eventsOfType('PUSH').pipe(map((message) => message.data));
+        this.notificationClicks = this.sw
+            .eventsOfType('NOTIFICATION_CLICK')
+            .pipe(map((message) => message.data));
+        this.notificationCloses = this.sw
+            .eventsOfType('NOTIFICATION_CLOSE')
+            .pipe(map((message) => message.data));
+        this.pushSubscriptionChanges = this.sw
+            .eventsOfType('PUSH_SUBSCRIPTION_CHANGE')
+            .pipe(map((message) => message.data));
+        this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));
+        const workerDrivenSubscriptions = this.pushManager.pipe(switchMap((pm) => pm.getSubscription()));
+        this.subscription = new Observable((subscriber) => {
+            const workerDrivenSubscription = workerDrivenSubscriptions.subscribe(subscriber);
+            const subscriptionChanges = this.subscriptionChanges.subscribe(subscriber);
+            return () => {
+                workerDrivenSubscription.unsubscribe();
+                subscriptionChanges.unsubscribe();
+            };
+        });
+    }
+    /**
+     * Subscribes to Web Push Notifications,
+     * after requesting and receiving user permission.
+     *
+     * @param options An object containing the `serverPublicKey` string.
+     * @returns A Promise that resolves to the new subscription object.
+     */
+    requestSubscription(options) {
+        if (!this.sw.isEnabled || this.pushManager === null) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
+        const pushOptions = { userVisibleOnly: true };
+        let key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
+        let applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
+        for (let i = 0; i < key.length; i++) {
+            applicationServerKey[i] = key.charCodeAt(i);
+        }
+        pushOptions.applicationServerKey = applicationServerKey;
+        return new Promise((resolve, reject) => {
+            this.pushManager.pipe(switchMap((pm) => pm.subscribe(pushOptions)), take(1)).subscribe({
+                next: (sub) => {
+                    this.subscriptionChanges.next(sub);
+                    resolve(sub);
+                },
+                error: reject,
+            });
+        });
+    }
+    /**
+     * Unsubscribes from Service Worker push notifications.
+     *
+     * @returns A Promise that is resolved when the operation succeeds, or is rejected if there is no
+     *          active subscription or the unsubscribe operation fails.
+     */
+    unsubscribe() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
+        const doUnsubscribe = (sub) => {
+            if (sub === null) {
+                throw new _RuntimeError(5602 /* RuntimeErrorCode.NOT_SUBSCRIBED_TO_PUSH_NOTIFICATIONS */, (typeof ngDevMode === 'undefined' || ngDevMode) &&
+                    'Not subscribed to push notifications.');
+            }
+            return sub.unsubscribe().then((success) => {
+                if (!success) {
+                    throw new _RuntimeError(5603 /* RuntimeErrorCode.PUSH_SUBSCRIPTION_UNSUBSCRIBE_FAILED */, (typeof ngDevMode === 'undefined' || ngDevMode) && 'Unsubscribe failed!');
+                }
+                this.subscriptionChanges.next(null);
+            });
+        };
+        return new Promise((resolve, reject) => {
+            this.subscription
+                .pipe(take(1), switchMap(doUnsubscribe))
+                .subscribe({ next: resolve, error: reject });
+        });
+    }
+    decodeBase64(input) {
+        return atob(input);
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: SwPush, providedIn: 'root' });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: SwPush, decorators: [{
+            type: Injectable,
+            args: [{ providedIn: 'root' }]
+        }], ctorParameters: () => [{ type: NgswCommChannel }] });
+
+/**
+ * Subscribe to update notifications from the Service Worker, trigger update
+ * checks, and forcibly activate updates.
+ *
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+ *
+ * @publicApi
+ */
+class SwUpdate {
+    sw;
+    /**
+     * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
+     *
+     * Emits a `VersionInstallationFailedEvent` event whenever checking for or downloading a new
+     * version fails.
+     *
+     * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
+     * activation.
+     */
+    versionUpdates;
+    /**
+     * Emits an `UnrecoverableStateEvent` event whenever the version of the app used by the service
+     * worker to serve this client is in a broken state that cannot be recovered from without a full
+     * page reload.
+     */
+    unrecoverable;
+    /**
+     * True if the Service Worker is enabled (supported by the browser and enabled via
+     * `ServiceWorkerModule`).
+     */
+    get isEnabled() {
+        return this.sw.isEnabled;
+    }
+    ongoingCheckForUpdate = null;
+    constructor(sw) {
+        this.sw = sw;
+        if (!sw.isEnabled) {
+            this.versionUpdates = NEVER;
+            this.unrecoverable = NEVER;
+            return;
+        }
+        this.versionUpdates = this.sw.eventsOfType([
+            'VERSION_DETECTED',
+            'VERSION_INSTALLATION_FAILED',
+            'VERSION_READY',
+            'NO_NEW_VERSION_DETECTED',
+        ]);
+        this.unrecoverable = this.sw.eventsOfType('UNRECOVERABLE_STATE');
+    }
+    /**
+     * Checks for an update and waits until the new version is downloaded from the server and ready
+     * for activation.
+     *
+     * @returns a promise that
+     * - resolves to `true` if a new version was found and is ready to be activated.
+     * - resolves to `false` if no new version was found
+     * - rejects if any error occurs
+     */
+    checkForUpdate() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+        }
+        if (this.ongoingCheckForUpdate) {
+            return this.ongoingCheckForUpdate;
+        }
+        const nonce = this.sw.generateNonce();
+        this.ongoingCheckForUpdate = this.sw
+            .postMessageWithOperation('CHECK_FOR_UPDATES', { nonce }, nonce)
+            .finally(() => {
+            this.ongoingCheckForUpdate = null;
+        });
+        return this.ongoingCheckForUpdate;
+    }
+    /**
+     * Updates the current client (i.e. browser tab) to the latest version that is ready for
+     * activation.
+     *
+     * In most cases, you should not use this method and instead should update a client by reloading
+     * the page.
+     *
+     * <div class="docs-alert docs-alert-important">
+     *
+     * Updating a client without reloading can easily result in a broken application due to a version
+     * mismatch between the application shell and other page resources,
+     * such as lazy-loaded chunks, whose filenames may change between
+     * versions.
+     *
+     * Only use this method, if you are certain it is safe for your specific use case.
+     *
+     * </div>
+     *
+     * @returns a promise that
+     *  - resolves to `true` if an update was activated successfully
+     *  - resolves to `false` if no update was available (for example, the client was already on the
+     *    latest version).
+     *  - rejects if any error occurs
+     */
+    activateUpdate() {
+        if (!this.sw.isEnabled) {
+            return Promise.reject(new _RuntimeError(5601 /* RuntimeErrorCode.SERVICE_WORKER_DISABLED_OR_NOT_SUPPORTED_BY_THIS_BROWSER */, (typeof ngDevMode === 'undefined' || ngDevMode) && ERR_SW_NOT_SUPPORTED));
+        }
+        const nonce = this.sw.generateNonce();
+        return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: SwUpdate, providedIn: 'root' });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.0-next.0+sha-b839d08", ngImport: i0, type: SwUpdate, decorators: [{
+            type: Injectable,
+            args: [{ providedIn: 'root' }]
+        }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
 export { ServiceWorkerModule, SwPush, SwRegistrationOptions, SwUpdate, provideServiceWorker };
 //# sourceMappingURL=service-worker.mjs.map
