@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.2.0-next.1+sha-a2f366f
+ * @license Angular v20.2.0-next.1+sha-4ac6171
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -344,10 +344,10 @@ class SwPush {
     decodeBase64(input) {
         return atob(input);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: SwPush });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: SwPush, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: SwPush });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: SwPush, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: SwPush, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -455,10 +455,10 @@ class SwUpdate {
         const nonce = this.sw.generateNonce();
         return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', { nonce }, nonce);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: SwUpdate });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: SwUpdate, deps: [{ token: NgswCommChannel }], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: SwUpdate });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: SwUpdate, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: SwUpdate, decorators: [{
             type: Injectable
         }], ctorParameters: () => [{ type: NgswCommChannel }] });
 
@@ -531,7 +531,7 @@ function ngswAppInitializer() {
                 return;
             }
             navigator.serviceWorker
-                .register(script, { scope: options.scope })
+                .register(script, { scope: options.scope, updateViaCache: options.updateViaCache })
                 .catch((err) => console.error(_formatRuntimeError(5604 /* RuntimeErrorCode.SERVICE_WORKER_REGISTRATION_FAILED */, (typeof ngDevMode === 'undefined' || ngDevMode) &&
                 'Service worker registration failed with: ' + err)));
         });
@@ -564,6 +564,12 @@ class SwRegistrationOptions {
      * Default: true
      */
     enabled;
+    /**
+     * The value of the setting used to determine the circumstances in which the browser
+     * will consult the HTTP cache when it tries to update the service worker or any scripts that are imported via importScripts().
+     * [ServiceWorkerRegistration.updateViaCache](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/updateViaCache)
+     */
+    updateViaCache;
     /**
      * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can
      * control. It will be used when calling
@@ -649,11 +655,11 @@ class ServiceWorkerModule {
             providers: [provideServiceWorker(script, options)],
         };
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: ServiceWorkerModule });
-    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: ServiceWorkerModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: ServiceWorkerModule });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: ServiceWorkerModule, providers: [SwPush, SwUpdate] });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-a2f366f", ngImport: i0, type: ServiceWorkerModule, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.2.0-next.1+sha-4ac6171", ngImport: i0, type: ServiceWorkerModule, decorators: [{
             type: NgModule,
             args: [{ providers: [SwPush, SwUpdate] }]
         }] });

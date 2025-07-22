@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.2.0-next.1+sha-a2f366f
+ * @license Angular v20.2.0-next.1+sha-4ac6171
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -149,6 +149,12 @@ declare abstract class SwRegistrationOptions {
      * Default: true
      */
     enabled?: boolean;
+    /**
+     * The value of the setting used to determine the circumstances in which the browser
+     * will consult the HTTP cache when it tries to update the service worker or any scripts that are imported via importScripts().
+     * [ServiceWorkerRegistration.updateViaCache](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/updateViaCache)
+     */
+    updateViaCache?: ServiceWorkerUpdateViaCache;
     /**
      * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can
      * control. It will be used when calling
