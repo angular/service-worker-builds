@@ -851,6 +851,7 @@ ${error.stack}`;
         return table.write("lru", this._lru.state);
       } catch (err) {
         this.debugHandler.log(err, `DataGroup(${this.config.name}@${this.config.version}).syncLru()`);
+        await this.detectStorageFull();
       }
     }
     /**
@@ -964,6 +965,7 @@ ${error.stack}`;
           await this.cacheResponse(req, res, lru, okToCacheOpaque);
         } catch (err) {
           this.debugHandler.log(err, `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${req.url}, status: ${res.status})`);
+          await this.detectStorageFull();
         }
       } catch (e) {
       }
@@ -1054,6 +1056,25 @@ ${error.stack}`;
           status: 504,
           statusText: "Gateway Timeout"
         });
+      }
+    }
+    /**
+     * Detect if storage is full or approaching capacity.
+     * Returns true if storage is at or near capacity.
+     */
+    async detectStorageFull() {
+      try {
+        const estimate = await navigator.storage.estimate();
+        const { quota, usage } = estimate;
+        if (typeof quota !== "number" || typeof usage !== "number") {
+          return;
+        }
+        const usagePercentage = usage / quota * 100;
+        const isStorageFull = usagePercentage >= 95;
+        if (isStorageFull) {
+          this.debugHandler.log("Storage is full or nearly full", `DataGroup(${this.config.name}@${this.config.version}).detectStorageFull()`);
+        }
+      } catch (e) {
       }
     }
   };
@@ -1261,7 +1282,7 @@ ${error.stack}`;
   };
 
   // packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "20.2.0-next.2+sha-da2700c";
+  var SW_VERSION = "20.2.0-next.2+sha-9d8c48d";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
