@@ -1282,7 +1282,7 @@ ${error.stack}`;
   };
 
   // packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "20.2.0-next.2+sha-94b0ef1";
+  var SW_VERSION = "20.2.0-next.2+sha-6d01168";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1991,6 +1991,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
         return;
       }
       const brokenHash = broken[0];
+      await this.notifyClientsAboutVersionFailure(brokenHash, err);
       if (this.latestHash === brokenHash) {
         this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
         this.stateMessage = `Degraded due to: ${errorToString(err)}`;
@@ -2180,6 +2181,21 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
           latestVersion: this.mergeHashWithAppData(manifest, hash)
         };
         client.postMessage(notice);
+      }));
+    }
+    async notifyClientsAboutVersionFailure(brokenHash, error) {
+      await this.initialized;
+      const affectedClients = Array.from(this.clientVersionMap.entries()).filter(([clientId, hash]) => hash === brokenHash).map(([clientId]) => clientId);
+      await Promise.all(affectedClients.map(async (clientId) => {
+        const client = await this.scope.clients.get(clientId);
+        if (client) {
+          const brokenVersion = this.versions.get(brokenHash);
+          client.postMessage({
+            type: "VERSION_FAILED",
+            version: this.mergeHashWithAppData(brokenVersion.manifest, brokenHash),
+            error: errorToString(error)
+          });
+        }
       }));
     }
     async broadcast(msg) {
