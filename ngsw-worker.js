@@ -1282,7 +1282,7 @@ ${error.stack}`;
   };
 
   // packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "20.2.0-next.3+sha-78a6b68";
+  var SW_VERSION = "20.2.0-next.3+sha-8255e0c";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1562,6 +1562,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
         // based on the incorrect assumption that browsers don't support it.
         this.onPushSubscriptionChange(event)
       ));
+      this.scope.addEventListener("messageerror", (event) => this.onMessageError(event));
       this.debugger = new DebugHandler(this, this.adapter);
       this.idle = new IdleScheduler(this.adapter, IDLE_DELAY, MAX_IDLE_DELAY, this.debugger);
     }
@@ -1635,6 +1636,9 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
     }
     onPushSubscriptionChange(event) {
       event.waitUntil(this.handlePushSubscriptionChange(event));
+    }
+    onMessageError(event) {
+      this.debugger.log(`Message error occurred - data could not be deserialized`, `Driver.onMessageError(origin: ${event.origin})`);
     }
     async ensureInitialized(event) {
       if (this.initialized !== null) {
