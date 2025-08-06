@@ -1282,7 +1282,7 @@ ${error.stack}`;
   };
 
   // packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "20.2.0-next.3+sha-52b8e07";
+  var SW_VERSION = "20.2.0-next.4+sha-d24d574";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1478,6 +1478,9 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
     "title",
     "vibrate"
   ];
+  function isLocalhost(scope2) {
+    return /(?:^https?:\/\/)?(?:(?:^|[^\w.])localhost|\[::1\]|127(?:\.\d{1,3}){3})(?::\d+)?(?:\/.*)?$/.test(scope2);
+  }
   var DriverReadyState;
   (function(DriverReadyState2) {
     DriverReadyState2[DriverReadyState2["NORMAL"] = 0] = "NORMAL";
@@ -1984,7 +1987,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
           await this.versionFailed(appVersion, err);
         }
       };
-      if (this.scope.registration.scope.indexOf("://localhost") > -1) {
+      if (isLocalhost(this.scope.registration.scope)) {
         return initialize();
       }
       this.idle.schedule(`initialization(${appVersion.manifestHash})`, initialize);

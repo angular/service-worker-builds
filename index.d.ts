@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.2.0-next.3+sha-52b8e07
+ * @license Angular v20.2.0-next.4+sha-d24d574
  * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
@@ -174,6 +174,15 @@ declare abstract class SwRegistrationOptions {
      * [ServiceWorkerRegistration.updateViaCache](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/updateViaCache)
      */
     updateViaCache?: ServiceWorkerUpdateViaCache;
+    /**
+     * The type of the ServiceWorker script to register.
+     * [ServiceWorkerRegistration#type](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register#type)
+     * - `classic`: Registers the script as a classic worker. ES module features such as `import` and `export` are NOT allowed in the script.
+     * - `module`: Registers the script as an ES module. Allows use of `import`/`export` syntax and module features.
+     *
+     * @default 'classic'
+     */
+    type?: WorkerType;
     /**
      * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can
      * control. It will be used when calling
