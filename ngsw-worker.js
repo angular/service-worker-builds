@@ -1282,7 +1282,7 @@ ${error.stack}`;
   };
 
   // packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "20.2.0-next.6+sha-6a11846";
+  var SW_VERSION = "20.2.0-next.6+sha-3b214d2";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1566,6 +1566,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
         this.onPushSubscriptionChange(event)
       ));
       this.scope.addEventListener("messageerror", (event) => this.onMessageError(event));
+      this.scope.addEventListener("unhandledrejection", (event) => this.onUnhandledRejection(event));
       this.debugger = new DebugHandler(this, this.adapter);
       this.idle = new IdleScheduler(this.adapter, IDLE_DELAY, MAX_IDLE_DELAY, this.debugger);
     }
@@ -1642,6 +1643,9 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
     }
     onMessageError(event) {
       this.debugger.log(`Message error occurred - data could not be deserialized`, `Driver.onMessageError(origin: ${event.origin})`);
+    }
+    onUnhandledRejection(event) {
+      this.debugger.log(`Unhandled promise rejection occurred`, `Driver.onUnhandledRejection(reason: ${event.reason})`);
     }
     async ensureInitialized(event) {
       if (this.initialized !== null) {
