@@ -18,7 +18,10 @@
     return a;
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-  var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __publicField = (obj, key, value) => {
+    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+    return value;
+  };
 
   // packages/service-worker/worker/src/named-cache-storage.js
   var NamedCacheStorage = class {
@@ -1282,7 +1285,7 @@ ${error.stack}`;
   };
 
   // packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "21.0.0-next.0+sha-8a6cc39";
+  var SW_VERSION = "21.0.0-next.0+sha-1feadba";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
