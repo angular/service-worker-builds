@@ -1,5 +1,5 @@
 /**
- * @license Angular v20.3.5+sha-6a7c27e
+ * @license Angular v20.3.5+sha-43fe755
  * (c) 2010-2025 Google LLC. https://angular.dev/
  * License: MIT
  */
@@ -158,6 +158,8 @@ declare class NgswCommChannel {
  * {@example service-worker/registration-options/module.ts region="registration-options"
  *     header="app.module.ts"}
  *
+ * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
+ *
  * @publicApi
  */
 declare abstract class SwRegistrationOptions {
@@ -236,6 +238,11 @@ declare abstract class SwRegistrationOptions {
  *   ],
  * });
  * ```
+ *
+ * @see [Custom service worker script](ecosystem/service-workers/custom-service-worker-scripts)
+ *
+ * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
+ *
  */
 declare function provideServiceWorker(script: string, options?: SwRegistrationOptions): EnvironmentProviders;
 
