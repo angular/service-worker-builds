@@ -1285,7 +1285,7 @@ ${error.stack}`;
   };
 
   // packages/service-worker/worker/src/debug.js
-  var SW_VERSION = "21.1.0-next.0+sha-be1598f";
+  var SW_VERSION = "21.1.0-next.0+sha-f0debd5";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
