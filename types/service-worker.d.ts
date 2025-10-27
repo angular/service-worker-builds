@@ -1,5 +1,5 @@
 /**
- * @license Angular v21.1.0-next.0+sha-a5678f6
+ * @license Angular v21.1.0-next.0+sha-b8c8bc6
  * (c) 2010-2025 Google LLC. https://angular.dev/
  * License: MIT
  */
@@ -139,14 +139,6 @@ declare class NgswCommChannel {
     waitForOperationCompleted(nonce: number): Promise<boolean>;
     get isEnabled(): boolean;
 }
-
-/*!
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.dev/license
- */
 
 /**
  * Token that can be used to provide options for `ServiceWorkerModule` outside of
