@@ -1,5 +1,5 @@
 /**
- * @license Angular v21.1.0-next.0+sha-d337cfb
+ * @license Angular v21.1.0-next.0+sha-4ed8781
  * (c) 2010-2025 Google LLC. https://angular.dev/
  * License: MIT
  */
@@ -76,31 +76,12 @@ interface VersionReadyEvent {
     };
 }
 /**
- * An event emitted when a specific version of the app has encountered a critical failure
- * that prevents it from functioning correctly.
- *
- * When a version fails, the service worker will notify all clients currently using that version
- * and may degrade to serving only existing clients if the failed version was the latest one.
- *
- * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
- *
- * @publicApi
- */
-interface VersionFailedEvent {
-    type: 'VERSION_FAILED';
-    version: {
-        hash: string;
-        appData?: object;
-    };
-    error: string;
-}
-/**
  * A union of all event types that can be emitted by
  * {@link SwUpdate#versionUpdates}.
  *
  * @publicApi
  */
-type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent | VersionFailedEvent | NoNewVersionDetectedEvent;
+type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent | NoNewVersionDetectedEvent;
 /**
  * An event emitted when the version of the app used by the service worker to serve this client is
  * in a broken state that cannot be recovered from and a full page reload is required.
