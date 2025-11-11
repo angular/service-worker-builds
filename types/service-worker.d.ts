@@ -1,5 +1,5 @@
 /**
- * @license Angular v21.1.0-next.0+sha-ec9dc94
+ * @license Angular v21.1.0-next.0+sha-0770387
  * (c) 2010-2025 Google LLC. https://angular.dev/
  * License: MIT
  */
@@ -110,7 +110,7 @@ type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | Vers
  * service worker cache has been partially cleaned by the browser, removing some files of a previous
  * app version but not all.
  *
- * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+ * @see [Handling an unrecoverable state](ecosystem/service-workers/communications#handling-an-unrecoverable-state)
 
  *
  * @publicApi
@@ -239,6 +239,10 @@ declare abstract class SwRegistrationOptions {
 declare function provideServiceWorker(script: string, options?: SwRegistrationOptions): EnvironmentProviders;
 
 /**
+ *
+ * @see [Custom service worker script](ecosystem/service-workers/custom-service-worker-scripts)
+ * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
+ *
  * @publicApi
  */
 declare class ServiceWorkerModule {
@@ -330,6 +334,7 @@ declare class ServiceWorkerModule {
  * @see [MDN: Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
  * @see [MDN: Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API)
  * @see [MDN: Web Push API Notifications best practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
+ * @see [Push notifications guide](ecosystem/service-workers/push-notifications)
  *
  * @publicApi
  */
@@ -349,6 +354,9 @@ declare class SwPush {
      * object that also includes the `title` of the [Notification][Mozilla Notification] object.
      *
      * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+     *
+     * @see [Notification click handling](ecosystem/service-workers/push-notifications#notification-click-handling)
+     *
      */
     readonly notificationClicks: Observable<{
         action: string;
@@ -445,6 +453,9 @@ declare class SwUpdate {
      *
      * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
      * activation.
+     *
+     * @see [Version updates](ecosystem/service-workers/communications#version-updates)
+     *
      */
     readonly versionUpdates: Observable<VersionEvent>;
     /**
