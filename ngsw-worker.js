@@ -1053,7 +1053,7 @@ ${error.stack}`;
     }
     async safeFetch(req) {
       try {
-        return this.scope.fetch(req);
+        return await this.scope.fetch(req);
       } catch (e) {
         return this.adapter.newResponse(null, {
           status: 504,
