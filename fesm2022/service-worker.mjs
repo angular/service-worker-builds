@@ -1,5 +1,5 @@
 /**
- * @license Angular v21.0.1+sha-4207d89
+ * @license Angular v21.0.1+sha-99b6341
  * (c) 2010-2025 Google LLC. https://angular.dev/
  * License: MIT
  */
@@ -202,7 +202,7 @@ class SwPush {
   }
   static ɵfac = i0.ɵɵngDeclareFactory({
     minVersion: "12.0.0",
-    version: "21.0.1+sha-4207d89",
+    version: "21.0.1+sha-99b6341",
     ngImport: i0,
     type: SwPush,
     deps: [{
@@ -212,14 +212,14 @@ class SwPush {
   });
   static ɵprov = i0.ɵɵngDeclareInjectable({
     minVersion: "12.0.0",
-    version: "21.0.1+sha-4207d89",
+    version: "21.0.1+sha-99b6341",
     ngImport: i0,
     type: SwPush
   });
 }
 i0.ɵɵngDeclareClassMetadata({
   minVersion: "12.0.0",
-  version: "21.0.1+sha-4207d89",
+  version: "21.0.1+sha-99b6341",
   ngImport: i0,
   type: SwPush,
   decorators: [{
@@ -274,7 +274,7 @@ class SwUpdate {
   }
   static ɵfac = i0.ɵɵngDeclareFactory({
     minVersion: "12.0.0",
-    version: "21.0.1+sha-4207d89",
+    version: "21.0.1+sha-99b6341",
     ngImport: i0,
     type: SwUpdate,
     deps: [{
@@ -284,14 +284,14 @@ class SwUpdate {
   });
   static ɵprov = i0.ɵɵngDeclareInjectable({
     minVersion: "12.0.0",
-    version: "21.0.1+sha-4207d89",
+    version: "21.0.1+sha-99b6341",
     ngImport: i0,
     type: SwUpdate
   });
 }
 i0.ɵɵngDeclareClassMetadata({
   minVersion: "12.0.0",
-  version: "21.0.1+sha-4207d89",
+  version: "21.0.1+sha-99b6341",
   ngImport: i0,
   type: SwUpdate,
   decorators: [{
@@ -397,7 +397,7 @@ class ServiceWorkerModule {
   }
   static ɵfac = i0.ɵɵngDeclareFactory({
     minVersion: "12.0.0",
-    version: "21.0.1+sha-4207d89",
+    version: "21.0.1+sha-99b6341",
     ngImport: i0,
     type: ServiceWorkerModule,
     deps: [],
@@ -405,13 +405,13 @@ class ServiceWorkerModule {
   });
   static ɵmod = i0.ɵɵngDeclareNgModule({
     minVersion: "14.0.0",
-    version: "21.0.1+sha-4207d89",
+    version: "21.0.1+sha-99b6341",
     ngImport: i0,
     type: ServiceWorkerModule
   });
   static ɵinj = i0.ɵɵngDeclareInjector({
     minVersion: "12.0.0",
-    version: "21.0.1+sha-4207d89",
+    version: "21.0.1+sha-99b6341",
     ngImport: i0,
     type: ServiceWorkerModule,
     providers: [SwPush, SwUpdate]
@@ -419,7 +419,7 @@ class ServiceWorkerModule {
 }
 i0.ɵɵngDeclareClassMetadata({
   minVersion: "12.0.0",
-  version: "21.0.1+sha-4207d89",
+  version: "21.0.1+sha-99b6341",
   ngImport: i0,
   type: ServiceWorkerModule,
   decorators: [{
