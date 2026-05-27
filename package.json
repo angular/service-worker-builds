@@ -1,11 +1,11 @@
 {
   "name": "@angular/service-worker",
-  "version": "22.1.0-next.0+sha-140c4d0",
+  "version": "22.1.0-next.0+sha-6f56202",
   "description": "Angular - service worker tooling!",
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^22.22.0 || ^24.13.1 || >=26.0.0"
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
   },
   "exports": {
     "./ngsw-worker.js": {
@@ -33,7 +33,7 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/core": "22.1.0-next.0+sha-140c4d0",
+    "@angular/core": "22.1.0-next.0+sha-6f56202",
     "rxjs": "^6.5.3 || ^7.4.0"
   },
   "repository": {
