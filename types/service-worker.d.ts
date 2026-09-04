@@ -1,5 +1,5 @@
 /**
- * @license Angular v22.1.5+sha-468b65b
+ * @license Angular v22.1.5+sha-dfe7be4
  * (c) 2010-2026 Google LLC. https://angular.dev/
  * License: MIT
  */
@@ -413,7 +413,7 @@ declare class SwPush {
     unsubscribe(): Promise<void>;
     private decodeBase64;
     static ɵfac: i0.ɵɵFactoryDeclaration<SwPush, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<SwPush>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 /**
@@ -488,7 +488,7 @@ declare class SwUpdate {
      */
     activateUpdate(): Promise<boolean>;
     static ɵfac: i0.ɵɵFactoryDeclaration<SwUpdate, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<SwUpdate>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 export { ServiceWorkerModule, SwPush, SwRegistrationOptions, SwUpdate, provideServiceWorker };
