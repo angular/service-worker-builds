@@ -1,5 +1,5 @@
 /**
- * @license Angular v22.3.0-next.0+sha-249f55f
+ * @license Angular v22.3.0-next.0+sha-afcda88
  * (c) 2010-2026 Google LLC. https://angular.dev/
  * License: MIT
  */
@@ -128,8 +128,7 @@ declare class NgswCommChannel {
  * You can use this token to define a provider that generates the registration options at runtime,
  * for example via a function call:
  *
- * {@example service-worker/registration-options/module.ts region="registration-options"
- *     header="app.module.ts"}
+ * {@example service-worker/registration-options/module.ts region="registration-options"}
  *
  * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
  *
@@ -250,16 +249,14 @@ declare class ServiceWorkerModule {
  * You can inject a `SwPush` instance into any component or service
  * as a dependency.
  *
- * <code-example path="service-worker/push/service_worker_component.ts" region="inject-sw-push"
- * header="app.component.ts"></code-example>
+ * {@example service-worker/push/service_worker_component.ts region='inject-sw-push'}
  *
  * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
  * The call returns a `Promise` with a new
  * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
  * instance.
  *
- * <code-example path="service-worker/push/service_worker_component.ts" region="subscribe-to-push"
- * header="app.component.ts"></code-example>
+ * {@example service-worker/push/service_worker_component.ts region='subscribe-to-push'}
  *
  * A request is rejected if the user denies permission, or if the browser
  * blocks or does not support the Push API or ServiceWorkers.
@@ -304,8 +301,7 @@ declare class ServiceWorkerModule {
  * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
  * clicks on a notification. For example:
  *
- * <code-example path="service-worker/push/service_worker_component.ts" region="subscribe-to-notification-clicks"
- * header="app.component.ts"></code-example>
+ * {@example service-worker/push/service_worker_component.ts region='subscribe-to-notification-clicks'}
  *
  * You can read more on handling notification clicks in the [Service worker notifications
  * guide](ecosystem/service-workers/push-notifications).
