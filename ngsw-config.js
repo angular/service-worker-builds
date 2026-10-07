@@ -361,8 +361,14 @@ var NodeFilesystem = class {
 
 // packages/service-worker/cli/main.ts
 var cwd = process.cwd();
-var distDir = path2.join(cwd, process.argv[2]);
-var config = path2.join(cwd, process.argv[3]);
+var distDir = path2.resolve(cwd, process.argv[2]);
+var config = path2.resolve(cwd, process.argv[3]);
+if (!distDir.startsWith(cwd + path2.sep) && distDir !== cwd) {
+  throw new Error('Path traversal detected: distDir is outside working directory');
+}
+if (!config.startsWith(cwd + path2.sep)) {
+  throw new Error('Path traversal detected: config is outside working directory');
+}
 var baseHref = process.argv[4] || "/";
 var configParsed = JSON.parse(fs2.readFileSync(config).toString());
 var filesystem = new NodeFilesystem(distDir);
